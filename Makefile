@@ -1,5 +1,5 @@
 CFLAGS	+=	-Os -Wall
-PROG		=	forecast-stone
+PROG		=	shaman
 PREFIX	?=	/usr
 VER		=	0.1
 MANDIR	?=	/share/man
