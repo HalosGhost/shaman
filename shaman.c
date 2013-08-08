@@ -24,7 +24,7 @@ void usage(char *progname) {
 void checkStone(char *location) {
 	len=snprintf(command,sizeof(command),"curl -fsL \"%s?inputstring=%s\"",provider,location);
 	if ( len<=sizeof(command) ) {
-		if ( !(url=popen(command,"r")) ) { fprintf(stderr,"Could not check stone\n");exit(1); }
+		if ( !(url=popen(command,"r")) ) { fprintf(stderr,"Could not check forecast stone\n");exit(1); }
 		while ( fgets(line,sizeof(line),url) ) {
 			if ( (condition=strstr(line,"myforecast-current")) ) {
 				if ( strlen(condition)<20 ) exit(46);
