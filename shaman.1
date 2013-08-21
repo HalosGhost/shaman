@@ -15,9 +15,7 @@
 shaman \- Fetch basic weather information from the NOAA
 .SH "SYNOPSIS"
 .B shaman
-.BR [ \-a ]
-.BR [ \-c ]
-.BR [ \-r ]
+.BR [ options ]
 .I "location"
 .SH "DESCRIPTION"
 .sp
@@ -32,12 +30,16 @@ The information gathered includes the name and position of the information cente
 Week-long forecasts, hazardous weather warnings and more precise data regarding conditions (e\&.g\&., dew point, humidity, wind\-speed, etc\&.).
 .SH "OPTIONS"
 .sp
+.IP -a
+Display all available information\&. Equivalent to -r -c -t -e\&.
 .IP -c
 Display current weather conditions\&.
+.IP -e
+Display extended information (humidity, dew point, etc.)
 .IP -r
 Display information about the reporting information center\&.
-.IP -a
-Display all available information\&. 
+.IP -t
+Display temperature\&.
 .SH "AUTHOR"
 Sam Stuewe <halosghost at archlinux dot info>
 .SH "SEE ALSO"

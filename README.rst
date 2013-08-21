@@ -12,7 +12,6 @@ Status
 
 To-Do
 -----
-# Revamp parsing to correctly print reporter information.
 # Add wind-speed, visibiliity and pressure to extended info
 # Correctly allow use of metric units (may involve a work-around until upstream fixes a bug)
 # Add 7-day forecasts

@@ -12,7 +12,7 @@ FILE *url;
 char command[256],locurl[256],line[2000],reporter[48],condition[20];
 char provider[54]="http://forecast.weather.gov/zipcity.php";
 char *c=NULL,*wind=NULL,*ptr=NULL,*match=NULL;
-char *coordln,*reportln,*elevln,*currentln,*degunts="F";
+char coordln[64],reportln[96],elevln[80],currentln[2000],*degunts="F";
 char *lines[4];
 float lat,lon;
 int elev,temperature,humidity,pressure,dewpoint,visibility,hindex;
@@ -39,7 +39,6 @@ void invalidOption(char *option) {
 
 /* Get Functions */
 void getReporter(char *reporterln,char *coordinateln,char *elevationln) {
-	printf("%s\n%s\n%s\n",reporterln,coordinateln,elevationln);
 	sscanf(reporterln,"%*[^>]>%[^<]",reporter);
 	sscanf(coordinateln,"%*[^\"]\"%f\"%*[^\"]\"%f\"",&lat,&lon);
 	sscanf(elevationln,"%*[^>]>%d",&elev);
@@ -64,10 +63,10 @@ void checkStones(char *location) {
 		if ( len<=sizeof(command) ) {
 			if ( !(url=popen(command,"r")) ) { fprintf(stderr,"Could not check weather stones\n");exit(1); }
 			while ( fgets(line,sizeof(line),url) ) {
-				if ( (match=strstr(line,"point l")) ) { count++; if (count==2) sscanf(match,"%s",coordln); }
-				else if ( (match=strstr(line,"area-description")) ) sscanf(match,"%s",reportln);
-				else if ( (match=strstr(line,"height-units")) ) sscanf(match,"%s",elevln);
-				else if ( (match=strstr(line,"apparent")) ) currentln=match;
+				if ( (match=strstr(line,"point l")) ) { count++; if (count==2) strcpy(coordln,match); }
+				else if ( (match=strstr(line,"area-description")) ) strcpy(reportln,match);
+				else if ( (match=strstr(line,"height-units")) ) strcpy(elevln,match);
+				else if ( (match=strstr(line,"apparent")) ) strcpy(currentln,match);
 			}
 		}
 		if (chrepo) getReporter(reportln,coordln,elevln);
