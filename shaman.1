@@ -1,0 +1,44 @@
+'\" 
+.\"     Title: shaman
+.\"    Author: [Sam Stuewe]
+.\"      Date: 2013-08-02
+.\"  Language: English
+.\"
+.TH "SHAMAN" "1" "2013-08-02" "\ \& 1\&.0" "\ \&"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.nh
+.ad l
+.\"
+.\" <- Main Content ->
+.SH "NAME"
+shaman \- Fetch basic weather information from the NOAA
+.SH "SYNOPSIS"
+.B shaman
+.BR [ \-a ]
+.BR [ \-c ]
+.BR [ \-r ]
+.I "location"
+.SH "DESCRIPTION"
+.sp
+.B shaman 
+is a simple CLI to fetch basic weather information about a given location from the NOAA using 
+.BR curl (1). 
+.sp
+Though more flexible specification is planned, at the moment,
+.IR location " can only be in the form of a zip code\&. "
+The information gathered includes the name and position of the information center providing the data, current weather conditions and current temperature\&.
+.SH "PLANNED FEATURES"
+Week-long forecasts and more precise data regarding conditions (e\&.g\&., dew point, humidity, wind\-speed, etc\&.).
+.SH "OPTIONS"
+.sp
+.IP -c
+Display current weather conditions\&.
+.IP -r
+Display information about the reporting information center\&.
+.IP -a
+Display all available information\&. 
+.SH "AUTHOR"
+Sam Stuewe <halosghost at archlinux dot info>
+.SH "SEE ALSO"
+.BR curl (1)
