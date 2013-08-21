@@ -5,3 +5,14 @@ Originally inspired by `weatherman <http://darkhorse.nu/weatherman/>`_, ``shaman
 For those who aren't familiar with the concept of a forecast stone, think of it like this. This software's most basic function is, essentially, a digital form of this:
 
 .. image:: http://www.theweatherstone.co.uk/images/slide1.jpg
+
+Status
+------
+``shaman`` now correctly grabs and parses current conditions, temperature, humidity and dew point.
+
+To-Do
+-----
+# Revamp parsing to correctly print reporter information.
+# Add wind-speed, visibiliity and pressure to extended info
+# Correctly allow use of metric units (may involve a work-around until upstream fixes a bug)
+# Add 7-day forecasts
