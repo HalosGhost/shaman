@@ -42,15 +42,16 @@ void getReporter(char *reporterln,char *coordinateln,char *elevationln) {
 	sscanf(reporterln,"%*[^>]>%[^<]",reporter);
 	sscanf(coordinateln,"%*[^\"]\"%f\"%*[^\"]\"%f\"",&lat,&lon);
 	sscanf(elevationln,"%*[^>]>%d",&elev);
-	printf("Provider: %s\nLat: %.5g, Lon: %.5g, Elev: %d\n",reporter,lat,lon,elev);
+	printf("%s\nLat: %.5g, Lon: %.5g, Elev: %d\n",reporter,lat,lon,elev);
 }
 
 void getConditions(char *conditionsln) {
 	sscanf(conditionsln,"%*[^<]<value>%d%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%d%*[^=]=%*[^=]=\"%[^\"]",&temperature,&dewpoint,&humidity,condition);
+	if (chrepo) printf("\n");
 	if (chcond) printf("%s",condition);
-	if (chcond&&chtemp) printf(" (%d °%s)",temperature,degunts);
-	if (chtemp&&!chcond) printf("%d °%s",temperature,degunts);
-	if (extend) printf("\nHumidity: %d%%\nDew Point: %d °%s",humidity,dewpoint,degunts);
+	if (chcond&&chtemp) printf(" (%d°%s)",temperature,degunts);
+	if (chtemp&&!chcond) printf("%d°%s",temperature,degunts);
+	if (extend) printf("\nHumidity: %d%%\nDew Point: %d°%s",humidity,dewpoint,degunts);
 	printf("\n");
 }
 
