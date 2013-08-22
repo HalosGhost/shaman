@@ -12,7 +12,7 @@
 FILE *url;
 char provider[]="http://forecast.weather.gov/zipcity.php";
 char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000];
-char *c=NULL,*ptr=NULL,*match=NULL;
+char *c=NULL,*ptr=NULL,*match=NULL,defaultLocation[6],defaultUnits[]="E";
 char reporter[48],condition[20],*degunts="F",*visunts="mi",*presunts="in",wgspd[5],wsspd[5],wtype[24],*wndir="",*wunts="mph";
 float lat,lon,temperature,visibility,pressure;
 int elev,humidity,dewpoint,wdir,wspd;
@@ -107,7 +107,18 @@ void checkStones(char *location) {
 	}
 }
 
+void discoverConfig(char* cmdLocation) {
+	FILE *rc=NULL;
+	const char *cwd = getenv("PWD");
+	if ( !rc ) { chdir(getenv("XDG_CONFIG_HOME")); if (chdir("shaman")==0) rc = fopen("config","r"); }
+	if ( !rc ) { chdir(getenv("HOME")); rc = fopen(".shamanrc","r"); }
+	chdir(cwd);
+	if ( rc ) fscanf(rc,"Location = %s\nUnits = %s",defaultLocation,defaultUnits); fclose(rc);
+	if (defaultUnits[0]=='M'&&degscl==0) { degscl=1; degunts="C"; }
+}
+
 int main(int argc,char** argv) {
+	defaultLocation[0]=0;
 	if ( !argv[1] ) usage(argv[0]);
 	if ( argv[1]&&argv[1][0]!='-' ) chall=1;
 	for ( i=1; i<argc; i++ ) {
@@ -129,12 +140,16 @@ int main(int argc,char** argv) {
 			}
 		}
 	}
-	for ( d=0; d<strlen(argv[argc-1]); d++ ) {
-		if ( !isdigit(argv[argc-1][d]) ) { 
-			printf("No valid location given!\nSee `%s -h` for help\n",argv[0]); 
-			exit(46); 
+	discoverConfig(argv[argc-1]);
+	if (!*defaultLocation) {
+		for ( d=0; d<strlen(argv[argc-1]); d++ ) {
+			if ( !isdigit(argv[argc-1][d]) ) { 
+				printf("No valid location given!\nSee `%s -h` for help\n",argv[0]); 
+				exit(46); 
+			}
 		}
+		checkStones(argv[argc-1]);
 	}
-	checkStones(argv[argc-1]);
+	checkStones(defaultLocation);
 	return 0;
 }
