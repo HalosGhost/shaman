@@ -9,11 +9,10 @@
 #include <unistd.h>
 
 FILE *url;
-char command[256],locurl[256],line[2000],reporter[48],condition[20];
 char provider[54]="http://forecast.weather.gov/zipcity.php";
+char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000];
 char *c=NULL,*ptr=NULL,*match=NULL;
-char coordln[64],reportln[96],elevln[80],currentln[2000],*degunts="F",visunts[20];
-char *lines[4];
+char reporter[48],condition[20],*degunts="F",visunts[20],wgspd[5],wsspd[5],wtype[24],wndir[2],*wunts="mph";
 float lat,lon,visibility,pressure;
 int elev,temperature,humidity,dewpoint,wdir,wspd;
 int len,i,chcond,chtemp,chcoor,chrepo,extend,degscl=0,count=0;
@@ -46,14 +45,20 @@ void getReporter(char *reporterln,char *coordinateln,char *elevationln) {
 }
 
 void getConditions(char *conditionsln) {
-	sscanf(conditionsln,"%*[^<]<value>%d%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%d%*[^=]=%*[^=]=\"%[^\"]\"%*[^\"]\"%[^\"]\">%f%*[^.]%*[^=]%*[^/]%*[^-]%*[^<]%*[^=]%*[^/]%*[^=]%*[^v]value>%f",
-		   &temperature,&dewpoint,&humidity,condition,visunts,&visibility,&pressure);
+	sscanf(conditionsln,
+		   "%*[^<]<value>%d%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%d%*[^=]=%*[^=]=\"%[^\"]\"%*[^\"]\"%[^\"]\">\
+		   %f%*[^.]%*[^=]%*[^v]value>%d%*[^\"]%*[^v]value>%[^<]%*[^=]%*[^v]value>%[^<]%*[^-]%*[^=]%*[^v]value>%f",
+		   &temperature,&dewpoint,&humidity,condition,visunts,&visibility,&wdir,wgspd,wsspd,&pressure);
+	//wspd=1.151*(wgspd[0]=='N' ? wsspd[0]=='N' ? 0 : wsspd : wgspd)
 	if (chrepo) printf("\n");
 	if (chcond) printf("%s",condition);
 	if (chcond&&chtemp) printf(" (%d°%s)",temperature,degunts);
 	if (chtemp&&!chcond) printf("%d°%s",temperature,degunts);
-	if (extend) printf("\nHumidity: %d%%\nDew Point: %d°%s\nVisibility: %.4g %s\nPressure: %.4g in",humidity,dewpoint,degunts,visibility,visunts,pressure);
-	printf("\n");
+	if (extend) {
+		printf("\nHumidity: %d%%\nDew Point: %d°%s\nVisibility: %.4g %s\nPressure: %.4g in",
+			   humidity,dewpoint,degunts,visibility,visunts,pressure);
+		//if (wspd) printf("Wind: %s %s %d %s",wtype,wndir,wspd,wunts);
+	}; printf("\n");
 }
 
 void checkStones(char *location) {
