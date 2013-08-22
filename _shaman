@@ -9,3 +9,4 @@ _arguments -C -A "-*" \
     -r'[print reporter information]' \
     -t'[print temperature]' \
     -v'[print visibility]' \
+    -w'[print wind information]' \

@@ -8,13 +8,11 @@ For those who aren't familiar with the concept of a forecast stone, think of it 
 
 Status
 ------
-``shaman`` now correctly grabs and parses current conditions, temperature, humidity, dew point, visibility and pressure. It is also capable of displaying its information with metric units.
+``shaman`` now correctly grabs and parses current conditions, temperature, humidity, dew point, visibility, wind information and pressure. It is also capable of displaying its information with metric units.
 
 To-Do
 -----
-#. Add wind-speed, type and direction to extended info
 #. Allow specifying a location by "City, ST" and not just through a zipcode
-#. Do more intelligent rounding for metric unit printing *or* print as a ``float``, not an ``int``
 #. Add 7-day forecasts
 
 Possible Additions

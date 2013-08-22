@@ -7,14 +7,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 
 FILE *url;
 char provider[54]="http://forecast.weather.gov/zipcity.php";
 char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000];
 char *c=NULL,*ptr=NULL,*match=NULL;
-char reporter[48],condition[20],*degunts="F",*visunts="mi",*presunts="in",wgspd[5],wsspd[5],wtype[24],wndir[2],*wunts="mph";
-float lat,lon,visibility,pressure;
-int elev,temperature,humidity,dewpoint,wdir,wspd;
+char reporter[48],condition[20],*degunts="F",*visunts="mi",*presunts="in",wgspd[5],wsspd[5],wtype[24],*wndir="",*wunts="mph";
+float lat,lon,temperature,visibility,pressure;
+int elev,humidity,dewpoint,wdir,wspd;
 int len,i,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,degscl=0,count=0;
 
 /* Rudimentary Error Handling */
@@ -50,7 +51,7 @@ void getReporter(char *reporterln,char *coordinateln,char *elevationln) {
 
 void getConditions(char *conditionsln) {
 	sscanf(conditionsln,
-		   "%*[^<]<value>%d%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%d%*[^=]=%*[^=]=\"%[^\"]\"%*[^\"]\"%*[^>]>\
+		   "%*[^<]<value>%f%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%d%*[^=]=%*[^=]=\"%[^\"]\"%*[^\"]\"%*[^>]>\
 		   %f%*[^.]%*[^=]%*[^v]value>%d%*[^\"]%*[^v]value>%[^<]%*[^=]%*[^v]value>%[^<]%*[^-]%*[^=]%*[^v]value>%f",
 		   &temperature,&dewpoint,&humidity,condition,&visibility,&wdir,wgspd,wsspd,&pressure);
 	if (degscl) { 
@@ -61,13 +62,27 @@ void getConditions(char *conditionsln) {
 	}
 	if (chrepo||chall) printf("\n");
 	if (!chtemp&&chcond) printf("%s\n",condition);
-	if ((chcond&&chtemp)||chall) printf("%s (%d°%s)\n",condition,temperature,degunts);
-	if (chtemp&&!chcond) printf("%d°%s\n",temperature,degunts);
-	/*if (chwnd||chall) {
-		wspd=1.151*(wgspd[0]=='N' ? wsspd[0]=='N' ? 0 : wsspd : wgspd);
-		//wndir calculation
-		if (wspd) printf("Wind: %s %s %d %s",wtype,wndir,wspd,wunts);
-	}*/
+	if ((chcond&&chtemp)||chall) printf("%s (%.3g°%s)\n",condition,temperature,degunts);
+	if (chtemp&&!chcond) printf("%.3g°%s\n",temperature,degunts);
+	if (chwnd||chall) {
+		if (!isdigit(*wgspd)&&!isdigit(*wsspd)) { printf("Wind: Negligible\n"); wspd=0; }
+		else sscanf((!isdigit(*wgspd))?wsspd:wgspd,"%d",&wspd);
+		if (degscl) { wspd*=1.852; wunts="kmph"; }
+		else wspd*=1.151;
+		switch ( (wdir/45) ) {
+			case 0: wndir="N"; break;
+			case 1: wndir="NE"; break;
+			case 2: wndir="E"; break;
+			case 3: wndir="SE"; break;
+			case 4: wndir="S"; break;
+			case 5: wndir="SW"; break;
+			case 6: wndir="W"; break;
+			case 7: wndir="NW"; break;
+			case 8: wndir="N"; break;
+			default: wndir="Vrbl"; break;
+		}
+		if (wspd) printf("Wind: %s %s %d %s\n",(!isdigit(*wgspd)?"Sustained":"Gusts"),wndir,wspd,wunts);
+	}
 	if (chhum||chall) printf("Humidity: %d%%\nDew Point: %d°%s\n",humidity,dewpoint,degunts);
 	if (chvis||chall) printf("Visbility: %.4g %s\n",visibility,visunts);
 	if (chpres||chall) printf("Pressure: %.4g %s\n",pressure,presunts);
