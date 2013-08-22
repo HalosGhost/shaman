@@ -69,7 +69,7 @@ void getConditions(char *conditionsln) {
 		else sscanf((!isdigit(*wgspd))?wsspd:wgspd,"%d",&wspd);
 		if (degscl) { wspd*=1.852; wunts="kmph"; }
 		else wspd*=1.151;
-		switch ( (wdir>22.5 ? wdir-22.5 : wdir)/45 ) {
+		switch ( ((wdir>22 ? wdir-22 : wdir)/45) ) {
 			case 0: wndir="N"; break;
 			case 1: wndir="NE"; break;
 			case 2: wndir="E"; break;
