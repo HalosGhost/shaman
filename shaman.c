@@ -31,7 +31,7 @@ void usage(char *progname) {
 	fprintf(stderr,"  -r   print reporter information.\n");
 	fprintf(stderr,"  -t   print temperature.\n");
 	fprintf(stderr,"  -v   print visibility.\n");
-	//fprintf(stderr,"  -w   print wind information.\n");
+	fprintf(stderr,"  -w   print wind information.\n");
 	fprintf(stderr,"\nIf no options are passed, -a is assumed.\n");
 	exit(44);
 }
