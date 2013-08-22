@@ -12,7 +12,7 @@
 FILE *url;
 char provider[]="http://forecast.weather.gov/zipcity.php";
 char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000];
-char *c=NULL,*ptr=NULL,*match=NULL,defaultLocation[6],defaultUnits[]="E";
+char *c=NULL,*ptr=NULL,*match=NULL,defaultLocation[6],defaultUnits[]="E",passloc[6];
 char reporter[48],condition[20],*degunts="F",*visunts="mi",*presunts="in",wgspd[5],wsspd[5],wtype[24],*wndir="",*wunts="mph";
 float lat,lon,temperature,visibility,pressure;
 int elev,humidity,dewpoint,wdir,wspd;
@@ -25,6 +25,7 @@ void usage(char *progname) {
 	fprintf(stderr,"  -a   print all available information.\n");
 	fprintf(stderr,"  -c   print current weather conditions.\n");
 	fprintf(stderr,"  -d   print humidity and dew-point.\n");
+	fprintf(stderr,"  -i   print with Imperial units. (default)\n");
 	fprintf(stderr,"  -h   print this help message.\n");
 	fprintf(stderr,"  -m   print with metric units.\n");
 	fprintf(stderr,"  -p   print pressure.\n");
@@ -113,14 +114,22 @@ void discoverConfig(char* cmdLocation) {
 	if ( !rc ) { chdir(getenv("XDG_CONFIG_HOME")); if (chdir("shaman")==0) rc = fopen("config","r"); }
 	if ( !rc ) { chdir(getenv("HOME")); rc = fopen(".shamanrc","r"); }
 	chdir(cwd);
-	if ( rc ) fscanf(rc,"Location = %s\nUnits = %s",defaultLocation,defaultUnits); fclose(rc);
-	if (defaultUnits[0]=='M'&&degscl==0) { degscl=1; degunts="C"; }
+	if ( rc ) {
+		while ( fgets(line,sizeof(line),rc) ) {
+			sscanf(line,"Location=%[^\n]",defaultLocation);
+			sscanf(line,"Units=%s",defaultUnits);
+		}
+		fclose(rc);
+	};
+	if (defaultUnits[0]=='M') { degscl=1; degunts="C"; }
+	if (*defaultLocation) strcpy(passloc,defaultLocation);
 }
 
 int main(int argc,char** argv) {
 	defaultLocation[0]=0;
 	if ( !argv[1] ) usage(argv[0]);
 	if ( argv[1]&&argv[1][0]!='-' ) chall=1;
+	discoverConfig(argv[argc-1]);
 	for ( i=1; i<argc; i++ ) {
 		if ( argv[i][0]=='-' ) {
 			for ( a=1; a<strlen(argv[i]); a++ ) {
@@ -129,6 +138,7 @@ int main(int argc,char** argv) {
 					case 'a': chall=1; break;
 					case 'c': chcond=1; break;
 					case 'd': chhum=1; break;
+				    case 'i': degscl=0; degunts="F"; break;
 					case 'm': degscl=1; degunts="C"; break;
 					case 'p': chpres=1; break;
 					case 'r': chrepo=1; break;
@@ -140,16 +150,13 @@ int main(int argc,char** argv) {
 			}
 		}
 	}
-	discoverConfig(argv[argc-1]);
-	if (!*defaultLocation) {
-		for ( d=0; d<strlen(argv[argc-1]); d++ ) {
-			if ( !isdigit(argv[argc-1][d]) ) { 
-				printf("No valid location given!\nSee `%s -h` for help\n",argv[0]); 
-				exit(46); 
-			}
+	if ( argv[argc-1][0]&&!*defaultLocation ) strcpy(passloc,argv[argc-1]);
+	for ( d=0; d<strlen(passloc); d++ ) {
+		if ( !isdigit(*passloc) ) { 
+			printf("No valid location given!\nSee `%s -h` for help\n",argv[0]); 
+			exit(46); 
 		}
-		checkStones(argv[argc-1]);
 	}
-	checkStones(defaultLocation);
+	checkStones(passloc);
 	return 0;
 }
