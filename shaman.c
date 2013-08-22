@@ -15,7 +15,7 @@ char *c=NULL,*ptr=NULL,*match=NULL;
 char reporter[48],condition[20],*degunts="F",visunts[20],wgspd[5],wsspd[5],wtype[24],wndir[2],*wunts="mph";
 float lat,lon,visibility,pressure;
 int elev,temperature,humidity,dewpoint,wdir,wspd;
-int len,i,chall,chcond,chtemp,chcoor,chrepo,extend,degscl=0,count=0;
+int len,i,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,degscl=0,count=0;
 
 /* Rudimentary Error Handling */
 void usage(char *progname) {
@@ -23,11 +23,14 @@ void usage(char *progname) {
 	fprintf(stderr,"If no options are passed, -a is assumed.\n");
 	fprintf(stderr,"  -a   print all available information.\n");
 	fprintf(stderr,"  -c   print current weather conditions.\n");
-	fprintf(stderr,"  -e   print extended temperature information.\n");
+	fprintf(stderr,"  -d   print humidity and dew-point.\n");
 	fprintf(stderr,"  -h   print this help message.\n");
 	//fprintf(stderr,"  -m   use metric units.\n");
+	fprintf(stderr,"  -p   print pressure.\n");
 	fprintf(stderr,"  -r   print reporter information.\n");
 	fprintf(stderr,"  -t   print temperature.\n");
+	fprintf(stderr,"  -v   print visibility.\n");
+	//fprintf(stderr,"  -w   print wind information.\n");
 	exit(44);
 }
 
@@ -50,15 +53,15 @@ void getConditions(char *conditionsln) {
 		   %f%*[^.]%*[^=]%*[^v]value>%d%*[^\"]%*[^v]value>%[^<]%*[^=]%*[^v]value>%[^<]%*[^-]%*[^=]%*[^v]value>%f",
 		   &temperature,&dewpoint,&humidity,condition,visunts,&visibility,&wdir,wgspd,wsspd,&pressure);
 	//wspd=1.151*(wgspd[0]=='N' ? wsspd[0]=='N' ? 0 : wsspd : wgspd)
+	//wndir calculation
 	if (chrepo||chall) printf("\n");
 	if (chcond||chall) printf("%s",condition);
-	if ((chcond&&chtemp)||chall) printf(" (%d°%s)",temperature,degunts);
-	if (chtemp&&!chcond) printf("%d°%s",temperature,degunts);
-	if (extend||chall) {
-		printf("\nHumidity: %d%%\nDew Point: %d°%s\nVisibility: %.4g %s\nPressure: %.4g in",
-			   humidity,dewpoint,degunts,visibility,visunts,pressure);
-		//if (wspd) printf("Wind: %s %s %d %s",wtype,wndir,wspd,wunts);
-	}; printf("\n");
+	if ((chcond&&chtemp)||chall) printf(" (%d°%s)\n",temperature,degunts);
+	if (chtemp&&!chcond) printf("%d°%s\n",temperature,degunts);
+	if (chhum||chall) printf("Humidity: %d%%\nDew Point: %d°%s\n",humidity,dewpoint,degunts);
+	if (chvis||chall) printf("Visbility: %.4g %s\n",visibility,visunts);
+	if (chpres||chall) printf("Pressure: %.4g in\n",pressure);
+	//if (chwnd||chall) { if (wspd) printf("Wind: %s %s %d %s",wtype,wndir,wspd,wunts); };
 }
 
 void checkStones(char *location) {
@@ -77,7 +80,7 @@ void checkStones(char *location) {
 			}
 		}
 		if (chrepo||chall) getReporter(reportln,coordln,elevln);
-		if (chcond||chtemp||extend||chall) getConditions(currentln);
+		if (chcond||chhum||chpres||chtemp||chvis||chwnd||chall) getConditions(currentln);
 	}
 }
 
@@ -90,10 +93,13 @@ int main(int argc,char** argv) {
 				case 'h': usage(argv[0]); break;
 			    case 'a': chall=1; break;
 			    case 'c': chcond=1; break;
-			    case 'e': chtemp=1; extend=1; break;
+				case 'd': chhum=1; break;
 			    case 'r': chrepo=1; break;
 			    case 'm': degscl=1; degunts="C"; break;
+			    case 'p': chpres=1; break;
 			    case 't': chtemp=1; break;
+			    case 'v': chvis=1; break;
+			    case 'w': chwnd=1; break;
 			    default: invalidOption(argv[i]); break;
 			}
 		}
