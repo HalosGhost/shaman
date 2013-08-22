@@ -4,6 +4,7 @@ _arguments -C -A "-*" \
     -c'[print current conditons]' \
     -d'[print humidity and dewpoint]' \
     -h'[print help]' \
+    -m'[print with metric units]' \
     -p'[print pressure]' \
     -r'[print reporter information]' \
     -t'[print temperature]' \

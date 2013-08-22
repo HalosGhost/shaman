@@ -12,7 +12,7 @@ FILE *url;
 char provider[54]="http://forecast.weather.gov/zipcity.php";
 char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000];
 char *c=NULL,*ptr=NULL,*match=NULL;
-char reporter[48],condition[20],*degunts="F",visunts[20],wgspd[5],wsspd[5],wtype[24],wndir[2],*wunts="mph";
+char reporter[48],condition[20],*degunts="F",visunts[20],*presunts="in",wgspd[5],wsspd[5],wtype[24],wndir[2],*wunts="mph";
 float lat,lon,visibility,pressure;
 int elev,temperature,humidity,dewpoint,wdir,wspd;
 int len,i,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,degscl=0,count=0;
@@ -25,7 +25,7 @@ void usage(char *progname) {
 	fprintf(stderr,"  -c   print current weather conditions.\n");
 	fprintf(stderr,"  -d   print humidity and dew-point.\n");
 	fprintf(stderr,"  -h   print this help message.\n");
-	//fprintf(stderr,"  -m   use metric units.\n");
+	fprintf(stderr,"  -m   print with metric units.\n");
 	fprintf(stderr,"  -p   print pressure.\n");
 	fprintf(stderr,"  -r   print reporter information.\n");
 	fprintf(stderr,"  -t   print temperature.\n");
@@ -53,16 +53,25 @@ void getConditions(char *conditionsln) {
 		   "%*[^<]<value>%d%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%d%*[^=]=%*[^=]=\"%[^\"]\"%*[^\"]\"%[^\"]\">\
 		   %f%*[^.]%*[^=]%*[^v]value>%d%*[^\"]%*[^v]value>%[^<]%*[^=]%*[^v]value>%[^<]%*[^-]%*[^=]%*[^v]value>%f",
 		   &temperature,&dewpoint,&humidity,condition,visunts,&visibility,&wdir,wgspd,wsspd,&pressure);
-	//wspd=1.151*(wgspd[0]=='N' ? wsspd[0]=='N' ? 0 : wsspd : wgspd)
-	//wndir calculation
+	if (degscl) { 
+		temperature=(temperature-32)/1.8; 
+		dewpoint=(dewpoint-32)/1.8;
+		visibility*=1.6;
+		strcpy(visunts,"kilometers");
+		pressure*=33.863753;presunts="mb";
+	}
 	if (chrepo||chall) printf("\n");
 	if (!chtemp&&chcond) printf("%s\n",condition);
 	if ((chcond&&chtemp)||chall) printf("%s (%d°%s)\n",condition,temperature,degunts);
 	if (chtemp&&!chcond) printf("%d°%s\n",temperature,degunts);
+	/*if (chwnd||chall) {
+		wspd=1.151*(wgspd[0]=='N' ? wsspd[0]=='N' ? 0 : wsspd : wgspd);
+		//wndir calculation
+		if (wspd) printf("Wind: %s %s %d %s",wtype,wndir,wspd,wunts);
+	}*/
 	if (chhum||chall) printf("Humidity: %d%%\nDew Point: %d°%s\n",humidity,dewpoint,degunts);
 	if (chvis||chall) printf("Visbility: %.4g %s\n",visibility,visunts);
-	if (chpres||chall) printf("Pressure: %.4g in\n",pressure);
-	//if (chwnd||chall) { if (wspd) printf("Wind: %s %s %d %s",wtype,wndir,wspd,wunts); };
+	if (chpres||chall) printf("Pressure: %.4g %s\n",pressure,presunts);
 }
 
 void checkStones(char *location) {
@@ -95,9 +104,9 @@ int main(int argc,char** argv) {
 			    case 'a': chall=1; break;
 			    case 'c': chcond=1; break;
 				case 'd': chhum=1; break;
-			    case 'r': chrepo=1; break;
 			    case 'm': degscl=1; degunts="C"; break;
 			    case 'p': chpres=1; break;
+			    case 'r': chrepo=1; break;
 			    case 't': chtemp=1; break;
 			    case 'v': chvis=1; break;
 			    case 'w': chwnd=1; break;
