@@ -56,9 +56,8 @@ void getConditions(char *conditionsln) {
 	if (degscl) { 
 		temperature=(temperature-32)/1.8; 
 		dewpoint=(dewpoint-32)/1.8;
-		visibility*=1.6;
-		strcpy(visunts,"kilometers");
-		pressure*=33.863753;presunts="mb";
+		visibility*=1.6; strcpy(visunts,"kilometers");
+		pressure*=33.863753; presunts="mb";
 	}
 	if (chrepo||chall) printf("\n");
 	if (!chtemp&&chcond) printf("%s\n",condition);
