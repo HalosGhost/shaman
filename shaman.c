@@ -10,13 +10,13 @@
 #include <ctype.h>
 
 FILE *url;
-char provider[54]="http://forecast.weather.gov/zipcity.php";
+char provider[]="http://forecast.weather.gov/zipcity.php";
 char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000];
 char *c=NULL,*ptr=NULL,*match=NULL;
 char reporter[48],condition[20],*degunts="F",*visunts="mi",*presunts="in",wgspd[5],wsspd[5],wtype[24],*wndir="",*wunts="mph";
 float lat,lon,temperature,visibility,pressure;
 int elev,humidity,dewpoint,wdir,wspd;
-int len,i,a,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,degscl=0,count=0;
+int len,i,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,degscl=0,count=0;
 
 /* Rudimentary Error Handling */
 void usage(char *progname) {
@@ -61,9 +61,8 @@ void getConditions(char *conditionsln) {
 		pressure*=33.863753; presunts="mb";
 	}
 	if (chrepo||chall) printf("\n");
-	if (!chtemp&&chcond) printf("%s\n",condition);
-	if ((chcond&&chtemp)||chall) printf("%s (%.3g°%s)\n",condition,temperature,degunts);
-	if (chtemp&&!chcond) printf("%.3g°%s\n",temperature,degunts);
+	if (chcond||chall) printf("Condition: %s\n",condition);
+	if (chtemp||chall) printf("Temperature: %.2g°%s\n",temperature,degunts);
 	if (chwnd||chall) {
 		if (!isdigit(*wgspd)&&!isdigit(*wsspd)) { printf("Wind: Negligible\n"); wspd=0; }
 		else sscanf((!isdigit(*wgspd))?wsspd:wgspd,"%d",&wspd);
@@ -84,7 +83,7 @@ void getConditions(char *conditionsln) {
 		if (wspd) printf("Wind: %s %s %d %s\n",(!isdigit(*wgspd)?"Sustained":"Gusts"),wndir,wspd,wunts);
 	}
 	if (chhum||chall) printf("Humidity: %d%%\nDew Point: %d°%s\n",humidity,dewpoint,degunts);
-	if (chvis||chall) printf("Visbility: %.4g %s\n",visibility,visunts);
+	if (chvis||chall) printf("Visibility: %.4g %s\n",visibility,visunts);
 	if (chpres||chall) printf("Pressure: %.4g %s\n",pressure,presunts);
 }
 
@@ -129,7 +128,13 @@ int main(int argc,char** argv) {
 				}
 			}
 		}
-		else checkStones(argv[i]);
 	}
+	for ( d=0; d<strlen(argv[argc-1]); d++ ) {
+		if ( !isdigit(argv[argc-1][d]) ) { 
+			printf("No valid location given!\nSee `%s -h` for help\n",argv[0]); 
+			exit(46); 
+		}
+	}
+	checkStones(argv[argc-1]);
 	return 0;
 }
