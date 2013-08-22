@@ -56,8 +56,8 @@ void getConditions(char *conditionsln) {
 	//wspd=1.151*(wgspd[0]=='N' ? wsspd[0]=='N' ? 0 : wsspd : wgspd)
 	//wndir calculation
 	if (chrepo||chall) printf("\n");
-	if (chcond||chall) printf("%s",condition);
-	if ((chcond&&chtemp)||chall) printf(" (%d°%s)\n",temperature,degunts);
+	if (!chtemp&&chcond) printf("%s\n",condition);
+	if ((chcond&&chtemp)||chall) printf("%s (%d°%s)\n",condition,temperature,degunts);
 	if (chtemp&&!chcond) printf("%d°%s\n",temperature,degunts);
 	if (chhum||chall) printf("Humidity: %d%%\nDew Point: %d°%s\n",humidity,dewpoint,degunts);
 	if (chvis||chall) printf("Visbility: %.4g %s\n",visibility,visunts);
