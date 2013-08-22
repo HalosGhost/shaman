@@ -1,0 +1,10 @@
+#compdef shaman 
+_arguments -C -A "-*" \
+    -a'[print all info]' \
+    -c'[print current conditons]' \
+    -d'[print humidity and dewpoint]' \
+    -h'[print help]' \
+    -p'[print pressure]' \
+    -r'[print reporter information]' \
+    -t'[print temperature]' \
+    -v'[print visibility]' \
