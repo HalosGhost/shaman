@@ -12,7 +12,7 @@ FILE *url;
 char provider[54]="http://forecast.weather.gov/zipcity.php";
 char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000];
 char *c=NULL,*ptr=NULL,*match=NULL;
-char reporter[48],condition[20],*degunts="F",visunts[20],*presunts="in",wgspd[5],wsspd[5],wtype[24],wndir[2],*wunts="mph";
+char reporter[48],condition[20],*degunts="F",*visunts="mi",*presunts="in",wgspd[5],wsspd[5],wtype[24],wndir[2],*wunts="mph";
 float lat,lon,visibility,pressure;
 int elev,temperature,humidity,dewpoint,wdir,wspd;
 int len,i,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,degscl=0,count=0;
@@ -50,13 +50,13 @@ void getReporter(char *reporterln,char *coordinateln,char *elevationln) {
 
 void getConditions(char *conditionsln) {
 	sscanf(conditionsln,
-		   "%*[^<]<value>%d%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%d%*[^=]=%*[^=]=\"%[^\"]\"%*[^\"]\"%[^\"]\">\
+		   "%*[^<]<value>%d%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%d%*[^=]=%*[^=]=\"%[^\"]\"%*[^\"]\"%*[^>]>\
 		   %f%*[^.]%*[^=]%*[^v]value>%d%*[^\"]%*[^v]value>%[^<]%*[^=]%*[^v]value>%[^<]%*[^-]%*[^=]%*[^v]value>%f",
-		   &temperature,&dewpoint,&humidity,condition,visunts,&visibility,&wdir,wgspd,wsspd,&pressure);
+		   &temperature,&dewpoint,&humidity,condition,&visibility,&wdir,wgspd,wsspd,&pressure);
 	if (degscl) { 
 		temperature=(temperature-32)/1.8; 
 		dewpoint=(dewpoint-32)/1.8;
-		visibility*=1.6; strcpy(visunts,"kilometers");
+		visibility*=1.6; visunts="km";
 		pressure*=33.863753; presunts="mb";
 	}
 	if (chrepo||chall) printf("\n");
