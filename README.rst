@@ -20,4 +20,3 @@ Possible Additions
 These are features that might take a disproportionate amount of work to implement for their gain, or detriment the final product because of how they might have to be implemented. As a result, they are not planned features, but rather, things I am mulling over for inclusion:
 
 * Hazardous/Severe Weather Warnings
-* Allowing compound arguments (e.g., ``-cprt`` as opposed to ``-c -p -r -t``)

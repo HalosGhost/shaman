@@ -16,7 +16,7 @@ char *c=NULL,*ptr=NULL,*match=NULL;
 char reporter[48],condition[20],*degunts="F",*visunts="mi",*presunts="in",wgspd[5],wsspd[5],wtype[24],*wndir="",*wunts="mph";
 float lat,lon,temperature,visibility,pressure;
 int elev,humidity,dewpoint,wdir,wspd;
-int len,i,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,degscl=0,count=0;
+int len,i,a,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,degscl=0,count=0;
 
 /* Rudimentary Error Handling */
 void usage(char *progname) {
@@ -112,19 +112,21 @@ int main(int argc,char** argv) {
 	if ( !argv[1] ) usage(argv[0]);
 	if ( argv[1]&&argv[1][0]!='-' ) chall=1;
 	for ( i=1; i<argc; i++ ) {
-		if ( argv[i][0]=='-') {
-			switch ( argv[i][1]=='-' ? argv[i][2] : argv[i][1] ) {
-				case 'h': usage(argv[0]); break;
-			    case 'a': chall=1; break;
-			    case 'c': chcond=1; break;
-				case 'd': chhum=1; break;
-			    case 'm': degscl=1; degunts="C"; break;
-			    case 'p': chpres=1; break;
-			    case 'r': chrepo=1; break;
-			    case 't': chtemp=1; break;
-			    case 'v': chvis=1; break;
-			    case 'w': chwnd=1; break;
-			    default: invalidOption(argv[i]); break;
+		if ( argv[i][0]=='-' ) {
+			for ( a=1; a<strlen(argv[i]); a++ ) {
+				switch ( argv[i][a] ) {
+					case 'h': usage(argv[0]); break;
+					case 'a': chall=1; break;
+					case 'c': chcond=1; break;
+					case 'd': chhum=1; break;
+					case 'm': degscl=1; degunts="C"; break;
+					case 'p': chpres=1; break;
+					case 'r': chrepo=1; break;
+					case 't': chtemp=1; break;
+					case 'v': chvis=1; break;
+					case 'w': chwnd=1; break;
+					default: invalidOption(argv[i]); break;
+				}
 			}
 		}
 		else checkStones(argv[i]);
