@@ -8,7 +8,7 @@ For those who aren't familiar with the concept of a forecast stone, think of it 
 
 Status
 ------
-``shaman`` now correctly grabs and parses current conditions, temperature, humidity and dew point.
+``shaman`` now correctly grabs and parses current conditions, temperature, humidity, dew point, visibility and pressure. It is also capable of displaying its information with metric units.
 
 To-Do
 -----
