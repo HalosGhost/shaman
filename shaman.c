@@ -20,7 +20,7 @@ int len,i,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,degscl=0,co
 /* Rudimentary Error Handling */
 void usage(char *progname) {
 	fprintf(stderr,"Usage: %s [options] location\n\n",progname);
-	fprintf(stderr,"If no options are passed, -a is assumed.\n");
+	fprintf(stderr,"Options:\n");
 	fprintf(stderr,"  -a   print all available information.\n");
 	fprintf(stderr,"  -c   print current weather conditions.\n");
 	fprintf(stderr,"  -d   print humidity and dew-point.\n");
@@ -31,6 +31,7 @@ void usage(char *progname) {
 	fprintf(stderr,"  -t   print temperature.\n");
 	fprintf(stderr,"  -v   print visibility.\n");
 	//fprintf(stderr,"  -w   print wind information.\n");
+	fprintf(stderr,"\nIf no options are passed, -a is assumed.\n");
 	exit(44);
 }
 
