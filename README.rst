@@ -14,5 +14,5 @@ To-Do
 -----
 #. Add wind-speed, type and direction to extended info
 #. Allow specifying a location by "City, ST" and not just through a zipcode
-#. Correctly allow use of metric units (may involve a work-around until upstream fixes a bug)
+#. Do more intelligent rounding for metric unit printing *or* print as a ``float``, not an ``int``
 #. Add 7-day forecasts
