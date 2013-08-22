@@ -15,12 +15,12 @@ char *c=NULL,*ptr=NULL,*match=NULL;
 char reporter[48],condition[20],*degunts="F",visunts[20],wgspd[5],wsspd[5],wtype[24],wndir[2],*wunts="mph";
 float lat,lon,visibility,pressure;
 int elev,temperature,humidity,dewpoint,wdir,wspd;
-int len,i,chcond,chtemp,chcoor,chrepo,extend,degscl=0,count=0;
+int len,i,chall,chcond,chtemp,chcoor,chrepo,extend,degscl=0,count=0;
 
 /* Rudimentary Error Handling */
 void usage(char *progname) {
 	fprintf(stderr,"Usage: %s [options] location\n\n",progname);
-	fprintf(stderr,"If no options are passed, nothing will be printed.\n");
+	fprintf(stderr,"If no options are passed, -a is assumed.\n");
 	fprintf(stderr,"  -a   print all available information.\n");
 	fprintf(stderr,"  -c   print current weather conditions.\n");
 	fprintf(stderr,"  -e   print extended temperature information.\n");
@@ -50,11 +50,11 @@ void getConditions(char *conditionsln) {
 		   %f%*[^.]%*[^=]%*[^v]value>%d%*[^\"]%*[^v]value>%[^<]%*[^=]%*[^v]value>%[^<]%*[^-]%*[^=]%*[^v]value>%f",
 		   &temperature,&dewpoint,&humidity,condition,visunts,&visibility,&wdir,wgspd,wsspd,&pressure);
 	//wspd=1.151*(wgspd[0]=='N' ? wsspd[0]=='N' ? 0 : wsspd : wgspd)
-	if (chrepo) printf("\n");
-	if (chcond) printf("%s",condition);
-	if (chcond&&chtemp) printf(" (%d°%s)",temperature,degunts);
+	if (chrepo||chall) printf("\n");
+	if (chcond||chall) printf("%s",condition);
+	if ((chcond&&chtemp)||chall) printf(" (%d°%s)",temperature,degunts);
 	if (chtemp&&!chcond) printf("%d°%s",temperature,degunts);
-	if (extend) {
+	if (extend||chall) {
 		printf("\nHumidity: %d%%\nDew Point: %d°%s\nVisibility: %.4g %s\nPressure: %.4g in",
 			   humidity,dewpoint,degunts,visibility,visunts,pressure);
 		//if (wspd) printf("Wind: %s %s %d %s",wtype,wndir,wspd,wunts);
@@ -76,18 +76,19 @@ void checkStones(char *location) {
 				else if ( (match=strstr(line,"apparent")) ) strcpy(currentln,match);
 			}
 		}
-		if (chrepo) getReporter(reportln,coordln,elevln);
-		if (chcond||chtemp||extend) getConditions(currentln);
+		if (chrepo||chall) getReporter(reportln,coordln,elevln);
+		if (chcond||chtemp||extend||chall) getConditions(currentln);
 	}
 }
 
 int main(int argc,char** argv) {
-	if ( !argv[1]||argv[1][0]!='-' ) usage(argv[0]);
+	if ( !argv[1] ) usage(argv[0]);
+	if ( argv[1]&&argv[1][0]!='-' ) chall=1;
 	for ( i=1; i<argc; i++ ) {
 		if ( argv[i][0]=='-') {
 			switch ( argv[i][1]=='-' ? argv[i][2] : argv[i][1] ) {
 				case 'h': usage(argv[0]); break;
-			    case 'a': chrepo=1; chcond=1; chtemp=1; extend=1; break;
+			    case 'a': chall=1; break;
 			    case 'c': chcond=1; break;
 			    case 'e': chtemp=1; extend=1; break;
 			    case 'r': chrepo=1; break;
