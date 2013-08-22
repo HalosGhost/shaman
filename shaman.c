@@ -11,11 +11,11 @@
 FILE *url;
 char command[256],locurl[256],line[2000],reporter[48],condition[20];
 char provider[54]="http://forecast.weather.gov/zipcity.php";
-char *c=NULL,*wind=NULL,*ptr=NULL,*match=NULL;
-char coordln[64],reportln[96],elevln[80],currentln[2000],*degunts="F";
+char *c=NULL,*ptr=NULL,*match=NULL;
+char coordln[64],reportln[96],elevln[80],currentln[2000],*degunts="F",visunts[20];
 char *lines[4];
-float lat,lon;
-int elev,temperature,humidity,pressure,dewpoint,visibility,hindex;
+float lat,lon,visibility,pressure;
+int elev,temperature,humidity,dewpoint,wdir,wspd;
 int len,i,chcond,chtemp,chcoor,chrepo,extend,degscl=0,count=0;
 
 /* Rudimentary Error Handling */
@@ -46,12 +46,13 @@ void getReporter(char *reporterln,char *coordinateln,char *elevationln) {
 }
 
 void getConditions(char *conditionsln) {
-	sscanf(conditionsln,"%*[^<]<value>%d%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%d%*[^=]=%*[^=]=\"%[^\"]",&temperature,&dewpoint,&humidity,condition);
+	sscanf(conditionsln,"%*[^<]<value>%d%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%d%*[^=]=%*[^=]=\"%[^\"]\"%*[^\"]\"%[^\"]\">%f%*[^.]%*[^=]%*[^/]%*[^-]%*[^<]%*[^=]%*[^/]%*[^=]%*[^v]value>%f",
+		   &temperature,&dewpoint,&humidity,condition,visunts,&visibility,&pressure);
 	if (chrepo) printf("\n");
 	if (chcond) printf("%s",condition);
 	if (chcond&&chtemp) printf(" (%d°%s)",temperature,degunts);
 	if (chtemp&&!chcond) printf("%d°%s",temperature,degunts);
-	if (extend) printf("\nHumidity: %d%%\nDew Point: %d°%s",humidity,dewpoint,degunts);
+	if (extend) printf("\nHumidity: %d%%\nDew Point: %d°%s\nVisibility: %.4g %s\nPressure: %.4g in",humidity,dewpoint,degunts,visibility,visunts,pressure);
 	printf("\n");
 }
 
