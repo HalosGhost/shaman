@@ -16,7 +16,7 @@ char *c=NULL,*ptr=NULL,*match=NULL,defaultLocation[6],defaultUnits[]="E",passloc
 char reporter[48],condition[20],*degunts="F",*visunts="mi",*presunts="in",wgspd[5],wsspd[5],wtype[24],*wndir="",*wunts="mph";
 float lat,lon,temperature,visibility,pressure;
 int elev,humidity,dewpoint,wdir,wspd;
-int len,i,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,degscl=0,count=0;
+int len,i,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,chfcst,fcstext,degscl=0,count=0;
 
 /* Rudimentary Error Handling */
 void usage(char *progname) {
@@ -25,6 +25,8 @@ void usage(char *progname) {
 	fprintf(stderr,"  -a   print all available information.\n");
 	fprintf(stderr,"  -c   print current weather conditions.\n");
 	fprintf(stderr,"  -d   print humidity and dew-point.\n");
+	//fprintf(stderr,"  -f   print basic 7-day forecast.\n");
+	//fprintf(stderr,"  -F   print detailed 7-day forecast.\n");
 	fprintf(stderr,"  -i   print with Imperial units. (default)\n");
 	fprintf(stderr,"  -h   print this help message.\n");
 	fprintf(stderr,"  -m   print with metric units.\n");
@@ -88,6 +90,14 @@ void getConditions(char *conditionsln) {
 	if (chpres||chall) printf("Pressure: %.4g %s\n",pressure,presunts);
 }
 
+void getForecast(FILE *noaadwml) {
+	if (chfcst||chall) {
+		if (fcstext) {
+			fscanf(noaadwml,"%*[^;]");
+		}
+	}
+}
+
 void checkStones(char *location) {
 	len=snprintf(command,sizeof(command),"curl -fv \"%s?inputstring=%s\"|&grep Location",provider,location);
 	if ( len<=sizeof(command) ) { 
@@ -105,6 +115,8 @@ void checkStones(char *location) {
 		}
 		if (chrepo||chall) getReporter(reportln,coordln,elevln);
 		if (chcond||chhum||chpres||chtemp||chvis||chwnd||chall) getConditions(currentln);
+		if (chfcst||chall) getForecast(url);
+		pclose(url);
 	}
 }
 
@@ -138,6 +150,8 @@ int main(int argc,char** argv) {
 					case 'a': chall=1; break;
 					case 'c': chcond=1; break;
 					case 'd': chhum=1; break;
+				    //case 'f': chfcast=1; break;
+				    //case 'F': chfcast=1; fcastext=1; break;
 				    case 'i': degscl=0; degunts="F"; break;
 					case 'm': degscl=1; degunts="C"; break;
 					case 'p': chpres=1; break;
