@@ -13,7 +13,7 @@ FILE *url;
 char provider[]="http://forecast.weather.gov/zipcity.php";
 char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000];
 char *c=NULL,*ptr=NULL,*match=NULL,defaultLocation[6],defaultUnits[]="E",passloc[6];
-char reporter[48],condition[20],*degunts="F",*visunts="mi",*presunts="in",wgspd[5],wsspd[5],wtype[24],*wndir="",*wunts="mph";
+char reporter[80],condition[20],*degunts="F",*visunts="mi",*presunts="in",wgspd[5],wsspd[5],wtype[24],*wndir="",*wunts="mph";
 float lat,lon,temperature,visibility,pressure;
 int elev,humidity,dewpoint,wdir,wspd;
 int len,i,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,chfcst,fcstext,degscl=0,count=0;
