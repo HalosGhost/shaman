@@ -11,9 +11,10 @@
 
 FILE *url;
 char provider[]="http://forecast.weather.gov/zipcity.php";
-char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000];
-char *c=NULL,*ptr=NULL,*match=NULL,defaultLocation[6],defaultUnits[]="E",passloc[6];
-char reporter[80],condition[20],*degunts="F",*visunts="mi",*presunts="in",wgspd[5],wsspd[5],wtype[24],*wndir="",*wunts="mph";
+char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000],
+	 defaultLocation[6];
+char *c=NULL,*ptr=NULL,*match=NULL,*degunts="F",*visunts="mi",*presunts="in",*wunts="mph",defaultUnits[]="E";
+char reporter[80],condition[20],wgspd[5],wsspd[5],wtype[24],*wndir="",passloc[6];
 float lat,lon,temperature,visibility,pressure;
 int elev,humidity,dewpoint,wdir,wspd;
 int len,i,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,chfcst,fcstext,degscl=0,count=0;
@@ -93,7 +94,10 @@ void getConditions(char *conditionsln) {
 void getForecast(FILE *noaadwml) {
 	if (chfcst||chall) {
 		if (fcstext) {
-			fscanf(noaadwml,"%*[^;]");
+			printf("Print full 7-day forecast.\n");
+		}
+		else {
+			printf("Print basic 7-day forecast.\n");
 		}
 	}
 }
@@ -107,15 +111,15 @@ void checkStones(char *location) {
 		if ( len<=sizeof(command) ) {
 			if ( !(url=popen(command,"r")) ) { fprintf(stderr,"Could not check weather stones\n");exit(1); }
 			while ( fgets(line,sizeof(line),url) ) {
-				if ( (match=strstr(line,"point l")) ) { count++; if (count==2) strcpy(coordln,match); }
-				else if ( (match=strstr(line,"area-description")) ) strcpy(reportln,match);
-				else if ( (match=strstr(line,"height-units")) ) strcpy(elevln,match);
-				else if ( (match=strstr(line,"apparent")) ) strcpy(currentln,match);
+				if ( (match=strstr(line,"point l")) ) { count++; if (count==2) strncpy(coordln,match,63); }
+				else if ( (match=strstr(line,"area-description")) ) strncpy(reportln,match,95);
+				else if ( (match=strstr(line,"height-units")) ) strncpy(elevln,match,79);
+				else if ( (match=strstr(line,"apparent")) ) strncpy(currentln,match,1999);
 			}
 		}
 		if (chrepo||chall) getReporter(reportln,coordln,elevln);
 		if (chcond||chhum||chpres||chtemp||chvis||chwnd||chall) getConditions(currentln);
-		if (chfcst||chall) getForecast(url);
+		//if (chfcst||chall) getForecast(url);
 		pclose(url);
 	}
 }
@@ -134,7 +138,7 @@ void discoverConfig(char* cmdLocation) {
 		fclose(rc);
 	};
 	if (defaultUnits[0]=='M') { degscl=1; degunts="C"; }
-	if (*defaultLocation) strcpy(passloc,defaultLocation);
+	if (*defaultLocation) strncpy(passloc,defaultLocation,5);
 }
 
 int main(int argc,char** argv) {
@@ -164,7 +168,7 @@ int main(int argc,char** argv) {
 			}
 		}
 	}
-	if ( argv[argc-1][0]&&!*defaultLocation ) strcpy(passloc,argv[argc-1]);
+	if ( argv[argc-1][0]&&!*defaultLocation ) strncpy(passloc,argv[argc-1],5);
 	for ( d=0; d<strlen(passloc); d++ ) {
 		if ( !isdigit(*passloc) ) { 
 			printf("No valid location given!\nSee `%s -h` for help\n",argv[0]); 
