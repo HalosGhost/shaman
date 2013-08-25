@@ -146,7 +146,7 @@ void checkStones(char *location) {
 	}
 }
 
-void discoverConfig(char* cmdLocation) {
+void discoverConfig(void) {
 	FILE *rc=NULL;
 	const char *cwd = getenv("PWD");
 	if ( !rc ) { chdir(getenv("XDG_CONFIG_HOME")); if (chdir("shaman")==0) rc = fopen("config","r"); }
@@ -164,9 +164,10 @@ void discoverConfig(char* cmdLocation) {
 
 int main(int argc,char** argv) {
 	defaultLocation[0]=0;
-	if ( !argv[1] ) usage(argv[0]);
+	discoverConfig();
+	if ( !argv[1] && !*passloc ) usage(argv[0]);
+    if ( argc == 1 && *passloc ) chall=1;
 	if ( argv[1]&&argv[1][0]!='-' ) chall=1;
-	discoverConfig(argv[argc-1]);
 	for ( i=1; i<argc; i++ ) {
 		if ( argv[i][0]=='-' ) {
 			for ( a=1; a<strlen(argv[i]); a++ ) {
