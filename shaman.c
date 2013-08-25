@@ -56,34 +56,34 @@ void getConditions(char *conditionsln) {
 		   "%*[^<]<value>%f%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%f%*[^=]=%*[^=]=\"%[^\"]\"%*[^\"]\"%*[^>]>\
 		   %f%*[^.]%*[^=]%*[^v]value>%d%*[^\"]%*[^v]value>%[^<]%*[^=]%*[^v]value>%[^<]%*[^-]%*[^=]%*[^v]value>%f",
 		   &temperature,&dewpoint,&humidity,condition,&visibility,&wdir,wgspd,wsspd,&pressure);
-	if (hindex||chall) {
+	if ( hindex || chall) {
 		hidx=(-42.379)+2.04901523*temperature+10.14333127*humidity-0.22475541*temperature*humidity
 			-6.83783E-3*temperature*temperature-5.481717E-2*humidity*humidity
 			+1.22874E-3*temperature*temperature*humidity+8.5282E-4*temperature*humidity*humidity
 			-1.99E-6*temperature*temperature*humidity*humidity;
-		if ( temperature>=80&&temperature<=112&&humidity<=13 ) {
+		if ( temperature>=80 && temperature<=112 && humidity<=13 ) {
 			hiadj=(((13-humidity)/4)*sqrtf((17-abs(temperature-95.))/17));
 		}
-		else if ( temperature>=80&&temperature<=87&&humidity>=85 ) {
+		else if ( temperature>=80 && temperature<=87 && humidity>=85 ) {
 			hiadj=(((humidity-85)/10)*((87-temperature)/5));
 		}
-		if (hiadj) hidx-=hiadj;
+		if ( hiadj ) hidx-=hiadj;
 	}
-	if (degscl) { 
+	if ( degscl ) { 
 		temperature=(temperature-32)/1.8;
 		hidx=(hidx-32)/1.8;
 		dewpoint=(dewpoint-32)/1.8;
 		visibility*=1.6; visunts="km";
 		pressure*=33.863753; presunts="mb";
 	}
-	if (chrepo||chall) printf("\n");
-	if (chcond||chall) printf("Condition: %s\n",condition);
-	if (chtemp||chall) printf("Temperature: %.3g°%s\n",temperature,degunts);
-	if (hindex||chall) printf("Heat Index: %.3g°%s\n",hidx,degunts);
-	if (chwnd||chall) {
-		if (!isdigit(*wgspd)&&!isdigit(*wsspd)) { printf("Wind: Negligible\n"); wspd=0; }
-		else sscanf((!isdigit(*wgspd))?wsspd:wgspd,"%d",&wspd);
-		if (degscl) { wspd*=1.852; wunts="kmph"; }
+	if ( chrepo || chall ) printf("\n");
+	if ( chcond || chall ) printf("Condition: %s\n",condition);
+	if ( chtemp || chall ) printf("Temperature: %.3g°%s\n",temperature,degunts);
+	if ( hindex || chall ) printf("Heat Index: %.3g°%s\n",hidx,degunts);
+	if ( chwnd || chall ) {
+		if ( !isdigit(*wgspd) && !isdigit(*wsspd) ) { printf("Wind: Negligible\n"); wspd=0; }
+		else sscanf( (!isdigit(*wgspd)) ? wsspd : wgspd,"%d",&wspd);
+		if ( degscl ) { wspd*=1.852; wunts="kmph"; }
 		else wspd*=1.151;
 		switch ( ((wdir>22 ? wdir-22 : wdir)/45) ) {
 			case 0: wndir="N"; break;
@@ -97,23 +97,23 @@ void getConditions(char *conditionsln) {
 			case 8: wndir="N"; break;
 			default: wndir="Vrbl"; break;
 		}
-		if (wspd) printf("Wind: %s %s %d %s\n",(!isdigit(*wgspd)?"Sustained":"Gusts"),wndir,wspd,wunts);
+		if ( wspd ) printf("Wind: %s %s %d %s\n",(!isdigit(*wgspd)?"Sustained":"Gusts"),wndir,wspd,wunts);
 	}
-	if (chhum||chall) printf("Humidity: %.2g%%\n",humidity);
-	if (chdp||chall) printf("Dew Point: %d°%s\n",dewpoint,degunts);
-	if (chvis||chall) printf("Visibility: %.4g %s\n",visibility,visunts);
-	if (chpres||chall) printf("Pressure: %.4g %s\n",pressure,presunts);
+	if ( chhum || chall ) printf("Humidity: %.2g%%\n",humidity);
+	if ( chdp || chall ) printf("Dew Point: %d°%s\n",dewpoint,degunts);
+	if ( chvis || chall ) printf("Visibility: %.4g %s\n",visibility,visunts);
+	if ( chpres || chall ) printf("Pressure: %.4g %s\n",pressure,presunts);
 }
 
 void getHazards(char *hazardline) {
-	if (chrepo||chall) printf("\n");
+	if ( chrepo || chall ) printf("\n");
 	sscanf(hazardline,"%*[^\"]\"%[^\"]",hazard);
 	printf("%s\a\n",hazard);
 }
 
 void getForecast(FILE *noaadwml) {
-	if (chfcst||chall) {
-		if (fcstext) {
+	if ( chfcst || chall ) {
+		if ( fcstext ) {
 			printf("Print full 7-day forecast.\n");
 		}
 		else {
@@ -131,17 +131,20 @@ void checkStones(char *location) {
 		if ( len<=sizeof(command) ) {
 			if ( !(url=popen(command,"r")) ) { fprintf(stderr,"Could not check weather stones\n");exit(1); }
 			while ( fgets(line,sizeof(line),url) ) {
-				if ( (match=strstr(line,"point l")) ) { count++; if (count==2) strncpy(coordln,match,63); }
+				if ( (match=strstr(line,"point l")) ) { count++; if ( count==2 ) strncpy(coordln,match,63); }
 				else if ( (match=strstr(line,"area-description")) ) strncpy(reportln,match,95);
 				else if ( (match=strstr(line,"height-units")) ) strncpy(elevln,match,79);
 				else if ( (match=strstr(line,"apparent")) ) strncpy(currentln,match,1999);
-				else if ( (match=strstr(line,"headline")) ) { count2++; if (count2==1) strncpy(hzdln,match,60); };
+				else if ( (match=strstr(line,"headline")) ) { 
+					count2++; 
+					if ( count2==1 ) strncpy(hzdln,match,60); 
+				}
 			}
 		}
-		if (chrepo||chall) getReporter(reportln,coordln,elevln);
-		if (!nohaz) getHazards(hzdln);
-		if (chcond||chhum||chpres||chtemp||hindex||chvis||chwnd||chall) getConditions(currentln);
-		//if (chfcst||chall) getForecast(url);
+		if ( chrepo || chall ) getReporter(reportln,coordln,elevln);
+		if ( !nohaz ) getHazards(hzdln);
+		if ( chcond || chhum || chpres || chtemp || hindex || chvis || chwnd || chall) getConditions(currentln);
+		//if ( chfcst || chall ) getForecast(url);
 		pclose(url);
 	}
 }
@@ -149,7 +152,7 @@ void checkStones(char *location) {
 void discoverConfig(void) {
 	FILE *rc=NULL;
 	const char *cwd = getenv("PWD");
-	if ( !rc ) { chdir(getenv("XDG_CONFIG_HOME")); if (chdir("shaman")==0) rc = fopen("config","r"); }
+	if ( !rc ) { chdir(getenv("XDG_CONFIG_HOME")); if ( chdir("shaman")==0 ) rc = fopen("config","r"); }
 	if ( !rc ) { chdir(getenv("HOME")); rc = fopen(".shamanrc","r"); }
 	chdir(cwd);
 	if ( rc ) {
@@ -158,16 +161,16 @@ void discoverConfig(void) {
 			sscanf(line,"Units=%s",defaultUnits);
 		}; fclose(rc);
 	};
-	if (defaultUnits[0]=='M') { degscl=1; degunts="C"; }
-	if (*defaultLocation) strncpy(passloc,defaultLocation,5);
+	if ( defaultUnits[0]=='M' ) { degscl=1; degunts="C"; }
+	if ( *defaultLocation ) strncpy(passloc,defaultLocation,5);
 }
 
 int main(int argc,char** argv) {
 	defaultLocation[0]=0;
 	discoverConfig();
 	if ( !argv[1] && !*passloc ) usage(argv[0]);
-    if ( argc == 1 && *passloc ) chall=1;
-	if ( argv[1]&&argv[1][0]!='-' ) chall=1;
+    if ( argc==1 && *passloc ) chall=1;
+	if ( argv[1] && argv[1][0]!='-' ) chall=1;
 	for ( i=1; i<argc; i++ ) {
 		if ( argv[i][0]=='-' ) {
 			for ( a=1; a<strlen(argv[i]); a++ ) {
@@ -193,11 +196,11 @@ int main(int argc,char** argv) {
 			}
 		}
 	}
-	if ( argv[argc-1][0]&&!*defaultLocation ) strncpy(passloc,argv[argc-1],40);
+	if ( argv[argc-1][0] && !*defaultLocation ) strncpy(passloc,argv[argc-1],40);
 	for ( d=0; d<strlen(passloc); d++ ) {
 		if ( !isdigit(*passloc) ) ctynm=1;
 	}
-	if (ctynm) {
+	if ( ctynm ) {
 		printf("No valid location given!\nSee `%s -h` for help\n",argv[0]);
 		exit(46);
 		/*strncpy(token,argv[argc-1],60);
