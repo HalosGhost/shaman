@@ -14,3 +14,9 @@ To-Do
 -----
 #. Allow specifying a location by "City, ST" and not just through a zipcode
 #. Add 7-day forecasts
+
+Possible Features
+-----------------
+The following list includes things that I am contemplating including but due to the great increase of code they may require, they may never see the light of day. If they are to bear fruit, it will certainly not be before the To-Do list is complete as they are planned features working toward a "stable" release.
+
+* Switch to a format code printing system
