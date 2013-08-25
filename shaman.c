@@ -12,7 +12,7 @@
 
 FILE *url;
 char provider[]="http://forecast.weather.gov/zipcity.php";
-char command[256],locurl[256],line[2000],hline[2000],coordln[64],reportln[96],elevln[80],currentln[2000],hzdln[64],
+char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000],hzdln[64],
 	 defaultLocation[6];
 char *c=NULL,*ptr=NULL,*match=NULL,*degunts="F",*visunts="mi",*presunts="in",*wunts="mph",defaultUnits[]="E";
 char reporter[80],condition[40],hazard[59],wgspd[5],wsspd[5],wtype[24],*wndir="",passloc[6],passspc[]="%20",
