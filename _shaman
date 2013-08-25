@@ -2,11 +2,14 @@
 _arguments -C -A "-*" \
     -a'[print all info]' \
     -c'[print current conditons]' \
-    -d'[print humidity and dewpoint]' \
+    -d'[print humidity]' \
+    -D'[print dewpoint]' \
     -h'[print help]' \
+    -l'[print heat index]' \
     -m'[print with metric units]' \
     -p'[print pressure]' \
     -r'[print reporter information]' \
     -t'[print temperature]' \
     -v'[print visibility]' \
     -w'[print wind information]' \
+    -z'[suppress hazardous weather warnings]' \
