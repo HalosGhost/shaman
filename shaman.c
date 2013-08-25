@@ -8,34 +8,32 @@
 #include <string.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <math.h>
 
 FILE *url;
 char provider[]="http://forecast.weather.gov/zipcity.php";
-char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000],
+char command[256],locurl[256],line[2000],hline[2000],coordln[64],reportln[96],elevln[80],currentln[2000],hzdln[64],
 	 defaultLocation[6];
 char *c=NULL,*ptr=NULL,*match=NULL,*degunts="F",*visunts="mi",*presunts="in",*wunts="mph",defaultUnits[]="E";
-char reporter[80],condition[20],wgspd[5],wsspd[5],wtype[24],*wndir="",passloc[6];
-float lat,lon,temperature,visibility,pressure;
-int elev,humidity,dewpoint,wdir,wspd;
-int len,i,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chvis,chpres,chwnd,chfcst,fcstext,degscl=0,count=0;
+char reporter[80],condition[40],hazard[59],wgspd[5],wsspd[5],wtype[24],*wndir="",passloc[6],passspc[]="%20",
+	 passcma[]="%2C",token[60];
+float lat,lon,temperature,humidity,visibility,pressure,hidx,hiadj;
+int elev,dewpoint,wdir,wspd;
+int len,i,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chdp,hindex,chvis,chpres,chwnd,nohaz,chfcst,fcstext,
+	degscl=0,count=0,count2=0,ctynm;
 
 /* Rudimentary Error Handling */
 void usage(char *progname) {
 	fprintf(stderr,"Usage: %s [options] location\n\n",progname);
 	fprintf(stderr,"Options:\n");
-	fprintf(stderr,"  -a   print all available information.\n");
-	fprintf(stderr,"  -c   print current weather conditions.\n");
-	fprintf(stderr,"  -d   print humidity and dew-point.\n");
-	//fprintf(stderr,"  -f   print basic 7-day forecast.\n");
-	//fprintf(stderr,"  -F   print detailed 7-day forecast.\n");
+	fprintf(stderr,"  -a   print all available information.\n  -c   print current weather conditions.\n");
+	fprintf(stderr,"  -d   print humidity.\n  -D   print dew-point.\n");//  -f   print basic 7-day forecast.\n");
+	//fprintf(stderr,"  -F   print detailed 7-day forecast.\n  -i   print with Imperial units. (default)\n");
 	fprintf(stderr,"  -i   print with Imperial units. (default)\n");
-	fprintf(stderr,"  -h   print this help message.\n");
-	fprintf(stderr,"  -m   print with metric units.\n");
-	fprintf(stderr,"  -p   print pressure.\n");
-	fprintf(stderr,"  -r   print reporter information.\n");
-	fprintf(stderr,"  -t   print temperature.\n");
-	fprintf(stderr,"  -v   print visibility.\n");
-	fprintf(stderr,"  -w   print wind information.\n");
+	fprintf(stderr,"  -l   print heat index.\n  -h   print this help message.\n  -m   print with metric units.\n");
+	fprintf(stderr,"  -p   print pressure.\n  -r   print reporter information.\n  -t   print temperature.\n");
+	fprintf(stderr,"  -v   print visibility.\n  -w   print wind information.\n");
+	fprintf(stderr,"  -z   suppress hazardous/severe weather warnings.\n");
 	fprintf(stderr,"\nIf no options are passed, -a is assumed.\n");
 	exit(44);
 }
@@ -55,18 +53,33 @@ void getReporter(char *reporterln,char *coordinateln,char *elevationln) {
 
 void getConditions(char *conditionsln) {
 	sscanf(conditionsln,
-		   "%*[^<]<value>%f%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%d%*[^=]=%*[^=]=\"%[^\"]\"%*[^\"]\"%*[^>]>\
+		   "%*[^<]<value>%f%*[^-]-%*[^v]value>%d%*[^-]-%*[^v]value>%f%*[^=]=%*[^=]=\"%[^\"]\"%*[^\"]\"%*[^>]>\
 		   %f%*[^.]%*[^=]%*[^v]value>%d%*[^\"]%*[^v]value>%[^<]%*[^=]%*[^v]value>%[^<]%*[^-]%*[^=]%*[^v]value>%f",
 		   &temperature,&dewpoint,&humidity,condition,&visibility,&wdir,wgspd,wsspd,&pressure);
+	if (hindex||chall) {
+		hidx=(-42.379)+2.04901523*temperature+10.14333127*humidity-0.22475541*temperature*humidity
+			-6.83783E-3*temperature*temperature-5.481717E-2*humidity*humidity
+			+1.22874E-3*temperature*temperature*humidity+8.5282E-4*temperature*humidity*humidity
+			-1.99E-6*temperature*temperature*humidity*humidity;
+		if ( temperature>=80&&temperature<=112&&humidity<=13 ) {
+			hiadj=(((13-humidity)/4)*sqrtf((17-abs(temperature-95.))/17));
+		}
+		else if ( temperature>=80&&temperature<=87&&humidity>=85 ) {
+			hiadj=(((humidity-85)/10)*((87-temperature)/5));
+		}
+		if (hiadj) hidx-=hiadj;
+	}
 	if (degscl) { 
-		temperature=(temperature-32)/1.8; 
+		temperature=(temperature-32)/1.8;
+		hidx=(hidx-32)/1.8;
 		dewpoint=(dewpoint-32)/1.8;
 		visibility*=1.6; visunts="km";
 		pressure*=33.863753; presunts="mb";
 	}
 	if (chrepo||chall) printf("\n");
 	if (chcond||chall) printf("Condition: %s\n",condition);
-	if (chtemp||chall) printf("Temperature: %.2g°%s\n",temperature,degunts);
+	if (chtemp||chall) printf("Temperature: %.3g°%s\n",temperature,degunts);
+	if (hindex||chall) printf("Heat Index: %.3g°%s\n",hidx,degunts);
 	if (chwnd||chall) {
 		if (!isdigit(*wgspd)&&!isdigit(*wsspd)) { printf("Wind: Negligible\n"); wspd=0; }
 		else sscanf((!isdigit(*wgspd))?wsspd:wgspd,"%d",&wspd);
@@ -86,9 +99,16 @@ void getConditions(char *conditionsln) {
 		}
 		if (wspd) printf("Wind: %s %s %d %s\n",(!isdigit(*wgspd)?"Sustained":"Gusts"),wndir,wspd,wunts);
 	}
-	if (chhum||chall) printf("Humidity: %d%%\nDew Point: %d°%s\n",humidity,dewpoint,degunts);
+	if (chhum||chall) printf("Humidity: %.2g%%\n",humidity);
+	if (chdp||chall) printf("Dew Point: %d°%s\n",dewpoint,degunts);
 	if (chvis||chall) printf("Visibility: %.4g %s\n",visibility,visunts);
 	if (chpres||chall) printf("Pressure: %.4g %s\n",pressure,presunts);
+}
+
+void getHazards(char *hazardline) {
+	if (chrepo||chall) printf("\n");
+	sscanf(hazardline,"%*[^\"]\"%[^\"]",hazard);
+	printf("%s\a\n",hazard);
 }
 
 void getForecast(FILE *noaadwml) {
@@ -115,10 +135,12 @@ void checkStones(char *location) {
 				else if ( (match=strstr(line,"area-description")) ) strncpy(reportln,match,95);
 				else if ( (match=strstr(line,"height-units")) ) strncpy(elevln,match,79);
 				else if ( (match=strstr(line,"apparent")) ) strncpy(currentln,match,1999);
+				else if ( (match=strstr(line,"headline")) ) { count2++; if (count2==1) strncpy(hzdln,match,60); };
 			}
 		}
 		if (chrepo||chall) getReporter(reportln,coordln,elevln);
-		if (chcond||chhum||chpres||chtemp||chvis||chwnd||chall) getConditions(currentln);
+		if (!nohaz) getHazards(hzdln);
+		if (chcond||chhum||chpres||chtemp||hindex||chvis||chwnd||chall) getConditions(currentln);
 		//if (chfcst||chall) getForecast(url);
 		pclose(url);
 	}
@@ -134,8 +156,7 @@ void discoverConfig(char* cmdLocation) {
 		while ( fgets(line,sizeof(line),rc) ) {
 			sscanf(line,"Location=%[^\n]",defaultLocation);
 			sscanf(line,"Units=%s",defaultUnits);
-		}
-		fclose(rc);
+		}; fclose(rc);
 	};
 	if (defaultUnits[0]=='M') { degscl=1; degunts="C"; }
 	if (*defaultLocation) strncpy(passloc,defaultLocation,5);
@@ -154,26 +175,40 @@ int main(int argc,char** argv) {
 					case 'a': chall=1; break;
 					case 'c': chcond=1; break;
 					case 'd': chhum=1; break;
+				    case 'D': chdp=1; break;
 				    //case 'f': chfcast=1; break;
 				    //case 'F': chfcast=1; fcastext=1; break;
 				    case 'i': degscl=0; degunts="F"; break;
+				    case 'l': hindex=1; break;
 					case 'm': degscl=1; degunts="C"; break;
 					case 'p': chpres=1; break;
 					case 'r': chrepo=1; break;
 					case 't': chtemp=1; break;
 					case 'v': chvis=1; break;
 					case 'w': chwnd=1; break;
+				    case 'z': nohaz=1; break;
 					default: invalidOption(argv[i]); break;
 				}
 			}
 		}
 	}
-	if ( argv[argc-1][0]&&!*defaultLocation ) strncpy(passloc,argv[argc-1],5);
+	if ( argv[argc-1][0]&&!*defaultLocation ) strncpy(passloc,argv[argc-1],40);
 	for ( d=0; d<strlen(passloc); d++ ) {
-		if ( !isdigit(*passloc) ) { 
-			printf("No valid location given!\nSee `%s -h` for help\n",argv[0]); 
-			exit(46); 
+		if ( !isdigit(*passloc) ) ctynm=1;
+	}
+	if (ctynm) {
+		printf("No valid location given!\nSee `%s -h` for help\n",argv[0]);
+		exit(46);
+		/*strncpy(token,argv[argc-1],60);
+		strtok(token," ");
+		strncpy(passloc,token,80);
+		while (*token) {
+			strncat(passloc,passspc,3);
+			strtok(NULL," ");
+			strncat(passloc,token,60);
+			strncat(passloc,passspc,3);
 		}
+		printf("%s",passloc);*/
 	}
 	checkStones(passloc);
 	return 0;

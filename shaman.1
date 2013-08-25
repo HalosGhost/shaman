@@ -36,17 +36,25 @@ Location=zipcode
 Units=<M|I>
 .RE
 .SH "PLANNED FEATURES"
-7-day forecasts and basic hazardous/severe weather warnings\&.
+7-day forecasts\&.
 .SH "OPTIONS"
 .sp
 .IP -a
-Display all available information\&. Equivalent to -cdprtvw\&. Assumed if no options are passed\&.
+Display all available information\&. Equivalent to -cdDlprtvw\&. Assumed if no options are passed\&.
 .IP -c
 Display current weather conditions\&.
 .IP -d
-Display humidity and dew point\&.
+Display humidity\&.
+.IP -D
+Display dew-point\&.
+.\".IP -f
+.\"Display basic 7-day forecast\&.
+.\".IP -F
+.\"Display detailed 7-day forecast\&.
 .IP -i
 Display units in Imperial measurements\&. (default)
+.IP -l
+Display heat index\&.
 .IP -m
 Display units in metric measurements\&.
 .IP -p
@@ -59,6 +67,8 @@ Display temperature\&.
 Display visibility\&.
 .IP -w
 Display wind information\&.
+.IP -z
+Suppress printing of Hazardous and Severe Weather Warnings\&.
 .SH "AUTHOR"
 Sam Stuewe <halosghost at archlinux dot info>
 .SH "SEE ALSO"
