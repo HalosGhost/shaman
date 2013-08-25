@@ -1,17 +1,16 @@
 Shaman
 ======
-Originally inspired by `weatherman <http://darkhorse.nu/weatherman/>`_, ``shaman`` is a small command-line application written in C for fetching current weather conditions (and perhaps, eventually, fetching forecasts) from the `NOAA <http://forecast.weather.gov>`_.
+Originally inspired by `weatherman <http://darkhorse.nu/weatherman/>`_, ``shaman`` is a small command-line application written in C for fetching current weather conditions from the `NOAA <http://forecast.weather.gov>`_.
 
 For those who aren't familiar with the concept of a forecast stone, think of it like this. This software's most basic function is, essentially, a digital form of this:
 
 .. image:: http://www.theweatherstone.co.uk/images/slide1.jpg
 
-Status
-------
-``shaman`` now correctly grabs and parses current conditions, temperature, humidity, dew point, visibility, wind information and pressure. It is also capable of displaying its information with metric units.
+Status & Documentation
+----------------------
+``shaman`` has grown in functionality a great deal, and to get a good idea of where the program stands, please see the documentation (``man shaman``).
 
 To-Do
 -----
 #. Allow specifying a location by "City, ST" and not just through a zipcode
 #. Add 7-day forecasts
-#. Hazardous/Severe Weather Warnings
