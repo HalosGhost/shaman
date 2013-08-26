@@ -14,6 +14,7 @@ To-Do
 -----
 #. Allow specifying a location by "City, ST" and not just through a zipcode
 #. Add 7-day forecasts
+#. Replace external calls to ``curl`` and ``grep`` with native libcurl
 
 Possible Features
 -----------------
