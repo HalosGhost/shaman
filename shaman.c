@@ -108,7 +108,7 @@ void getConditions(char *conditionsln) {
 void getHazards(char *hazardline) {
 	if ( chrepo || chall ) printf("\n");
 	sscanf(hazardline,"%*[^\"]\"%[^\"]",hazard);
-	printf("%s\a\n",hazard);
+	printf("ALERT: %s\a\n",hazard);
 }
 
 void getForecast(FILE *noaadwml) {
