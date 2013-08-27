@@ -165,7 +165,7 @@ void discoverConfig(void) {
 		}; fclose(rc);
 	};
 	if ( defaultUnits[0]=='M' ) { degscl=1; degunts="C"; }
-	if ( *defaultLocation ) strncpy(passloc,defaultLocation,5);
+	if ( *defaultLocation ) strncpy(passloc,defaultLocation,119);
 }
 
 int main(int argc,char** argv) {
@@ -204,7 +204,8 @@ int main(int argc,char** argv) {
 		if ( !isdigit(passloc[d]) ) ctynm=1;
 	}
 	if ( ctynm ) {
-		strncpy(token,argv[argc-1],50);
+		if ( *defaultLocation ) strncpy(token,defaultLocation,59);
+		else strncpy(token,argv[argc-1],50);
 		strncpy(ptr,strtok(token,delims),59);
 		if ( strstr(ptr,",") ) {
 			ptr[strcspn(ptr,",")]=0;
