@@ -9,14 +9,15 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <math.h>
+#include <curl/curl.h>
 
 FILE *url;
 char provider[]="http://forecast.weather.gov/zipcity.php";
 char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000],hzdln[64],
 	 defaultLocation[6];
-char *c=NULL,*ptr=NULL,*match=NULL,*degunts="F",*visunts="mi",*presunts="in",*wunts="mph",defaultUnits[]="E";
-char reporter[80],condition[40],hazard[59],wgspd[5],wsspd[5],wtype[24],*wndir="",passloc[6],passspc[]="%20",
-	 passcma[]="%2C",token[60];
+char *c=NULL,ptr[60],*match=NULL,*degunts="F",*visunts="mi",*presunts="in",*wunts="mph",defaultUnits[]="E";
+char reporter[80],condition[40],hazard[59],wgspd[5],wsspd[5],wtype[24],*wndir="",passloc[120],passspc[]="%20",
+	 passcma[]="%2C",token[60],delims[]=" ";
 float lat,lon,temperature,humidity,visibility,pressure,hidx,hiadj;
 int elev,dewpoint,wdir,wspd;
 int len,i,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chdp,hindex,chvis,chpres,chwnd,nohaz,chfcst,fcstext,
@@ -24,7 +25,7 @@ int len,i,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chdp,hindex,chvis,chpres,c
 
 /* Rudimentary Error Handling */
 void usage(char *progname) {
-	fprintf(stderr,"Usage: %s [options] location\n\n",progname);
+	fprintf(stderr,"Usage: %s [options] \"location\"\n\n",progname);
 	fprintf(stderr,"Options:\n");
 	fprintf(stderr,"  -a   print all available information.\n  -c   print current weather conditions.\n");
 	fprintf(stderr,"  -d   print humidity.\n  -D   print dew-point.\n");//  -f   print basic 7-day forecast.\n");
@@ -106,9 +107,11 @@ void getConditions(char *conditionsln) {
 }
 
 void getHazards(char *hazardline) {
-	if ( chrepo || chall ) printf("\n");
 	sscanf(hazardline,"%*[^\"]\"%[^\"]",hazard);
-	printf("ALERT: %s\a\n",hazard);
+	if ( *hazard ) {
+		if ( chrepo || chall ) printf("\n");
+		printf("ALERT: %s\a\n",hazard);
+	}
 }
 
 void getForecast(FILE *noaadwml) {
@@ -157,8 +160,8 @@ void discoverConfig(void) {
 	chdir(cwd);
 	if ( rc ) {
 		while ( fgets(line,sizeof(line),rc) ) {
-			sscanf(line,"Location=%[^\n]",defaultLocation);
-			sscanf(line,"Units=%s",defaultUnits);
+			sscanf(line,"Location%*[^\"]\"%[^\"]",defaultLocation);
+			sscanf(line,"Units%*[^\"]%[^\"]",defaultUnits);
 		}; fclose(rc);
 	};
 	if ( defaultUnits[0]=='M' ) { degscl=1; degunts="C"; }
@@ -198,21 +201,26 @@ int main(int argc,char** argv) {
 	}
 	if ( argv[argc-1][0] && !*defaultLocation ) strncpy(passloc,argv[argc-1],40);
 	for ( d=0; d<strlen(passloc); d++ ) {
-		if ( !isdigit(*passloc) ) ctynm=1;
+		if ( !isdigit(passloc[d]) ) ctynm=1;
 	}
 	if ( ctynm ) {
-		printf("No valid location given!\nSee `%s -h` for help\n",argv[0]);
-		exit(46);
-		/*strncpy(token,argv[argc-1],60);
-		strtok(token," ");
-		strncpy(passloc,token,80);
-		while (*token) {
-			strncat(passloc,passspc,3);
-			strtok(NULL," ");
-			strncat(passloc,token,60);
-			strncat(passloc,passspc,3);
+		strncpy(token,argv[argc-1],50);
+		strncpy(ptr,strtok(token,delims),59);
+		if ( strstr(ptr,",") ) {
+			ptr[strcspn(ptr,",")]=0;
+			strncat(ptr,passcma,3);
 		}
-		printf("%s",passloc);*/
+		strncpy(passloc,ptr,60);
+		char *y;
+		while ( (y=strtok(NULL,delims)) ) {
+			strncat(passloc,passspc,3);
+			strncpy(ptr,y,59);
+			if ( strstr(ptr,",") ) {
+				ptr[strcspn(ptr,",")]=0;
+				strncat(ptr,passcma,3);
+			}
+			strncat(passloc,ptr,60);
+		}
 	}
 	checkStones(passloc);
 	return 0;

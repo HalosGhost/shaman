@@ -16,25 +16,25 @@ shaman \- Fetch basic weather information from the NOAA
 .SH "SYNOPSIS"
 .B shaman
 .BR [ options ]
-.I "location"
+.I "\(dqlocation\(dq"
 .SH "DESCRIPTION"
 .sp
 .B shaman 
 is a simple CLI to fetch basic weather information about a given location from the NOAA using 
 .BR curl (1). 
 .sp
-Though more flexible specification is planned, at the moment,
-.IR location " can only be in the form of a zip code\&. "
 .SH "CONFIGURATION"
 A configuration file may be placed at
 .IR "$XDG_CONFIG_HOME/shaman/config" " or at " "$HOME/.shamanrc"
 which allows for setting a default location and/or selecting whether to print in metric or Imperial units. These settings are defined like so:
 .RS
 
-Location=zipcode
+Location="location"
 
-Units=<M|I>
+Units="U"
 .RE
+
+.IR location " can be either a zipcode or as \(dqCity, ST\(dq\&. " U " can either be \(dqM\(dq or \(dqI\(dq\&.
 .SH "PLANNED FEATURES"
 7-day forecasts\&.
 .SH "OPTIONS"
