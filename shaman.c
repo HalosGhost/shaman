@@ -14,13 +14,13 @@
 FILE *url;
 char provider[]="http://forecast.weather.gov/zipcity.php";
 char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000],hzdln[64],
-	 defaultLocation[6];
+	 defaultLocation[6],*lnfcst[21];
 char *c=NULL,ptr[60],*match=NULL,*degunts="F",*visunts="mi",*presunts="in",*wunts="mph",defaultUnits[]="E";
 char reporter[80],condition[40],hazard[59],wgspd[5],wsspd[5],wtype[24],*wndir="",passloc[120],passspc[]="%20",
 	 passcma[]="%2C",token[60],delims[]=" ";
 float lat,lon,temperature,humidity,visibility,pressure,hidx,hiadj;
 int elev,dewpoint,wdir,wspd;
-int len,i,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chdp,hindex,chvis,chpres,chwnd,nohaz,chfcst,fcstext,
+int len,i,ind,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chdp,hindex,chvis,chpres,chwnd,nohaz,chfcst,fcstext,
 	degscl=0,count=0,count2=0,ctynm;
 
 /* Rudimentary Error Handling */
@@ -114,17 +114,6 @@ void getHazards(char *hazardline) {
 	}
 }
 
-void getForecast(FILE *noaadwml) {
-	if ( chfcst || chall ) {
-		if ( fcstext ) {
-			printf("Print full 7-day forecast.\n");
-		}
-		else {
-			printf("Print basic 7-day forecast.\n");
-		}
-	}
-}
-
 void checkStones(char *location) {
 	len=snprintf(command,sizeof(command),"curl -fv \"%s?inputstring=%s\"|&grep Location",provider,location);
 	if ( len<=sizeof(command) ) { 
@@ -147,8 +136,21 @@ void checkStones(char *location) {
 		if ( chrepo || chall ) getReporter(reportln,coordln,elevln);
 		if ( !nohaz ) getHazards(hzdln);
 		if ( chcond || chhum || chpres || chtemp || hindex || chvis || chwnd || chall) getConditions(currentln);
-		//if ( chfcst || chall ) getForecast(url);
-		pclose(url);
+		if ( chfcst || chall ) {
+			if ( fcstext ) {
+				printf("Print detailed 7-day forecast.\n");
+				while ( fgets(line,sizeof(line),url) ) {
+					if ( (match=strstr(line,"Overnight")) ) sscanf(line,"%[^\"]",lnfcst[0]);
+					printf("GOD DAMNIT\n");
+				}
+				for ( ind=0;ind<22;ind++ ) {
+					if ( *lnfcst[ind] ) printf("%s\n",lnfcst[i]);
+				}
+			}
+			else {
+				printf("Print basic 7-day forecast.\n");
+			}
+		}; pclose(url);
 	}
 }
 
@@ -165,15 +167,15 @@ void discoverConfig(void) {
 		}; fclose(rc);
 	};
 	if ( defaultUnits[0]=='M' ) { degscl=1; degunts="C"; }
-	if ( *defaultLocation ) strncpy(passloc,defaultLocation,119);
 }
 
 int main(int argc,char** argv) {
 	defaultLocation[0]=0;
 	discoverConfig();
-	if ( !argv[1] && !*passloc ) usage(argv[0]);
-    if ( argc==1 && *passloc ) chall=1;
-	if ( argv[1] && argv[1][0]!='-' ) chall=1;
+	if ( argc==1 ) {
+		if ( !*defaultLocation ) usage(argv[0]);
+		else { chall=1; strncpy(passloc,defaultLocation,40); }
+	}
 	for ( i=1; i<argc; i++ ) {
 		if ( argv[i][0]=='-' ) {
 			for ( a=1; a<strlen(argv[i]); a++ ) {
@@ -183,8 +185,8 @@ int main(int argc,char** argv) {
 					case 'c': chcond=1; break;
 					case 'd': chhum=1; break;
 				    case 'D': chdp=1; break;
-				    //case 'f': chfcast=1; break;
-				    //case 'F': chfcast=1; fcastext=1; break;
+				    //case 'f': chfcst=1; break;
+				    //case 'F': chfcst=1; fcstext=1; break;
 				    case 'i': degscl=0; degunts="F"; break;
 				    case 'l': hindex=1; break;
 					case 'm': degscl=1; degunts="C"; break;
@@ -199,9 +201,13 @@ int main(int argc,char** argv) {
 			}
 		}
 	}
-	if ( argv[argc-1][0] && !*defaultLocation ) strncpy(passloc,argv[argc-1],40);
+	if ( argc>1 ) {
+		if ( argv[1][0]!='-' ) chall=1;
+		if ( argv[argc-1][0]!='-' ) strncpy(passloc,argv[argc-1],40);
+		else strncpy(passloc,defaultLocation,40);
+	}
 	for ( d=0; d<strlen(passloc); d++ ) {
-		if ( !isdigit(passloc[d]) ) ctynm=1;
+		if ( !isdigit(passloc[d]) ) { ctynm=1; break; }
 	}
 	if ( ctynm ) {
 		if ( *defaultLocation ) strncpy(token,defaultLocation,59);
