@@ -136,7 +136,7 @@ void checkStones(char *location) {
 		if ( chrepo || chall ) getReporter(reportln,coordln,elevln);
 		if ( !nohaz ) getHazards(hzdln);
 		if ( chcond || chhum || chpres || chtemp || hindex || chvis || chwnd || chall) getConditions(currentln);
-		if ( chfcst || chall ) {
+		if ( chfcst ) {//|| chall ) {
 			if ( fcstext ) {
 				printf("Print detailed 7-day forecast.\n");
 				while ( fgets(line,sizeof(line),url) ) {
