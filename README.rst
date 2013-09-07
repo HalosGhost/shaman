@@ -12,7 +12,6 @@ Status & Documentation
 
 To-Do
 -----
-#. Add 7-day forecasts
 #. Replace external calls to ``curl`` and ``grep`` with native libcurl
 
 Possible Features

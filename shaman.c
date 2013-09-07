@@ -14,13 +14,13 @@
 FILE *url;
 char provider[]="http://forecast.weather.gov/zipcity.php";
 char command[256],locurl[256],line[2000],coordln[64],reportln[96],elevln[80],currentln[2000],hzdln[64],
-	 defaultLocation[6],*lnfcst[21];
+	 defaultLocation[6];
 char *c=NULL,ptr[60],*match=NULL,*degunts="F",*visunts="mi",*presunts="in",*wunts="mph",defaultUnits[]="E";
 char reporter[80],condition[40],hazard[59],wgspd[5],wsspd[5],wtype[24],*wndir="",passloc[120],passspc[]="%20",
 	 passcma[]="%2C",token[60],delims[]=" ";
 float lat,lon,temperature,humidity,visibility,pressure,hidx,hiadj;
 int elev,dewpoint,wdir,wspd;
-int len,i,ind,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chdp,hindex,chvis,chpres,chwnd,nohaz,chfcst,fcstext,
+int len,i,ind,a,d,chall,chcond,chtemp,chcoor,chrepo,chhum,chdp,hindex,chvis,chpres,chwnd,nohaz,
 	degscl=0,count=0,count2=0,ctynm;
 
 /* Rudimentary Error Handling */
@@ -28,9 +28,7 @@ void usage(char *progname) {
 	fprintf(stderr,"Usage: %s [options] \"location\"\n\n",progname);
 	fprintf(stderr,"Options:\n");
 	fprintf(stderr,"  -a   print all available information.\n  -c   print current weather conditions.\n");
-	fprintf(stderr,"  -d   print humidity.\n  -D   print dew-point.\n");//  -f   print basic 7-day forecast.\n");
-	//fprintf(stderr,"  -F   print detailed 7-day forecast.\n  -i   print with Imperial units. (default)\n");
-	fprintf(stderr,"  -i   print with Imperial units. (default)\n");
+	fprintf(stderr,"  -d   print humidity.\n  -D   print dew-point.\n  -i   print with Imperial units. (default)\n");
 	fprintf(stderr,"  -l   print heat index.\n  -h   print this help message.\n  -m   print with metric units.\n");
 	fprintf(stderr,"  -p   print pressure.\n  -r   print reporter information.\n  -t   print temperature.\n");
 	fprintf(stderr,"  -v   print visibility.\n  -w   print wind information.\n");
@@ -82,9 +80,15 @@ void getConditions(char *conditionsln) {
 	if ( chtemp || chall ) printf("Temperature: %.3g°%s\n",temperature,degunts);
 	if ( hindex || chall ) printf("Heat Index: %.3g°%s\n",hidx,degunts);
 	if ( chwnd || chall ) {
-		if ( !isdigit(*wgspd) && !isdigit(*wsspd) ) { printf("Wind: Negligible\n"); wspd=0; }
+		if ( !isdigit(*wgspd) && !isdigit(*wsspd) ) { 
+			printf("Wind: Negligible\n"); 
+			wspd=0; 
+		}
 		else sscanf( (!isdigit(*wgspd)) ? wsspd : wgspd,"%d",&wspd);
-		if ( degscl ) { wspd*=1.852; wunts="kmph"; }
+		if ( degscl ) { 
+			wspd*=1.852; 
+			wunts="kmph"; 
+		}
 		else wspd*=1.151;
 		switch ( ((wdir>22 ? wdir-22 : wdir)/45) ) {
 			case 0: wndir="N"; break;
@@ -117,13 +121,22 @@ void getHazards(char *hazardline) {
 void checkStones(char *location) {
 	len=snprintf(command,sizeof(command),"curl -fv \"%s?inputstring=%s\"|&grep Location",provider,location);
 	if ( len<=sizeof(command) ) { 
-		if ( !(url=popen(command,"r")) ) { fprintf(stderr,"Could not get location\n");exit(1); }
+		if ( !(url=popen(command,"r")) ) { 
+			fprintf(stderr,"Could not get location\n");
+			exit(1); 
+		}
 		fscanf(url,"%*[^:]: %s",locurl);pclose(url);
 		len=snprintf(command,sizeof(command),"curl -fsL \"%s&FcstType=dwml&unit=%d\"",locurl,degscl);
 		if ( len<=sizeof(command) ) {
-			if ( !(url=popen(command,"r")) ) { fprintf(stderr,"Could not check weather stones\n");exit(1); }
+			if ( !(url=popen(command,"r")) ) { 
+				fprintf(stderr,"Could not check weather stones\n");
+				exit(1); 
+			}
 			while ( fgets(line,sizeof(line),url) ) {
-				if ( (match=strstr(line,"point l")) ) { count++; if ( count==2 ) strncpy(coordln,match,63); }
+				if ( (match=strstr(line,"point l")) ) { 
+					count++; 
+					if ( count==2 ) strncpy(coordln,match,63); 
+				}
 				else if ( (match=strstr(line,"area-description")) ) strncpy(reportln,match,95);
 				else if ( (match=strstr(line,"height-units")) ) strncpy(elevln,match,79);
 				else if ( (match=strstr(line,"apparent")) ) strncpy(currentln,match,1999);
@@ -135,21 +148,8 @@ void checkStones(char *location) {
 		}
 		if ( chrepo || chall ) getReporter(reportln,coordln,elevln);
 		if ( !nohaz ) getHazards(hzdln);
-		if ( chcond || chhum || chpres || chtemp || hindex || chvis || chwnd || chall) getConditions(currentln);
-		if ( chfcst ) {//|| chall ) {
-			if ( fcstext ) {
-				printf("Print detailed 7-day forecast.\n");
-				while ( fgets(line,sizeof(line),url) ) {
-					if ( (match=strstr(line,"Overnight")) ) sscanf(line,"%[^\"]",lnfcst[0]);
-					printf("GOD DAMNIT\n");
-				}
-				for ( ind=0;ind<22;ind++ ) {
-					if ( *lnfcst[ind] ) printf("%s\n",lnfcst[i]);
-				}
-			}
-			else {
-				printf("Print basic 7-day forecast.\n");
-			}
+		if ( chcond || chhum || chpres || chtemp || hindex || chvis || chwnd || chall) {
+			getConditions(currentln);
 		}; pclose(url);
 	}
 }
@@ -157,15 +157,21 @@ void checkStones(char *location) {
 void discoverConfig(void) {
 	FILE *rc=NULL;
 	const char *cwd = getenv("PWD");
-	if ( !rc ) { chdir(getenv("XDG_CONFIG_HOME")); if ( chdir("shaman")==0 ) rc = fopen("config","r"); }
-	if ( !rc ) { chdir(getenv("HOME")); rc = fopen(".shamanrc","r"); }
+	if ( !rc ) { 
+		chdir(getenv("XDG_CONFIG_HOME")); 
+		if ( chdir("shaman")==0 ) rc = fopen("config","r"); 
+	}
+	if ( !rc ) { 
+		chdir(getenv("HOME")); 
+		rc = fopen(".shamanrc","r"); 
+	}
 	chdir(cwd);
 	if ( rc ) {
 		while ( fgets(line,sizeof(line),rc) ) {
 			sscanf(line,"Location%*[^\"]\"%[^\"]",defaultLocation);
 			sscanf(line,"Units%*[^\"]%[^\"]",defaultUnits);
 		}; fclose(rc);
-	};
+	}
 	if ( defaultUnits[0]=='M' ) { degscl=1; degunts="C"; }
 }
 
@@ -174,7 +180,10 @@ int main(int argc,char** argv) {
 	discoverConfig();
 	if ( argc==1 ) {
 		if ( !*defaultLocation ) usage(argv[0]);
-		else { chall=1; strncpy(passloc,defaultLocation,40); }
+		else { 
+			chall=1; 
+			strncpy(passloc,defaultLocation,40); 
+		}
 	}
 	for ( i=1; i<argc; i++ ) {
 		if ( argv[i][0]=='-' ) {
@@ -185,8 +194,6 @@ int main(int argc,char** argv) {
 					case 'c': chcond=1; break;
 					case 'd': chhum=1; break;
 				    case 'D': chdp=1; break;
-				    //case 'f': chfcst=1; break;
-				    //case 'F': chfcst=1; fcstext=1; break;
 				    case 'i': degscl=0; degunts="F"; break;
 				    case 'l': hindex=1; break;
 					case 'm': degscl=1; degunts="C"; break;
