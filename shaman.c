@@ -217,7 +217,7 @@ int main(int argc,char** argv) {
 		if ( !isdigit(passloc[d]) ) { ctynm=1; break; }
 	}
 	if ( ctynm ) {
-		if ( *defaultLocation ) strncpy(token,defaultLocation,59);
+		if ( strlen(argv[argc-1])<5 && *defaultLocation ) strncpy(token,defaultLocation,59);
 		else strncpy(token,argv[argc-1],50);
 		strncpy(ptr,strtok(token,delims),59);
 		if ( strstr(ptr,",") ) {
