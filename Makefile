@@ -12,6 +12,9 @@ ${PROG}: ${PROG}.c
 clean:
 	@rm -f ${PROG}
 
+docs:
+	@latex2man man1.tex ${PROG}.1
+
 install:
 	@install -Dm755 ${PROG} ${DESTDIR}${PREFIX}/bin/${PROG}
 	@install -Dm644 ${PROG}.1 ${DESTDIR}${PREFIX}${MANDIR}/man1/${PROG}.1

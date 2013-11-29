@@ -1,70 +1,126 @@
-'\" 
-.\"     Title: shaman
-.\"    Author: [Sam Stuewe]
-.\"      Date: 2013-08-02
-.\"  Language: English
-.\"
-.TH "SHAMAN" "1" "2013-08-02" "\ \& 0\&.2" "\ \&"
-.ie \n(.g .ds Aq \(aq
-.el       .ds Aq '
-.nh
-.ad l
-.\"
-.\" <- Main Content ->
-.SH "NAME"
-shaman \- Fetch basic weather information from the NOAA
-.SH "SYNOPSIS"
-.B shaman
-.BR [ options ]
-.I "\(dqlocation\(dq"
-.SH "DESCRIPTION"
-.sp
-.B shaman 
-is a simple CLI to fetch basic weather information about a given location from the NOAA using 
-.BR curl (1). 
-.sp
-.SH "CONFIGURATION"
-A configuration file may be placed at
-.IR "$XDG_CONFIG_HOME/shaman/config" " or at " "$HOME/.shamanrc"
-which allows for setting a default location and/or selecting whether to print in metric or Imperial units. These settings are defined like so:
-.RS
+'\" t
+.\" Manual page created with latex2man on Fri Nov 29 15:57:19 CST 2013
+.\" NOTE: This file is generated, DO NOT EDIT.
+.de Vb
+.ft CW
+.nf
+..
+.de Ve
+.ft R
 
-Location="location"
+.fi
+..
+.TH "SHAMAN" "1" "29 November 2013" "weather fetcher " "weather fetcher "
+.SH NAME
 
-Units="U"
-.RE
+.PP
+Shaman
+\- Fetch basic weather information from the National Weather Service 
+.PP
+.SH SYNOPSIS
 
-.IR location " can be either a zipcode or as \(dqCity, ST\(dq\&. " U " can either be \(dqM\(dq or \(dqI\(dq\&.
-.\".SH "PLANNED FEATURES"
-.SH "OPTIONS"
-.sp
-.IP -a
-Display all available information\&. Equivalent to -cdDlprtvw\&. Assumed if no options are passed\&.
-.IP -c
-Display current weather conditions\&.
-.IP -d
-Display humidity\&.
-.IP -D
-Display dew-point\&.
-.IP -i
-Display units in Imperial measurements\&. (default)
-.IP -l
-Display heat index\&.
-.IP -m
-Display units in metric measurements\&.
-.IP -p
-Display pressure\&.
-.IP -r
-Display information about the reporting information center\&.
-.IP -t
-Display temperature\&.
-.IP -v
-Display visibility\&.
-.IP -w
-Display wind information\&.
-.IP -z
-Suppress printing of Hazardous and Severe Weather Warnings\&.
-.SH "AUTHOR"
-Sam Stuewe <halosghost at archlinux dot info>
-.SH "SEE ALSO"
-.BR curl (1)
+shaman
+[\fB\-h\fP]
+[\fB\-a\fP]
+[\fB\-i|\-m\fP]
+[\fB\-c\fP]
+[\fB\-d\fP]
+[\fB\-D\fP]
+[\fB\-l\fP]
+[\fB\-p\fP]
+[\fB\-r\fP]
+[\fB\-t\fP]
+[\fB\-v\fP]
+[\fB\-w\fP]
+[\fB\-z\fP]
+\fI"location"\fP
+.PP
+.SH DESCRIPTION
+
+Shaman
+is a very lightweight application to fetch weather information from the National Weather Service using \fIcurl\fP(1)\&.
+.PP
+.SH OPTIONS
+
+.TP
+\fB\-h\fP
+ Print help and exit 
+.TP
+\fB\-a\fP
+ Print all available information 
+(Assumed if no options are passed) 
+.TP
+\fB\-i\fP, \fB\-m\fP
+ Print information using Imperial or Metric units (respectively) 
+.TP
+\fB\-c\fP
+ Print current weather conditions 
+.TP
+\fB\-d\fP
+ Print humidity 
+.TP
+\fB\-D\fP
+ Print dew\-point 
+.TP
+\fB\-l\fP
+ Print heat index 
+.TP
+\fB\-p\fP
+ Print pressure 
+.TP
+\fB\-r\fP
+ Print reporter information 
+.TP
+\fB\-t\fP
+ Print temperature 
+.TP
+\fB\-v\fP
+ Print visibility 
+.TP
+\fB\-w\fP
+ Print wind speed and direction 
+.TP
+\fB\-z\fP
+ Suppress printing of hazardous and severe weather warnings 
+.TP
+\fI"location"\fP
+ Zip code or city name (formatted as "City, ST") of the location to fetch information for 
+.PP
+.SH CONFIGURATION
+
+A very minimal configuration file may be used to tell shaman
+some default values: a default location, and whether to use Imperial or Metric units by default. 
+Shaman
+will look for this config file in the following places in the following order, and will stop searching and load the first file it finds: 
+$XDG_CONFIG_HOME/shaman/config,
+$HOME/.config/shaman/config,
+$HOME/.shamanrc
+.PP
+The config file should be formatted in the following way: 
+.PP
+Location=\fI"location"\fP
+.br
+Units="U" 
+.PP
+As with its command\-line argument counter\-part, \fI"location"\fP
+may be formatted as either the zipcode or name. 
+"U" may be either an "I" or an "M" (for Imperial and Metric respectively). 
+.PP
+.SH AUTHOR
+
+Copyright (C)2012\-2013 Sam Stuewe 
+.br
+License GPLv3: GNU GPL version 3 \fBhttp://gnu.org/licenses/gpl.html\fP
+.br
+This is free software: you are free to change and redistribute it. 
+.br
+There is NO WARRANTY, to the extent permitted by law. 
+.PP
+Bug reports, suggestions and comments may be submitted via GitHub (\fBhttp://github.com/HalosGhost/shaman.git\fP)
+or email (\fBhalosghost@archlinux.info\fP).
+.PP
+.SH SEE ALSO
+
+\fIcurl\fP(1)
+.PP
+.\" NOTE: This file is generated, DO NOT EDIT.
