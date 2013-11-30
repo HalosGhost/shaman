@@ -9,8 +9,6 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <math.h>
-#include <curl/curl.h>
-#include <libconfig.h>
 
 FILE *url;
 char provider[]="http://forecast.weather.gov/zipcity.php";
