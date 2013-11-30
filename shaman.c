@@ -1,7 +1,7 @@
 /****************************************\
 * Fetch weather information from the NWS *
-* Author: 2012-2013 (C) Sam Stuewe	     *
-* License: GPLv3					     *
+* Author: 2012-2013 (C) Sam Stuewe       *
+* License: GPLv2                         *
 \****************************************/
 
 #include <stdio.h>
