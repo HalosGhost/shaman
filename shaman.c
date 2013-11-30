@@ -103,11 +103,6 @@ void usage(char *progname)
 	exit(0);
 }
 
-void invalidOption(int option)
-{   fprintf(stderr, "Unrecognized option: %d\n", option);
-	exit(46);
-}
-
 // Configuration Functions //
 void discoverConfig(void)
 {   printf("Function not yet implemented\n");
