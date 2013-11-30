@@ -11,6 +11,7 @@ ${PROG}: ${PROG}.c
 
 clean:
 	@rm -f ${PROG}
+	@rm -f ${PROG}.1
 
 docs:
 	@latex2man man1.tex ${PROG}.1
