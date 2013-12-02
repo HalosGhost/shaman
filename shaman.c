@@ -16,9 +16,10 @@
 
 // Variables //
 FILE *url;
-static int flag_help, flag_units;
+static int flag_help, flag_metric;
+int defaultUnits;
 char formatString[80],
-	 passloc[80];
+	 passLoc[80];
 
 // Prototypes //
 void usage(char *progname);
@@ -28,6 +29,7 @@ void getData(char *location);
 void getReporter(char *reporterln, char *coordsln, char *elevln);
 void getConditions(char *conditionsln);
 void getHazards(char *hazardln);
+void parseFormat(char *formatStr);
 
 // Main Function //
 int main(int argc, char **argv)
@@ -37,18 +39,19 @@ int main(int argc, char **argv)
 		while (1) 
 		{	static struct option long_options[] = 
 			{   // Long Option Flags //
-				{"help",	  no_argument,		   &flag_help,	  1},
-				{"imperial",  no_argument,		   &flag_units,	  0},
-				{"metric",	  no_argument,		   &flag_units,	  1},
+				{"help",	  no_argument,		   0,	 'h'   },
+				{"imperial",  no_argument,		   0,	 'i'   },
+				{"metric",	  no_argument,		   0,	 'm'   },
 				// Long Option Switches //
-				{"config",	  required_argument,   0,			  'c'},
-				{"format",	  required_argument,   0,			  'f'},
-				{"location",  required_argument,   0,			  'l'},
+				{"config",	  required_argument,   0,	 'c'   },
+				{"format",	  required_argument,   0,	 'f'   },
+				{"location",  required_argument,   0,	 'l'   },
+				{0,			  0,				   0,	 0	   },
 			};
 
 			int option_index = 0; // Stores the option index
 
-			c = getopt_long(argc, argv, "c:f:", long_options, &option_index);
+			c = getopt_long(argc, argv, "hc:if:l:m", long_options, &option_index);
 
 			if ( c == -1 ) break;
 
@@ -61,12 +64,20 @@ int main(int argc, char **argv)
 					parseConfig(optarg);
 					break;
 
+			    case 'i':
+					flag_metric = 0;
+					break;
+
 			    case 'f':
 					strncpy(formatString, optarg, strlen(formatString));
 					break;
 
 			    case 'l':
-					strncpy(passloc, optarg, strlen(passloc));
+					strncpy(passLoc, optarg, strlen(passLoc));
+					break;
+
+			    case 'm':
+					flag_metric = 1;
 					break;
 			}
 		}
@@ -76,37 +87,47 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-// Error Handling Functions //
+// Usage Function //
 void usage(char *progname)
-{   fprintf(stderr, "Usage: %s [-h] [-i|-m] [-f \"<format string>\"] -l \"<location>\"\n\n", progname);
+{   fprintf(stderr, "Usage: %s [-h] [-c configfile] [-i|-m] [-f \"<format string>\"] -l \"<location>\"\n\n", progname);
 	fprintf(stderr, "Options:\n");
-	fprintf(stderr, "  -h, --help                  print help and exit\n");
-	fprintf(stderr, "  -c, --config=filename       use specified config file\n");
-	fprintf(stderr, "  -i, --imperial              use Imperial units (default)\n");
-	fprintf(stderr, "  -m, --metric                use Metric units\n");
-	fprintf(stderr, "  -f, --format=\"FORMAT\"       print weather information according to \"string\"\n");
-	fprintf(stderr, "  -l, --location=\"location\"   print weather information for \"location\"\n");
-	fprintf(stderr, "\nValid escape sequences for FORMAT are as follows:\n\n");
-	fprintf(stderr, "%%%%      A literal percent sign\n");
-	fprintf(stderr, "%%g      A unicode degree sign (°)\n");
-	fprintf(stderr, "%%c      current condition\n");
-	fprintf(stderr, "%%d      humidity\n");
-	fprintf(stderr, "%%D      dew-point\n");
-	fprintf(stderr, "%%h      heat index\n");
-	fprintf(stderr, "%%p      pressure\n");
-	fprintf(stderr, "%%r      reporter name\n");
-	fprintf(stderr, "%%C      reporter coordinates\n");
-	fprintf(stderr, "%%t      temperature\n");
-	fprintf(stderr, "%%v      visibility\n");
-	fprintf(stderr, "%%w      wind speed\n");
-	fprintf(stderr, "%%W      wind direction\n");
+	fprintf(stderr, "  -h, --help                    print help and exit\n");
+	fprintf(stderr, "  -c, --config=filename         use specified config file\n");
+	fprintf(stderr, "  -i, --imperial                use Imperial units (default)\n");
+	fprintf(stderr, "  -m, --metric                  use Metric units\n");
+	fprintf(stderr, "  -f, --format=\"formatString\"   format output according to \"formatString\"\n");
+	fprintf(stderr, "  -l, --location=\"location\"     print weather information for \"location\"\n");
+	fprintf(stderr, "\nSee `man 1 %s` for more information\n", progname);
 	exit(0);
 }
 
-// Configuration Functions //
+/* Configuration Functions //
 void discoverConfig(void)
-{   printf("Function not yet implemented\n");
-}
+{   config_t(cfg);
+	const config_setting_t *Location, *Format, defaultUnits;
+	const char *cwd = getenv("PWD");
+	char *confString = "config";
+
+	if ( !*passLoc && !*formatString && !defaultUnits )
+    {   if ( chdir(getenv("XDG_CONFIG_HOME")) )
+		{	if ( chdir("shaman") ) 
+			{   if ( access("config", R_OK) != -1 ) config_init("config");
+			}
+		}
+		else 
+	    {	chdir(getenv("HOME"));
+			if ( chdir(".config/shaman") ) access("config", R_OK);
+			else 
+			{   access(".shamanrc", R_OK);
+				confString = ".shamanrc";
+			}
+		}
+		config_lookup_string("Location", confString, passLoc);
+		config_lookup_string("Format", confString, formatString);
+		config_lookup_bool("Use_Metric", confString, flag_metric);
+	}
+	chdir(cwd);
+}*/
 
 void parseConfig(char *configFile)
 {   printf("Function not yet implemented\n");
@@ -126,5 +147,9 @@ void getConditions(char *conditionsln)
 }
 
 void getHazards(char *hazardln)
+{   printf("Function not yet implemented\n");
+}
+
+void parseFormat(char *formatStr)
 {   printf("Function not yet implemented\n");
 }
