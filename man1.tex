@@ -1,0 +1,82 @@
+\documentclass{latex2man}
+
+\begin{Name}{1}{shaman}{Sam Stuewe}{weather information}{Shaman - A lightweight tool to fetch weather information from the National Weather Service}
+   \Prog{Shaman} - A lightweight tool to fetch weather information from the National Weather Service
+\end{Name}
+
+\section{Synopsis}
+\Prog{shaman}
+   \oOpt{-h}
+   \oOptArg{-c}{\SP configFile}
+   \oOptArg{-f}{\SP "formatString"}
+   \oOpt{-i|-m}
+   \oOptArg{-l}{\SP "location"}
+
+\section{Description}
+\Prog{Shaman} is a very lightweight application to fetch weather information from the National Weather Service.
+
+\section{Options}
+\begin{description}
+   \item[\Opt{-h}, \Opt{--help}]
+      Print usage information and exit
+   \item[\OptArg{-c}{\SP configFile}, \OptArg{--config=}{configFile}]
+      Specify an alternative config file to be used
+   \item[\OptArg{-f}{\SP "formatString"}, \OptArg{--format=}{"formatString"}]
+      Specify an output format
+   \item[\Opt{-i, --imperial}]
+      Print information using Imperial units
+   \item[\OptArg{-l}{\SP "location"}, \OptArg{--location=}{"location"}]
+      Specify location to query. Note that \Arg{"location"} may be given either as a zipcode or as "City, ST"
+   \item[\Opt{-m, --metric}]
+      Print information using Metric units
+\end{description}
+
+\section{Format}
+The following escapes may be used in the formatString:
+
+\begin{verbatim}
+%%    A literal percent sign
+%g    A unicode degress sign (°)
+%c    Weather condition
+%d    Humidity
+%D    Dew point
+%h    Heat Index
+%p    Pressure
+%r    Reporter Identity
+%R    Reporter Coordinates
+%t    Temperature
+%v    Visibility
+%w    Wind Speed
+%W    Wind Direction
+\end{verbatim}
+Some other basic escape characters may be used such as newline characters (\Bs n) and literal backslashes (\Bs\Bs).
+When used without a specified formatString, \Prog{shaman} will default to the following: "\%r\Bs n\%c (\%t)"
+
+\section{Configuration}
+\Prog{Shaman} can take a small configuration file to provide default values.
+It will look for a config in four locations in the following order stoping and loading the first config it finds:
+
+\File{configFile} (when specified with \Opt{-c})\\
+\File{\$XDG_CONFIG_HOME/shaman/config}\\
+\File{\$HOME/.config/shaman/config}\\
+\File{\$HOME/.shamanrc}
+
+A config file may specify a default formatString, scale (Imperial or Metric) and location.
+A basic config would look like the following:
+
+\OptArg{Format}{\SP =\SP "\Percent r\Bs n\Percent c (\Percent t)"}\\
+\OptArg{Scale}{\SP =\SP "Imperial"}\\
+\OptArg{Location}{\SP =\SP "Chicago, IL"}\\
+
+\section{Author}
+Copyright \copyright 2012-2013 Sam Stuewe\\
+License GPLv2: GNU GPL version 2 \URL{https://www.gnu.org/licenses/gpl-2.0.html} \\
+This is free software: you are free to change and redistribute it. \\
+There is NO WARRANTY, to the extent permitted by law.
+
+Feature requests, bug reports and other comments may be submitted via GitHub (\URL{https://github.com/HalosGhost/shaman.git}) or E-mail (\Email{halosghost@archlinux.info})
+
+\section{See Also}
+\Cmd{libcurl}{3}
+
+\LatexManEnd
