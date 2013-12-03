@@ -50,15 +50,13 @@ The following escapes may be used in the formatString:
 %W    Wind Direction
 \end{verbatim}
 Some other basic escape characters may be used such as newline characters (\Bs n) and literal backslashes (\Bs\Bs).
-When used without a specified formatString, \Prog{shaman} will default to the following: "\%r\Bs n\%c (\%t)"
 
 \section{Configuration}
 \Prog{Shaman} can take a small configuration file to provide default values.
-It will look for a config in four locations in the following order stoping and loading the first config it finds:
+It will look for a config in three locations in the following order stoping and loading the first config it finds:
 
 \File{configFile} (when specified with \Opt{-c})\\
 \File{\$XDG_CONFIG_HOME/shaman/config}\\
-\File{\$HOME/.config/shaman/config}\\
 \File{\$HOME/.shamanrc}
 
 A config file may specify a default formatString, scale (Imperial or Metric) and location.
