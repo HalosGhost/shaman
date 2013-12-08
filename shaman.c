@@ -15,11 +15,12 @@
 #include <getopt.h>
 
 // Variables //
-FILE *url;
 static int flag_help, flag_metric;
 int defaultUnits;
-char formatString[80],
-	 passLoc[80];
+char provider[] = "http://forecast.weather.gov/zipcity.php?inputstring=",
+     formatString[80] = "",
+	 passLoc[80] = "",
+	 confPath[80] = "";
 
 // Prototypes //
 void usage(char *progname);
@@ -29,11 +30,12 @@ void getData(char *location);
 void getReporter(char *reporterln, char *coordsln, char *elevln);
 void getConditions(char *conditionsln);
 void getHazards(char *hazardln);
-void parseFormat(char *formatStr);
+void formatOutput(char *formatStr);
 
 // Main Function //
 int main(int argc, char **argv)
-{   if ( argc > 1 )
+{   //discoverConfig(); // Look for default configuration
+	if ( argc > 1 )
 	{   int c;
 
 		while (1) 
@@ -73,7 +75,7 @@ int main(int argc, char **argv)
 					break;
 
 			    case 'l':
-					strncpy(passLoc, optarg, strlen(passLoc));
+					strncpy(passLoc, optarg, 80);
 					break;
 
 			    case 'm':
@@ -84,58 +86,103 @@ int main(int argc, char **argv)
 	}
 
 	if ( flag_help == 1 ) usage(argv[0]);
+	
+	if ( *passLoc ) getData(passLoc);
+	else
+    {   fprintf(stderr, "No specified location\n");
+		exit(1);
+	}
+
+	// Call other functions for parsing
+
 	return 0;
 }
 
 // Usage Function //
 void usage(char *progname)
-{   fprintf(stderr, "Usage: %s [-h] [-c configfile] [-i|-m] [-f \"<format string>\"] -l \"<location>\"\n\n", progname);
+{   fprintf(stderr, "Usage: %s [-h] [-c /path/to/config] [-i|-m] [-f \"FORMAT\"] [-l \"location\"]\n\n", progname);
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "  -h, --help                    print help and exit\n");
-	fprintf(stderr, "  -c, --config=filename         use specified config file\n");
+	fprintf(stderr, "  -c, --config=/path/to/config  use specified config file\n");
 	fprintf(stderr, "  -i, --imperial                use Imperial units (default)\n");
 	fprintf(stderr, "  -m, --metric                  use Metric units\n");
-	fprintf(stderr, "  -f, --format=\"formatString\"   format output according to \"formatString\"\n");
+	fprintf(stderr, "  -f, --format=\"FORMAT\"         format output according to \"FORMAT\"\n");
 	fprintf(stderr, "  -l, --location=\"location\"     print weather information for \"location\"\n");
 	fprintf(stderr, "\nSee `man 1 %s` for more information\n", progname);
 	exit(0);
 }
 
-/* Configuration Functions //
+// Configuration Functions //
 void discoverConfig(void)
-{   config_t(cfg);
-	const config_setting_t *Location, *Format, defaultUnits;
-	const char *cwd = getenv("PWD");
-	char *confString = "config";
-
-	if ( !*passLoc && !*formatString && !defaultUnits )
-    {   if ( chdir(getenv("XDG_CONFIG_HOME")) )
-		{	if ( chdir("shaman") ) 
-			{   if ( access("config", R_OK) != -1 ) config_init("config");
-			}
-		}
-		else 
-	    {	chdir(getenv("HOME"));
-			if ( chdir(".config/shaman") ) access("config", R_OK);
-			else 
-			{   access(".shamanrc", R_OK);
-				confString = ".shamanrc";
-			}
-		}
-		config_lookup_string("Location", confString, passLoc);
-		config_lookup_string("Format", confString, formatString);
-		config_lookup_bool("Use_Metric", confString, flag_metric);
+{   const char *cwd = getenv("PWD");
+	strncpy(confPath, strcat(getenv("XDG_CONFIG_HOME"), "/shaman/config"), 80);
+	if ( access(confPath, F_OK) == -1 )
+    {   strncpy(confPath, strcat(getenv("HOME"), "/.shamanrc"), 80);
 	}
+	if ( access(confPath, F_OK) != -1 ) parseConfig(confPath);
 	chdir(cwd);
-}*/
+}
 
 void parseConfig(char *configFile)
-{   printf("Function not yet implemented\n");
+{   printf("Configuration Parsing is not yet implemented\n");
+	/*config_t(cfg);
+	const config_setting_t *Location, *Format, defaultUnits;
+	char *confString = "config";
+	config_lookup_string("Location", confString, passLoc);
+	config_lookup_string("Format", confString, formatString);
+	config_lookup_bool("Use_Metric", confString, flag_metric);*/
 }
 
 // Data and Analysis Functions //
 void getData(char *location)
-{   printf("Function not yet implemented\n");
+{   CURL *curl;
+	CURLcode res;
+	char url[256] = "";
+	FILE *suppressOutput = fopen("/dev/null", "wb"),
+		 *xml;
+
+	curl_global_init(CURL_GLOBAL_ALL);
+	curl = curl_easy_init();
+
+	if (curl)
+    {   strncpy(url, provider, strlen(provider));
+		strncat(url, location, 255-strlen(provider));
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, suppressOutput);
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+
+		res = curl_easy_perform(curl);
+		if ( res == CURLE_OK )
+	    {	char *interim;
+			res = curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &interim);
+			strncpy(url, interim, 255);
+			if ( res == CURLE_OK )
+			{   strncat(url, "&FcstType=dwml", 15);
+				curl_easy_setopt(curl, CURLOPT_URL, url);
+				curl_easy_setopt(curl, CURLOPT_WRITEDATA, stdout);
+				res = curl_easy_perform(curl);
+			}
+			else
+			{   fprintf(stderr, "Failed to get weather page (%s)\n", curl_easy_strerror(res));
+			}
+		}
+		else
+	    {	fprintf(stderr, "Failed to get location (%s)\n", curl_easy_strerror(res));
+		}
+	}
+
+	fclose(suppressOutput);
+	curl_easy_cleanup(curl);
+	curl_global_cleanup();
+
+	// Parse XML file
+	// Call getReporter(), getConditions() and getHazards() if needed
+
+	if ( *formatString ) formatOutput(formatString);
+	else
+    {   fprintf(stderr, "No specified format\n");
+		exit(1);
+	}
 }
 
 void getReporter(char *reporterln, char *coordsln, char *elevln)
@@ -150,6 +197,73 @@ void getHazards(char *hazardln)
 {   printf("Function not yet implemented\n");
 }
 
-void parseFormat(char *formatStr)
-{   printf("Function not yet implemented\n");
+void formatOutput(char *formatStr)
+{   for ( ; *formatStr; ++formatStr)
+    {   if ( *formatStr == '%' )
+		{   if ( *formatStr == '0' ) formatStr++;
+
+			switch (*++formatStr)
+			{   case '\0':
+				    --formatStr;
+					break;
+				
+				case 'c':
+					// condition
+					continue;
+				
+				case 'd':
+					// humidity
+					continue;
+				
+				case 'D':
+					// dew point
+					continue;
+				
+				case 'h':
+					// heat index
+					continue;
+
+			    case 'H':
+					// hazard warnings
+					continue;
+				
+				case 'p':
+					// pressure
+					continue;
+				
+				case 'P':
+					// probability of precipitation
+					continue;
+				
+				case 'r':
+					// reporter identity
+					continue;
+				
+				case 'R':
+					// reporter coordinates
+					continue;
+				
+				case 't':
+					// temperature
+					continue;
+				
+				case 'v':
+					// visibility
+					continue;
+				
+				case 'w':
+					// wind speed
+					continue;
+				
+				case 'W':
+					// wind direction
+					continue;
+
+				case '%':
+				case 'g':
+				default:
+					break;
+			}
+		}
+	}
 }

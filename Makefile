@@ -3,7 +3,7 @@ PROG		=	shaman
 PREFIX	?=	/usr
 VER		=	0.1
 MANDIR	?=	/share/man
-LIBS		= -lm
+LIBS		= -lm -lcurl
 
 ${PROG}: ${PROG}.c
 	@${CC} ${CFLAGS} ${LIBS} -o ${PROG} ${PROG}.c

@@ -7,8 +7,8 @@
 \section{Synopsis}
 \Prog{shaman}
    \oOpt{-h}
-   \oOptArg{-c}{\SP configFile}
-   \oOptArg{-f}{\SP "formatString"}
+   \oOptArg{-c}{\SP filename}
+   \oOptArg{-f}{\SP "format"}
    \oOpt{-i|-m}
    \oOptArg{-l}{\SP "location"}
 
@@ -19,9 +19,9 @@
 \begin{description}
    \item[\Opt{-h}, \Opt{--help}]
       Print usage information and exit
-   \item[\OptArg{-c}{\SP configFile}, \OptArg{--config=}{configFile}]
+   \item[\OptArg{-c}{\SP filename}, \OptArg{--config=}{filename}]
       Specify an alternative config file to be used
-   \item[\OptArg{-f}{\SP "formatString"}, \OptArg{--format=}{"formatString"}]
+   \item[\OptArg{-f}{\SP "format"}, \OptArg{--format=}{"format"}]
       Specify an output format
    \item[\Opt{-i, --imperial}]
       Print information using Imperial units
@@ -38,10 +38,12 @@ The following escapes may be used in the formatString:
 %%    A literal percent sign
 %g    A unicode degress sign (°)
 %c    Weather condition
-%d    Humidity
+%d    Relative Humidity
 %D    Dew point
 %h    Heat Index
+%H    Hazard Warnings
 %p    Pressure
+%P    Probability of precipitation
 %r    Reporter Identity
 %R    Reporter Coordinates
 %t    Temperature
@@ -55,8 +57,8 @@ Some other basic escape characters may be used such as newline characters (\Bs n
 \Prog{Shaman} can take a small configuration file to provide default values.
 It will look for a config in three locations in the following order stoping and loading the first config it finds:
 
-\File{configFile} (when specified with \Opt{-c})\\
-\File{\$XDG_CONFIG_HOME/shaman/config}\\
+\File{filename} (when specified with \Opt{-c})\\
+\File{\$XDG\_CONFIG\_HOME/shaman/config}\\
 \File{\$HOME/.shamanrc}
 
 A config file may specify a default formatString, scale (Imperial or Metric) and location.
