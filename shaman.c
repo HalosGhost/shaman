@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 
 // Usage Function //
 void usage(char *progname)
-{   fprintf(stderr, "Usage: %s [-h] [-c /path/to/config] [-i|-m] [-f \"FORMAT\"] [-l \"location\"]\n\n", progname);
+{   fprintf(stderr, "Usage: %s [options]\n\n", progname);
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "  -h, --help                    print help and exit\n");
 	fprintf(stderr, "  -c, --config=/path/to/config  use specified config file\n");
@@ -135,32 +135,32 @@ void parseConfig(char *configFile)
 
 // Data and Analysis Functions //
 void getData(char *location)
-{   CURL *curl;
+{   CURL *handle;
 	CURLcode res;
 	char url[256] = "";
 	FILE *suppressOutput = fopen("/dev/null", "wb"),
 		 *xml;
 
 	curl_global_init(CURL_GLOBAL_ALL);
-	curl = curl_easy_init();
+	handle = curl_easy_init();
 
-	if (curl)
+	if (handle)
     {   strncpy(url, provider, strlen(provider));
 		strncat(url, location, 255-strlen(provider));
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, suppressOutput);
-		curl_easy_setopt(curl, CURLOPT_URL, url);
-		curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+		curl_easy_setopt(handle, CURLOPT_WRITEDATA, suppressOutput);
+		curl_easy_setopt(handle, CURLOPT_URL, url);
+		curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1);
 
-		res = curl_easy_perform(curl);
+		res = curl_easy_perform(handle);
 		if ( res == CURLE_OK )
 	    {	char *interim;
-			res = curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &interim);
+			res = curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &interim);
 			strncpy(url, interim, 255);
 			if ( res == CURLE_OK )
 			{   strncat(url, "&FcstType=dwml", 15);
-				curl_easy_setopt(curl, CURLOPT_URL, url);
-				curl_easy_setopt(curl, CURLOPT_WRITEDATA, stdout);
-				res = curl_easy_perform(curl);
+				curl_easy_setopt(handle, CURLOPT_URL, url);
+				curl_easy_setopt(handle, CURLOPT_WRITEDATA, stdout);
+				res = curl_easy_perform(handle);
 			}
 			else
 			{   fprintf(stderr, "Failed to get weather page (%s)\n", curl_easy_strerror(res));
@@ -172,7 +172,7 @@ void getData(char *location)
 	}
 
 	fclose(suppressOutput);
-	curl_easy_cleanup(curl);
+	curl_easy_cleanup(handle);
 	curl_global_cleanup();
 
 	// Parse XML file
@@ -260,7 +260,6 @@ void formatOutput(char *formatStr)
 					continue;
 
 				case '%':
-				case 'g':
 				default:
 					break;
 			}
