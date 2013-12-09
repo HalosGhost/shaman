@@ -139,7 +139,7 @@ void getData(char *location)
 	CURLcode res;
 	char url[256] = "";
 	FILE *suppressOutput = fopen("/dev/null", "wb"),
-		 *xml;
+		 *xml = fopen("/tmp/weather.xml","w");
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	handle = curl_easy_init();
@@ -159,7 +159,7 @@ void getData(char *location)
 			if ( res == CURLE_OK )
 			{   strncat(url, "&FcstType=dwml", 15);
 				curl_easy_setopt(handle, CURLOPT_URL, url);
-				curl_easy_setopt(handle, CURLOPT_WRITEDATA, stdout);
+				curl_easy_setopt(handle, CURLOPT_WRITEDATA, xml);
 				res = curl_easy_perform(handle);
 			}
 			else
@@ -172,6 +172,7 @@ void getData(char *location)
 	}
 
 	fclose(suppressOutput);
+	fclose(xml);
 	curl_easy_cleanup(handle);
 	curl_global_cleanup();
 
