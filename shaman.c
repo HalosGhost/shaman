@@ -97,7 +97,6 @@ void usage(void)
 Usage: shaman [options]\n\n\
 Options:\n\
   -h, --help                    print help and exit\n\
-  -c, --config=/path/to/config  use specified config file\n\
   -i, --imperial                use Imperial units (default)\n\
   -m, --metric                  use Metric units\n\
   -f, --format=\"FORMAT\"         format output according to \"FORMAT\"\n\
