@@ -13,6 +13,8 @@
 #include <curl/curl.h>
 #include <libconfig.h>
 #include <getopt.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
 // Variables //
 static int flag_help, flag_metric;
@@ -20,16 +22,16 @@ int defaultUnits;
 char provider[] = "http://forecast.weather.gov/zipcity.php?inputstring=",
      formatString[80] = "",
 	 passLoc[80] = "",
-	 confPath[80] = "";
+	 confPath[80] = "",
+	 tempweather[] = "/tmp/weather.xml";
 
 // Prototypes //
-void usage(char *progname);
+void usage(void);
 void discoverConfig(void);
 void parseConfig(char *configfile);
 void getData(char *location);
-void getReporter(char *reporterln, char *coordsln, char *elevln);
-void getConditions(char *conditionsln);
-void getHazards(char *hazardln);
+void parseFile(char *tempweather);
+void parseData(xmlDocPtr weather, xmlNodePtr cur);
 void formatOutput(char *formatStr);
 
 // Main Function //
@@ -85,7 +87,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if ( flag_help == 1 ) usage(argv[0]);
+	if ( flag_help == 1 ) usage();
 	
 	if ( *passLoc ) getData(passLoc);
 	else
@@ -99,16 +101,18 @@ int main(int argc, char **argv)
 }
 
 // Usage Function //
-void usage(char *progname)
-{   fprintf(stderr, "Usage: %s [options]\n\n", progname);
-	fprintf(stderr, "Options:\n");
-	fprintf(stderr, "  -h, --help                    print help and exit\n");
-	fprintf(stderr, "  -c, --config=/path/to/config  use specified config file\n");
-	fprintf(stderr, "  -i, --imperial                use Imperial units (default)\n");
-	fprintf(stderr, "  -m, --metric                  use Metric units\n");
-	fprintf(stderr, "  -f, --format=\"FORMAT\"         format output according to \"FORMAT\"\n");
-	fprintf(stderr, "  -l, --location=\"location\"     print weather information for \"location\"\n");
-	fprintf(stderr, "\nSee `man 1 %s` for more information\n", progname);
+
+void usage(void)
+{   fputs("\
+Usage: shaman [options]\n\n\
+Options:\n\
+  -h, --help                    print help and exit\n\
+  -c, --config=/path/to/config  use specified config file\n\
+  -i, --imperial                use Imperial units (default)\n\
+  -m, --metric                  use Metric units\n\
+  -f, --format=\"FORMAT\"         format output according to \"FORMAT\"\n\
+  -l, --location=\"location\"     print weather information for \"location\"\n\n\
+See `man 1 shaman` for more information\n", stderr);
 	exit(0);
 }
 
@@ -139,7 +143,7 @@ void getData(char *location)
 	CURLcode res;
 	char url[256] = "";
 	FILE *suppressOutput = fopen("/dev/null", "wb"),
-		 *xml = fopen("/tmp/weather.xml","w");
+		 *xml = fopen(tempweather,"w");
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	handle = curl_easy_init();
@@ -178,6 +182,8 @@ void getData(char *location)
 
 	// Parse XML file
 	// Call getReporter(), getConditions() and getHazards() if needed
+	
+	if ( access(tempweather, F_OK) != -1 ) parseFile(tempweather);
 
 	if ( *formatString ) formatOutput(formatString);
 	else
@@ -186,16 +192,56 @@ void getData(char *location)
 	}
 }
 
-void getReporter(char *reporterln, char *coordsln, char *elevln)
-{   printf("Function not yet implemented\n");
+void parseFile(char *tempweather)
+{   xmlDocPtr weather;
+	xmlNodePtr cur;
+
+	weather = xmlParseFile(tempweather);
+
+	if ( !weather )
+    {   fprintf(stderr, "Failed to parse weather data\n");
+		exit(1);
+	}
+
+	cur = xmlDocGetRootElement(weather);
+
+	if ( !cur )
+    {   fprintf(stderr, "Weather file is empty\n");
+		xmlFreeDoc(weather);
+		exit(1);
+	}
+
+	if ( xmlStrcmp((const xmlChar *) cur->name, (const xmlChar *) "dwml") )
+    {   fprintf(stderr, "Fetched wrong file\nNode named \"%s\"", cur->name);
+		xmlFreeDoc(weather);
+		exit(1);
+	}
+
+	cur = cur->xmlChildrenNode;
+
+	while ( cur )
+    {   if ( !xmlStrcmp((const xmlChar *) cur->name, (const xmlChar *) "head") )
+		{	parseData(weather, cur);
+		}
+
+		cur = cur->next;
+	}
+
+	xmlFreeDoc(weather);
 }
 
-void getConditions(char *conditionsln)
-{   printf("Function not yet implemented\n");
-}
+void parseData(xmlDocPtr weather, xmlNodePtr cur)
+{   xmlChar *datum;
+	cur = cur->xmlChildrenNode;
 
-void getHazards(char *hazardln)
-{   printf("Function not yet implemented\n");
+	while ( cur )
+    {   if ( !xmlStrcmp((const xmlChar *) cur->name, (const xmlChar *) "description") )
+		{	datum = xmlNodeListGetString(weather, cur->xmlChildrenNode, 1);
+			printf("datum: %s\n", datum);
+			xmlFree(datum);
+		}
+		cur = cur->next;
+	}
 }
 
 void formatOutput(char *formatStr)

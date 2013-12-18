@@ -3,11 +3,12 @@ PROG		=	shaman
 PREFIX	?=	/usr
 VER		=	0.1
 MANDIR	?=	/share/man
-LIBS		= -lm -lcurl
+LIBS		= -lm -lcurl -lxml2
+INCLUDE	= -I/usr/include/libxml2
 
 ${PROG}: ${PROG}.c
-	@${CC} ${CFLAGS} ${LIBS} -o ${PROG} ${PROG}.c
-	@strip ${PROG}
+	@${CC} ${INCLUDE} ${CFLAGS} ${LIBS} -o ${PROG} ${PROG}.c
+#	@strip ${PROG}
 
 clean:
 	@rm -f ${PROG}
