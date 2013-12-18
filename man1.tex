@@ -7,7 +7,6 @@
 \section{Synopsis}
 \Prog{shaman}
    \oOpt{-h}
-   \oOptArg{-c}{\SP filename}
    \oOptArg{-f}{\SP "format"}
    \oOpt{-i|-m}
    \oOptArg{-l}{\SP "location"}
@@ -19,8 +18,6 @@
 \begin{description}
    \item[\Opt{-h}, \Opt{--help}]
       Print usage information and exit
-   \item[\OptArg{-c}{\SP filename}, \OptArg{--config=}{filename}]
-      Specify an alternative config file to be used
    \item[\OptArg{-f}{\SP "format"}, \OptArg{--format=}{"format"}]
       Specify an output format
    \item[\Opt{-i, --imperial}]
@@ -51,21 +48,6 @@ The following escapes may be used in the formatString:
 %W    Wind Direction
 \end{verbatim}
 Some other basic escape characters may be used such as newline characters (\Bs n) and literal backslashes (\Bs\Bs).
-
-\section{Configuration}
-\Prog{Shaman} can take a small configuration file to provide default values.
-It will look for a config in three locations in the following order stoping and loading the first config it finds:
-
-\File{filename} (when specified with \Opt{-c})\\
-\File{\$XDG\_CONFIG\_HOME/shaman/config}\\
-\File{\$HOME/.shamanrc}
-
-A config file may specify a default formatString, scale (Imperial or Metric) and location.
-A basic config would look like the following:
-
-\OptArg{Format}{\SP =\SP "\Percent r\Bs n\Percent c (\Percent t)"}\\
-\OptArg{Scale}{\SP =\SP "Imperial"}\\
-\OptArg{Location}{\SP =\SP "Chicago, IL"}\\
 
 \section{Author}
 Copyright \copyright 2012-2013 Sam Stuewe\\

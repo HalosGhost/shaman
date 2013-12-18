@@ -11,7 +11,6 @@
 #include <ctype.h>
 #include <math.h>
 #include <curl/curl.h>
-#include <libconfig.h>
 #include <getopt.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -22,13 +21,10 @@ int defaultUnits;
 char provider[] = "http://forecast.weather.gov/zipcity.php?inputstring=",
      formatString[80] = "",
 	 passLoc[80] = "",
-	 confPath[80] = "",
 	 tempweather[] = "/tmp/weather.xml";
 
 // Prototypes //
 void usage(void);
-void discoverConfig(void);
-void parseConfig(char *configfile);
 void getData(char *location);
 void parseFile(char *tempweather);
 void parseData(xmlDocPtr weather, xmlNodePtr cur);
@@ -36,8 +32,7 @@ void formatOutput(char *formatStr);
 
 // Main Function //
 int main(int argc, char **argv)
-{   //discoverConfig(); // Look for default configuration
-	if ( argc > 1 )
+{   if ( argc > 1 )
 	{   int c;
 
 		while (1) 
@@ -47,7 +42,6 @@ int main(int argc, char **argv)
 				{"imperial",  no_argument,		   0,	 'i'   },
 				{"metric",	  no_argument,		   0,	 'm'   },
 				// Long Option Switches //
-				{"config",	  required_argument,   0,	 'c'   },
 				{"format",	  required_argument,   0,	 'f'   },
 				{"location",  required_argument,   0,	 'l'   },
 				{0,			  0,				   0,	 0	   },
@@ -55,7 +49,7 @@ int main(int argc, char **argv)
 
 			int option_index = 0; // Stores the option index
 
-			c = getopt_long(argc, argv, "hc:if:l:m", long_options, &option_index);
+			c = getopt_long(argc, argv, "hif:l:m", long_options, &option_index);
 
 			if ( c == -1 ) break;
 
@@ -64,10 +58,6 @@ int main(int argc, char **argv)
 				    flag_help = 1;
 					break;
 				
-				case 'c':
-					parseConfig(optarg);
-					break;
-
 			    case 'i':
 					flag_metric = 0;
 					break;
@@ -114,27 +104,6 @@ Options:\n\
   -l, --location=\"location\"     print weather information for \"location\"\n\n\
 See `man 1 shaman` for more information\n", stderr);
 	exit(0);
-}
-
-// Configuration Functions //
-void discoverConfig(void)
-{   const char *cwd = getenv("PWD");
-	strncpy(confPath, strcat(getenv("XDG_CONFIG_HOME"), "/shaman/config"), 80);
-	if ( access(confPath, F_OK) == -1 )
-    {   strncpy(confPath, strcat(getenv("HOME"), "/.shamanrc"), 80);
-	}
-	if ( access(confPath, F_OK) != -1 ) parseConfig(confPath);
-	chdir(cwd);
-}
-
-void parseConfig(char *configFile)
-{   printf("Configuration Parsing is not yet implemented\n");
-	/*config_t(cfg);
-	const config_setting_t *Location, *Format, defaultUnits;
-	char *confString = "config";
-	config_lookup_string("Location", confString, passLoc);
-	config_lookup_string("Format", confString, formatString);
-	config_lookup_bool("Use_Metric", confString, flag_metric);*/
 }
 
 // Data and Analysis Functions //
