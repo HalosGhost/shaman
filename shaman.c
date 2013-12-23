@@ -29,6 +29,7 @@ void getData(char *location);
 void parseFile(char *tempweather);
 void parseData(xmlDocPtr weather, xmlNodePtr cur);
 void formatOutput(char *formatStr);
+// Add url-encoding for non-zip locations: http://www.geekhideout.com/urlcode.shtml
 
 // Main Function //
 int main(int argc, char **argv)
@@ -63,11 +64,11 @@ int main(int argc, char **argv)
 					break;
 
 			    case 'f':
-					strncpy(formatString, optarg, strlen(formatString));
+					snprintf(formatString, sizeof(formatString), "%s", optarg);
 					break;
 
 			    case 'l':
-					strncpy(passLoc, optarg, 80);
+					snprintf(passLoc, sizeof(passLoc), "%s", optarg);
 					break;
 
 			    case 'm':
@@ -117,8 +118,7 @@ void getData(char *location)
 	handle = curl_easy_init();
 
 	if (handle)
-    {   strncpy(url, provider, strlen(provider));
-		strncat(url, location, 255-strlen(provider));
+    {   snprintf(url, sizeof(url), "%s%s%s", url, provider, location);
 		curl_easy_setopt(handle, CURLOPT_WRITEDATA, suppressOutput);
 		curl_easy_setopt(handle, CURLOPT_URL, url);
 		curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1);
@@ -127,10 +127,9 @@ void getData(char *location)
 		if ( res == CURLE_OK )
 	    {	char *interim;
 			res = curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &interim);
-			strncpy(url, interim, 255);
+			snprintf(url, sizeof(url), "%s&FcstType=dwml", interim);
 			if ( res == CURLE_OK )
-			{   strncat(url, "&FcstType=dwml", 15);
-				curl_easy_setopt(handle, CURLOPT_URL, url);
+			{   curl_easy_setopt(handle, CURLOPT_URL, url);
 				curl_easy_setopt(handle, CURLOPT_WRITEDATA, xml);
 				res = curl_easy_perform(handle);
 			}
