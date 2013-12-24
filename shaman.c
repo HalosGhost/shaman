@@ -25,10 +25,10 @@ char passLoc[BUFFER_SIZE] = {'\0'};
 
 // Prototypes //
 static void _usage(void);
-static void _getData(const char *location);
-static void _parseFile(const char *tempWeather);
+static void _getData(const char * location, const int scale);
+static void _parseFile(const char * tempWeather);
 static void _parseData(xmlDocPtr weather, xmlNodePtr cur);
-static void _formatOutput(char *formatStr);
+static void _formatOutput(char * formatStr);
 
 // Main Function //
 int main(int argc, char **argv)
@@ -101,14 +101,14 @@ int main(int argc, char **argv)
 				pass++;
 			}
 			*buff = '\0';
-			_getData(buffer);
+			_getData(buffer, flag_metric);
 			free(buffer);
 		}
 		else if ( sl > 99999 || sl < 00000 )
 	    {	fprintf(stderr, "Invalid zip code: %ld\n", sl);
 			exit(1);
 		}
-		else _getData((char * )passLoc);
+		else _getData((char * )passLoc, flag_metric);
 	}
 	else
     {   fprintf(stderr, "No specified location\n");
@@ -136,7 +136,7 @@ See `man 1 shaman` for more information\n", stderr);
 }
 
 // Data and Analysis Functions //
-void _getData(const char *location)
+void _getData(const char * location, const int scale)
 {   CURL * handle;
 	CURLcode res;
 	char url[256] = "";
@@ -156,7 +156,10 @@ void _getData(const char *location)
 		if ( res == CURLE_OK )
 	    {	char * interim;
 			res = curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &interim);
-			snprintf(url, sizeof(url), "%s&FcstType=dwml", interim);
+
+			if ( scale == 1 ) snprintf(url, sizeof(url), "%s&FcstType=dwml&unit=1", interim);
+			else snprintf(url, sizeof(url), "%s&FcstType=dwml&unit=0", interim);
+
 			if ( res == CURLE_OK )
 			{   curl_easy_setopt(handle, CURLOPT_URL, url);
 				curl_easy_setopt(handle, CURLOPT_WRITEDATA, xml);
