@@ -29,7 +29,6 @@ static void _getData(const char *location);
 static void _parseFile(const char *tempWeather);
 static void _parseData(xmlDocPtr weather, xmlNodePtr cur);
 static void _formatOutput(char *formatStr);
-// Add url-encoding for non-zip locations: http://www.geekhideout.com/urlcode.shtml
 
 // Main Function //
 int main(int argc, char **argv)
@@ -83,7 +82,34 @@ int main(int argc, char **argv)
 
 	if ( flag_help == 1 ) _usage();
 	
-	if ( *passLoc ) _getData(passLoc);
+	if ( *passLoc ) // Inspiration: http://www.geekhideout.com/urlcode.shtml
+    {   char * end;
+		const long sl = strtol(passLoc, &end, 10);
+
+		if ( end == passLoc )
+	    {	char * pass = passLoc;
+			char * buffer = malloc(strlen(passLoc) * 3 + 1);
+			char * buff = buffer;
+
+			while ( *pass )
+			{   if ( isalnum(*pass) ||\
+					 *pass == '-' ||
+					 *pass == '.' ||
+					 *pass == ',' ) *buff++ = *pass;
+
+				else if ( *pass == ' ' ) *buff++ = '+';
+				pass++;
+			}
+			*buff = '\0';
+			_getData(buffer);
+			free(buffer);
+		}
+		else if ( sl > 99999 || sl < 00000 )
+	    {	fprintf(stderr, "Invalid zip code: %ld\n", sl);
+			exit(1);
+		}
+		else _getData((char * )passLoc);
+	}
 	else
     {   fprintf(stderr, "No specified location\n");
 		exit(1);
@@ -111,11 +137,11 @@ See `man 1 shaman` for more information\n", stderr);
 
 // Data and Analysis Functions //
 void _getData(const char *location)
-{   CURL *handle;
+{   CURL * handle;
 	CURLcode res;
 	char url[256] = "";
-	FILE *suppressOutput = fopen("/dev/null", "wb"),
-		 *xml = fopen(tempWeather,"w");
+	FILE * suppressOutput = fopen("/dev/null", "wb");
+	FILE * xml = fopen(tempWeather,"w");
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	handle = curl_easy_init();
@@ -128,7 +154,7 @@ void _getData(const char *location)
 
 		res = curl_easy_perform(handle);
 		if ( res == CURLE_OK )
-	    {	char *interim;
+	    {	char * interim;
 			res = curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &interim);
 			snprintf(url, sizeof(url), "%s&FcstType=dwml", interim);
 			if ( res == CURLE_OK )
@@ -181,7 +207,7 @@ void _parseFile(const char * tempWeather)
 		exit(1);
 	}
 
-	if ( xmlStrcmp((const xmlChar *) cur->name, (const xmlChar *) "dwml") )
+	if ( xmlStrcmp((const xmlChar * )cur->name, (const xmlChar * )"dwml") )
     {   fprintf(stderr, "Fetched wrong file\nNode named \"%s\"", cur->name);
 		xmlFreeDoc(weather);
 		exit(1);
@@ -190,7 +216,7 @@ void _parseFile(const char * tempWeather)
 	cur = cur->xmlChildrenNode;
 
 	while ( cur )
-    {   if ( !xmlStrcmp((const xmlChar *) cur->name, (const xmlChar *) "head") )
+    {   if ( !xmlStrcmp((const xmlChar * )cur->name, (const xmlChar * )"head") )
 		{	_parseData(weather, cur);
 		}
 
@@ -205,7 +231,7 @@ void _parseData(xmlDocPtr weather, xmlNodePtr cur)
 	cur = cur->xmlChildrenNode;
 
 	while ( cur )
-    {   if ( !xmlStrcmp((const xmlChar *) cur->name, (const xmlChar *) "description") )
+    {   if ( !xmlStrcmp((const xmlChar * )cur->name, (const xmlChar * )"description") )
 		{	datum = xmlNodeListGetString(weather, cur->xmlChildrenNode, 1);
 			printf("datum: %s\n", datum);
 			xmlFree(datum);
@@ -214,7 +240,7 @@ void _parseData(xmlDocPtr weather, xmlNodePtr cur)
 	}
 }
 
-void _formatOutput(char *formatStr)
+void _formatOutput(char * formatStr)
 {   for ( ; *formatStr; ++formatStr)
     {   if ( *formatStr == '%' )
 		{   if ( *formatStr == '0' ) formatStr++;
