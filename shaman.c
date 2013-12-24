@@ -93,8 +93,8 @@ int main(int argc, char **argv)
 
 			while ( *pass )
 			{   if ( isalnum(*pass) ||\
-					 *pass == '-' ||
-					 *pass == '.' ||
+					 *pass == '-' ||\
+					 *pass == '.' ||\
 					 *pass == ',' ) *buff++ = *pass;
 
 				else if ( *pass == ' ' ) *buff++ = '+';
