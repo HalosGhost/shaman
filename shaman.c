@@ -15,25 +15,28 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
+#define BUFFER_SIZE 80
+
 // Variables //
-static int flag_help, flag_metric;
-int defaultUnits;
-char provider[] = "http://forecast.weather.gov/zipcity.php?inputstring=",
-     formatString[80] = "",
-	 passLoc[80] = "",
-	 tempweather[] = "/tmp/weather.xml";
+const char * tempWeather = "/tmp/weather.xml";
+
+char formatString[BUFFER_SIZE] = {'\0'};
+char passLoc[BUFFER_SIZE] = {'\0'};
 
 // Prototypes //
-void usage(void);
-void getData(char *location);
-void parseFile(char *tempweather);
-void parseData(xmlDocPtr weather, xmlNodePtr cur);
-void formatOutput(char *formatStr);
+static void _usage(void);
+static void _getData(const char *location);
+static void _parseFile(const char *tempWeather);
+static void _parseData(xmlDocPtr weather, xmlNodePtr cur);
+static void _formatOutput(char *formatStr);
 // Add url-encoding for non-zip locations: http://www.geekhideout.com/urlcode.shtml
 
 // Main Function //
 int main(int argc, char **argv)
-{   if ( argc > 1 )
+{   static int flag_help;
+	static int flag_metric;
+
+	if ( argc > 1 )
 	{   int c;
 
 		while (1) 
@@ -53,7 +56,7 @@ int main(int argc, char **argv)
 			c = getopt_long(argc, argv, "hif:l:m", long_options, &option_index);
 
 			if ( c == -1 ) break;
-
+			
 			switch (c)
 			{   case 'h':
 				    flag_help = 1;
@@ -78,9 +81,9 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if ( flag_help == 1 ) usage();
+	if ( flag_help == 1 ) _usage();
 	
-	if ( *passLoc ) getData(passLoc);
+	if ( *passLoc ) _getData(passLoc);
 	else
     {   fprintf(stderr, "No specified location\n");
 		exit(1);
@@ -93,7 +96,7 @@ int main(int argc, char **argv)
 
 // Usage Function //
 
-void usage(void)
+void _usage(void)
 {   fputs("\
 Usage: shaman [options]\n\n\
 Options:\n\
@@ -107,18 +110,18 @@ See `man 1 shaman` for more information\n", stderr);
 }
 
 // Data and Analysis Functions //
-void getData(char *location)
+void _getData(const char *location)
 {   CURL *handle;
 	CURLcode res;
 	char url[256] = "";
 	FILE *suppressOutput = fopen("/dev/null", "wb"),
-		 *xml = fopen(tempweather,"w");
+		 *xml = fopen(tempWeather,"w");
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	handle = curl_easy_init();
 
 	if (handle)
-    {   snprintf(url, sizeof(url), "%s%s%s", url, provider, location);
+    {   snprintf(url, sizeof(url), "http://forecast.weather.gov/zipcity.php?inputstring=%s", location);
 		curl_easy_setopt(handle, CURLOPT_WRITEDATA, suppressOutput);
 		curl_easy_setopt(handle, CURLOPT_URL, url);
 		curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1);
@@ -150,20 +153,20 @@ void getData(char *location)
 	// Parse XML file
 	// Call getReporter(), getConditions() and getHazards() if needed
 	
-	if ( access(tempweather, F_OK) != -1 ) parseFile(tempweather);
+	if ( access(tempWeather, F_OK) != -1 ) _parseFile(tempWeather);
 
-	if ( *formatString ) formatOutput(formatString);
+	if ( *formatString ) _formatOutput(formatString);
 	else
     {   fprintf(stderr, "No specified format\n");
 		exit(1);
 	}
 }
 
-void parseFile(char *tempweather)
+void _parseFile(const char * tempWeather)
 {   xmlDocPtr weather;
 	xmlNodePtr cur;
 
-	weather = xmlParseFile(tempweather);
+	weather = xmlParseFile(tempWeather);
 
 	if ( !weather )
     {   fprintf(stderr, "Failed to parse weather data\n");
@@ -188,7 +191,7 @@ void parseFile(char *tempweather)
 
 	while ( cur )
     {   if ( !xmlStrcmp((const xmlChar *) cur->name, (const xmlChar *) "head") )
-		{	parseData(weather, cur);
+		{	_parseData(weather, cur);
 		}
 
 		cur = cur->next;
@@ -197,7 +200,7 @@ void parseFile(char *tempweather)
 	xmlFreeDoc(weather);
 }
 
-void parseData(xmlDocPtr weather, xmlNodePtr cur)
+void _parseData(xmlDocPtr weather, xmlNodePtr cur)
 {   xmlChar *datum;
 	cur = cur->xmlChildrenNode;
 
@@ -211,7 +214,7 @@ void parseData(xmlDocPtr weather, xmlNodePtr cur)
 	}
 }
 
-void formatOutput(char *formatStr)
+void _formatOutput(char *formatStr)
 {   for ( ; *formatStr; ++formatStr)
     {   if ( *formatStr == '%' )
 		{   if ( *formatStr == '0' ) formatStr++;
