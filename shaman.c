@@ -17,18 +17,16 @@
 
 #define BUFFER_SIZE 80
 
-// Variables //
-const char * tempWeather = "/tmp/weather.xml";
-
 char formatString[BUFFER_SIZE] = {'\0'};
 char passLoc[BUFFER_SIZE] = {'\0'};
 
 // Prototypes //
 static void _usage(void);
 static void _getData(const char * location, const int scale);
-static void _parseFile(const char * tempWeather);
+static void _parseDataInBuffer(const char * buffer,int buffer_size);
 static void _parseData(xmlDocPtr weather, xmlNodePtr cur);
 static void _formatOutput(char * formatStr);
+static size_t _writeDataToBuffer( char *ptr, size_t size, size_t nmemb, void *userdata) ;
 
 // Main Function //
 int main(int argc, char **argv)
@@ -38,8 +36,8 @@ int main(int argc, char **argv)
 	if ( argc > 1 )
 	{   int c;
 
-		while (1) 
-		{	static struct option long_options[] = 
+		while (1)
+		{	static struct option long_options[] =
 			{   // Long Option Flags //
 				{"help",	  no_argument,		   0,	 'h'   },
 				{"imperial",  no_argument,		   0,	 'i'   },
@@ -55,12 +53,12 @@ int main(int argc, char **argv)
 			c = getopt_long(argc, argv, "hif:l:m", long_options, &option_index);
 
 			if ( c == -1 ) break;
-			
+
 			switch (c)
 			{   case 'h':
 				    flag_help = 1;
 					break;
-				
+
 			    case 'i':
 					flag_metric = 0;
 					break;
@@ -81,7 +79,7 @@ int main(int argc, char **argv)
 	}
 
 	if ( flag_help == 1 ) _usage();
-	
+
 	if ( *passLoc ) // Inspiration: http://www.geekhideout.com/urlcode.shtml
     {   char * end;
 		const long sl = strtol(passLoc, &end, 10);
@@ -135,13 +133,38 @@ See `man 1 shaman` for more information\n", stderr);
 	exit(0);
 }
 
+typedef struct{
+	char *buffer ;
+	size_t size   ;
+	size_t offset ;
+}data_t;
+
+size_t _writeDataToBuffer( char *ptr, size_t size, size_t nmemb, void *userdata)
+{
+	data_t *data = (data_t*) userdata ;
+	size_t s = size * nmemb ;
+
+	data->size += s ;
+	data->buffer = realloc(data->buffer, data->size + 1);
+	data->buffer[data->size] = '\0' ;
+
+	if ( ptr != NULL )
+    {		memcpy(data->buffer + data->offset, ptr, s);
+		data->offset += s ;
+	}
+
+	return s;
+}
+
 // Data and Analysis Functions //
 void _getData(const char * location, const int scale)
 {   CURL * handle;
 	CURLcode res;
 	char url[256] = "";
 	FILE * suppressOutput = fopen("/dev/null", "wb");
-	FILE * xml = fopen(tempWeather,"w");
+
+	data_t data ;
+	memset( &data, '\0', sizeof(data_t));
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	handle = curl_easy_init();
@@ -162,7 +185,8 @@ void _getData(const char * location, const int scale)
 
 			if ( res == CURLE_OK )
 			{   curl_easy_setopt(handle, CURLOPT_URL, url);
-				curl_easy_setopt(handle, CURLOPT_WRITEDATA, xml);
+				curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION,_writeDataToBuffer );
+				curl_easy_setopt(handle, CURLOPT_WRITEDATA,(void*)&data );
 				res = curl_easy_perform(handle);
 			}
 			else
@@ -175,14 +199,20 @@ void _getData(const char * location, const int scale)
 	}
 
 	fclose(suppressOutput);
-	fclose(xml);
 	curl_easy_cleanup(handle);
 	curl_global_cleanup();
 
+	/*
+	 * un comment below line to observe downloaded content
+	 */
+	//puts( data.buffer ) ;
+
 	// Parse XML file
 	// Call getReporter(), getConditions() and getHazards() if needed
-	
-	if ( access(tempWeather, F_OK) != -1 ) _parseFile(tempWeather);
+
+	_parseDataInBuffer(data.buffer, data.size);
+
+	free(data.buffer);
 
 	if ( *formatString ) _formatOutput(formatString);
 	else
@@ -191,11 +221,11 @@ void _getData(const char * location, const int scale)
 	}
 }
 
-void _parseFile(const char * tempWeather)
+void _parseDataInBuffer(const char * buffer,int buffer_size )
 {   xmlDocPtr weather;
 	xmlNodePtr cur;
 
-	weather = xmlParseFile(tempWeather);
+	weather = xmlParseMemory(buffer,buffer_size);
 
 	if ( !weather )
     {   fprintf(stderr, "Failed to parse weather data\n");
@@ -252,19 +282,19 @@ void _formatOutput(char * formatStr)
 			{   case '\0':
 				    --formatStr;
 					break;
-				
+
 				case 'c':
 					// condition
 					continue;
-				
+
 				case 'd':
 					// humidity
 					continue;
-				
+
 				case 'D':
 					// dew point
 					continue;
-				
+
 				case 'h':
 					// heat index
 					continue;
@@ -272,35 +302,35 @@ void _formatOutput(char * formatStr)
 			    case 'H':
 					// hazard warnings
 					continue;
-				
+
 				case 'p':
 					// pressure
 					continue;
-				
+
 				case 'P':
 					// probability of precipitation
 					continue;
-				
+
 				case 'r':
 					// reporter identity
 					continue;
-				
+
 				case 'R':
 					// reporter coordinates
 					continue;
-				
+
 				case 't':
 					// temperature
 					continue;
-				
+
 				case 'v':
 					// visibility
 					continue;
-				
+
 				case 'w':
 					// wind speed
 					continue;
-				
+
 				case 'W':
 					// wind direction
 					continue;
