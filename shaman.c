@@ -17,19 +17,27 @@
 
 #define BUFFER_SIZE 80
 
+// Variables //
 char formatString[BUFFER_SIZE] = {'\0'};
 char passLoc[BUFFER_SIZE] = {'\0'};
+
+typedef struct
+{   char * buffer;
+	size_t size;
+	size_t offset;
+}data_t;
 
 // Prototypes //
 static void _usage(void);
 static void _getData(const char * location, const int scale);
-static void _parseDataInBuffer(const char * buffer,int buffer_size);
+static size_t _writeDataToBuffer(char * ptr, size_t size, size_t nmemb, 
+		void * userdata);
+static void _parseDataInBuffer(const char * buffer, int buffer_size);
 static void _parseData(xmlDocPtr weather, xmlNodePtr cur);
 static void _formatOutput(char * formatStr);
-static size_t _writeDataToBuffer( char *ptr, size_t size, size_t nmemb, void *userdata) ;
 
 // Main Function //
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {   static int flag_help;
 	static int flag_metric;
 
@@ -98,6 +106,7 @@ int main(int argc, char **argv)
 				else if ( *pass == ' ' ) *buff++ = '+';
 				pass++;
 			}
+
 			*buff = '\0';
 			_getData(buffer, flag_metric);
 			free(buffer);
@@ -119,7 +128,6 @@ int main(int argc, char **argv)
 }
 
 // Usage Function //
-
 void _usage(void)
 {   fputs("\
 Usage: shaman [options]\n\n\
@@ -133,29 +141,6 @@ See `man 1 shaman` for more information\n", stderr);
 	exit(0);
 }
 
-typedef struct{
-	char *buffer ;
-	size_t size   ;
-	size_t offset ;
-}data_t;
-
-size_t _writeDataToBuffer( char *ptr, size_t size, size_t nmemb, void *userdata)
-{
-	data_t *data = (data_t*) userdata ;
-	size_t s = size * nmemb ;
-
-	data->size += s ;
-	data->buffer = realloc(data->buffer, data->size + 1);
-	data->buffer[data->size] = '\0' ;
-
-	if ( ptr != NULL )
-    {		memcpy(data->buffer + data->offset, ptr, s);
-		data->offset += s ;
-	}
-
-	return s;
-}
-
 // Data and Analysis Functions //
 void _getData(const char * location, const int scale)
 {   CURL * handle;
@@ -163,8 +148,8 @@ void _getData(const char * location, const int scale)
 	char url[256] = "";
 	FILE * suppressOutput = fopen("/dev/null", "wb");
 
-	data_t data ;
-	memset( &data, '\0', sizeof(data_t));
+	data_t data;
+	memset(&data, '\0', sizeof(data_t));
 
 	curl_global_init(CURL_GLOBAL_ALL);
 	handle = curl_easy_init();
@@ -185,8 +170,8 @@ void _getData(const char * location, const int scale)
 
 			if ( res == CURLE_OK )
 			{   curl_easy_setopt(handle, CURLOPT_URL, url);
-				curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION,_writeDataToBuffer );
-				curl_easy_setopt(handle, CURLOPT_WRITEDATA,(void*)&data );
+				curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, _writeDataToBuffer);
+				curl_easy_setopt(handle, CURLOPT_WRITEDATA, (void * )&data);
 				res = curl_easy_perform(handle);
 			}
 			else
@@ -202,13 +187,8 @@ void _getData(const char * location, const int scale)
 	curl_easy_cleanup(handle);
 	curl_global_cleanup();
 
-	/*
-	 * un comment below line to observe downloaded content
-	 */
-	//puts( data.buffer ) ;
-
-	// Parse XML file
-	// Call getReporter(), getConditions() and getHazards() if needed
+	// Uncomment the following to see the fetched file
+	//puts(data.buffer);
 
 	_parseDataInBuffer(data.buffer, data.size);
 
@@ -221,11 +201,27 @@ void _getData(const char * location, const int scale)
 	}
 }
 
-void _parseDataInBuffer(const char * buffer,int buffer_size )
+size_t _writeDataToBuffer(char * ptr, size_t size, size_t nmemb, void * userdata)
+{   data_t * data = (data_t * )userdata;
+	size_t s = size * nmemb;
+
+	data->size += s;
+	data->buffer = realloc(data->buffer, data->size + 1);
+	data->buffer[data->size] = '\0';
+
+	if ( ptr )
+    {   memcpy(data->buffer + data->offset, ptr, s);
+		data->offset += s;
+	}
+
+	return s;
+}
+
+void _parseDataInBuffer(const char * buffer, int buffer_size)
 {   xmlDocPtr weather;
 	xmlNodePtr cur;
 
-	weather = xmlParseMemory(buffer,buffer_size);
+	weather = xmlParseMemory(buffer, buffer_size);
 
 	if ( !weather )
     {   fprintf(stderr, "Failed to parse weather data\n");
