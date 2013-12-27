@@ -46,13 +46,13 @@ void * _abortProgram(void)
 }
 
 void * _realloc(void * ptr, size_t size)
-{   char * e = realloc(ptr, size);
+{   void * e = realloc(ptr, size);
 	if ( e ) return e;
 	else return _abortProgram();
 }
 
 void * _malloc(size_t size)
-{   char * e = malloc(size);
+{   void * e = malloc(size);
 	if ( e ) return e;
 	else return _abortProgram();
 }
