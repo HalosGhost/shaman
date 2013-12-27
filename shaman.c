@@ -30,11 +30,32 @@ typedef struct
 // Prototypes //
 static void _usage(void);
 static void _getData(const char * location, const int scale);
-static size_t _writeDataToBuffer(char * ptr, size_t size, size_t nmemb, 
+static size_t _writeDataToBuffer(char * ptr, size_t size, size_t nmemb,
 		void * userdata);
 static void _parseDataInBuffer(const char * buffer, int buffer_size);
 static void _parseData(xmlDocPtr weather, xmlNodePtr cur);
 static void _formatOutput(char * formatStr);
+static void * _realloc(void * ptr, size_t size);
+static void * _malloc(size_t size);
+static void * _abortProgram(void);
+
+void * _abortProgram(void)
+{	puts( "could not allocate memory,aborting" ) ;
+	exit(1);
+	return NULL ;
+}
+
+void * _realloc(void * ptr, size_t size)
+{   char * e = realloc(ptr, size);
+	if ( e ) return e;
+	else return _abortProgram();
+}
+
+void * _malloc(size_t size)
+{   char * e = malloc(size);
+	if ( e ) return e;
+	else return _abortProgram();
+}
 
 // Main Function //
 int main(int argc, char ** argv)
@@ -94,7 +115,7 @@ int main(int argc, char ** argv)
 
 		if ( end == passLoc )
 	    {	char * pass = passLoc;
-			char * buffer = malloc(strlen(passLoc) * 3 + 1);
+			char * buffer = _malloc(strlen(passLoc) * 3 + 1);
 			char * buff = buffer;
 
 			while ( *pass )
@@ -206,7 +227,7 @@ size_t _writeDataToBuffer(char * ptr, size_t size, size_t nmemb, void * userdata
 	size_t s = size * nmemb;
 
 	data->size += s;
-	data->buffer = realloc(data->buffer, data->size + 1);
+	data->buffer = _realloc(data->buffer, data->size + 1);
 	data->buffer[data->size] = '\0';
 
 	if ( ptr )
