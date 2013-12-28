@@ -28,6 +28,9 @@ typedef struct
 }data_t;
 
 // Prototypes //
+static void * _realloc(void * ptr, size_t size);
+static void * _malloc(size_t size);
+static void * _memoryAbort(void);
 static void _usage(void);
 static void _getData(const char * location, const int scale);
 static size_t _writeDataToBuffer(char * ptr, size_t size, size_t nmemb,
@@ -35,27 +38,6 @@ static size_t _writeDataToBuffer(char * ptr, size_t size, size_t nmemb,
 static void _parseDataInBuffer(const char * buffer, int buffer_size);
 static void _parseData(xmlDocPtr weather, xmlNodePtr cur);
 static void _formatOutput(char * formatStr);
-static void * _realloc(void * ptr, size_t size);
-static void * _malloc(size_t size);
-static void * _abortProgram(void);
-
-void * _abortProgram(void)
-{	puts( "could not allocate memory,aborting" ) ;
-	exit(1);
-	return NULL ;
-}
-
-void * _realloc(void * ptr, size_t size)
-{   void * e = realloc(ptr, size);
-	if ( e ) return e;
-	else return _abortProgram();
-}
-
-void * _malloc(size_t size)
-{   void * e = malloc(size);
-	if ( e ) return e;
-	else return _abortProgram();
-}
 
 // Main Function //
 int main(int argc, char ** argv)
@@ -148,7 +130,26 @@ int main(int argc, char ** argv)
 	return 0;
 }
 
-// Usage Function //
+// Memory Safety //
+void * _realloc(void * ptr, size_t size)
+{   void * e = realloc(ptr, size);
+	if ( e ) return e;
+	else return _memoryAbort();
+}
+
+void * _malloc(size_t size)
+{   void * e = malloc(size);
+	if ( e ) return e;
+	else return _memoryAbort();
+}
+
+void * _memoryAbort(void)
+{	puts("Failed to allocate memory");
+	exit(1);
+	return NULL;
+}
+
+// Usage //
 void _usage(void)
 {   fputs("\
 Usage: shaman [options]\n\n\
