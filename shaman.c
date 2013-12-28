@@ -204,10 +204,20 @@ void _getData(const char * location, const int scale)
 			}
 			else
 			{   fprintf(stderr, "Failed to get weather page (%s)\n", curl_easy_strerror(res));
+				fclose(suppressOutput);
+				curl_easy_cleanup(handle);
+				curl_global_cleanup();
+				free(data.buffer);
+				exit(1);
 			}
 		}
 		else
 	    {	fprintf(stderr, "Failed to get location (%s)\n", curl_easy_strerror(res));
+			fclose(suppressOutput);
+			curl_easy_cleanup(handle);
+			curl_global_cleanup();
+			free(data.buffer);
+			exit(1);
 		}
 	}
 
