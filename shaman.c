@@ -167,7 +167,7 @@ Options:\n\
   -f, --format=\"FORMAT\"         format output according to \"FORMAT\"\n\
   -l, --location=\"location\"     print weather information for \"location\"\n\n\
 See `man 1 shaman` for more information\n", stderr);
-  exit(0);
+    exit(0);
 }
 
 // Data and Analysis Functions //
