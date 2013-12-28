@@ -284,7 +284,7 @@ void _parseDataInBuffer(const char * buffer, int buffer_size)
 
     while ( cur )
     {   if ( !xmlStrcmp((const xmlChar * )cur->name, (const xmlChar * )"head") )
-        { _parseData(weather, cur);
+        {   _parseData(weather, cur);
         }
 
         cur = cur->next;
