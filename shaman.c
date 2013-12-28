@@ -33,8 +33,7 @@ static void * _realloc(void * ptr, size_t size);
 static void * _memoryAbort(void);
 static void _usage(void);
 static void _getData(const char * location, const int scale);
-static size_t _writeDataToBuffer(char * ptr, size_t size, size_t nmemb,
-		void * userdata);
+static size_t _writeDataToBuffer(char * ptr, size_t size, size_t nmemb, void * userdata);
 static void _parseDataInBuffer(const char * buffer, int buffer_size);
 static void _parseData(xmlDocPtr weather, xmlNodePtr cur);
 static void _formatOutput(char * formatStr);
@@ -101,12 +100,20 @@ int main(int argc, char ** argv)
 			char * buff = buffer;
 
 			while ( *pass )
-			{   if ( isalnum(*pass) ||\
-					 *pass == '-' ||\
-					 *pass == '.' ||\
-					 *pass == ',' ) *buff++ = *pass;
+			{   if ( isalnum(*pass) ) *buff++ = *pass;
+				else
+			    {   switch (*pass)
+			        {   case '-':
+						case '.':
+						case ',':
+							*buff++ = *pass;
+							break;
 
-				else if ( *pass == ' ' ) *buff++ = '+';
+						case ' ':
+							*buff++ = '+';
+							break;
+					}
+				}
 				pass++;
 			}
 
