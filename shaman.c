@@ -187,8 +187,7 @@ void _getData(const char * location, const int scale)
 	    {	char * interim;
 			res = curl_easy_getinfo(handle, CURLINFO_EFFECTIVE_URL, &interim);
 
-			if ( scale == 1 ) snprintf(url, sizeof(url), "%s&FcstType=dwml&unit=1", interim);
-			else snprintf(url, sizeof(url), "%s&FcstType=dwml&unit=0", interim);
+			snprintf(url, sizeof(url), "%s&FcstType=dwml&unit=%d", interim, scale);
 
 			if ( res == CURLE_OK )
 			{   curl_easy_setopt(handle, CURLOPT_URL, url);
@@ -209,7 +208,7 @@ void _getData(const char * location, const int scale)
 	curl_easy_cleanup(handle);
 	curl_global_cleanup();
 
-	// Uncomment the following to see the fetched file
+	// Uncomment the following line to see the fetched file
 	//puts(data.buffer);
 
 	_parseDataInBuffer(data.buffer, data.size);
