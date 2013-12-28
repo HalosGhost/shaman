@@ -28,8 +28,8 @@ typedef struct
 }data_t;
 
 // Prototypes //
-static void * _realloc(void * ptr, size_t size);
 static void * _malloc(size_t size);
+static void * _realloc(void * ptr, size_t size);
 static void * _memoryAbort(void);
 static void _usage(void);
 static void _getData(const char * location, const int scale);
@@ -131,14 +131,14 @@ int main(int argc, char ** argv)
 }
 
 // Memory Safety //
-void * _realloc(void * ptr, size_t size)
-{   void * e = realloc(ptr, size);
+void * _malloc(size_t size)
+{   void * e = malloc(size);
 	if ( e ) return e;
 	else return _memoryAbort();
 }
 
-void * _malloc(size_t size)
-{   void * e = malloc(size);
+void * _realloc(void * ptr, size_t size)
+{   void * e = realloc(ptr, size);
 	if ( e ) return e;
 	else return _memoryAbort();
 }
