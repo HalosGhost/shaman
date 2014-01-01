@@ -7,19 +7,19 @@ LIBS    =   -lm -lcurl -lxml2
 INCLUDE =   -I/usr/include/libxml2
 
 ${PROG}: ${PROG}.c
-    @${CC} ${INCLUDE} ${CFLAGS} ${LIBS} -o ${PROG} ${PROG}.c
-#   @strip ${PROG}
+	@${CC} ${INCLUDE} ${CFLAGS} ${LIBS} -o ${PROG} ${PROG}.c
+#	@strip ${PROG}
 
-clean: ${PROG} ${PROG}.1
-    @rm -f ${PROG}
-    @rm -f ${PROG}.1
+clean:
+	@rm -f ${PROG}
+	@rm -f ${PROG}.1
 
 docs: man1.tex
-    @latex2man man1.tex ${PROG}.1
+	@latex2man man1.tex ${PROG}.1
 
 install: ${PROG}
-    @install -Dm755 ${PROG} ${DESTDIR}${PREFIX}/bin/${PROG}
-    @install -Dm644 ${PROG}.1 ${DESTDIR}${PREFIX}${MANDIR}/man1/${PROG}.1
-    @install -Dm644 _${PROG} ${DESTDIR}${PREFIX}/share/zsh/site-functions/_${PROG}
+	@install -Dm755 ${PROG} ${DESTDIR}${PREFIX}/bin/${PROG}
+	@install -Dm644 ${PROG}.1 ${DESTDIR}${PREFIX}${MANDIR}/man1/${PROG}.1
+	@install -Dm644 _${PROG} ${DESTDIR}${PREFIX}/share/zsh/site-functions/_${PROG}
 
-# vim: set tabstop=4 shiftwidth=4 expandtab
+# vim: set tabstop=4 shiftwidth=4
