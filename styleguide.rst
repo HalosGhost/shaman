@@ -21,10 +21,11 @@ Variable (Re)Definition and Usage
 If a variable was declared with no initializer and it is now being defined, or it is being redefined (regardless of whether or not it had an initializer), its assigned value should still be separated from the equals sign.
 However, pointer dereferencing and referencing both are attached to the name.
 Having the pointer (de)reference attached to the name is the same for usage.
-Below is an example of a good variable definition and a good variable usage::
-   *variableName = "new data";
+Below is an example of a good variable definition and a good variable usage:
 
-   if ( *variableName )
+``*variableName = "new data";``
+
+``if ( *variableName )``
 
 Function Declaration
 --------------------
@@ -52,7 +53,7 @@ Below is an example of a good function definition showing good indentation and b
        return secondArgument;
    }
 
-*Note how this bracing style is similar to Horstmann's compromise between "K&R" and "Allman"*
+*Note how this bracing style is similar to Horstmann's compromise between "K&R" and "Allman."*
 Also note that *all* indentations should be spaces (not tabs).
 This bracing style can be easily achieved in vim using the following modesetting line which should be the last line of the source file.
 
@@ -121,7 +122,7 @@ Below is an example of good commenting::
     */
 
 Disclaimer
-==========
+----------
 Personally, I find the above rules to create source documents that are incredibly well-formatted and easy-to-read.
 They reflect experience and conclusions made from working with other styles.
 Code submitted to this repository should follow this style guide; if it does not, the commit may either be rejected, or it will be reformatted to conform before being merged.
