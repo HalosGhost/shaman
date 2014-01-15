@@ -14,3 +14,9 @@ To-Do
 -----
 #. Add basic functionality (e.g., fetch and parse weather XML file)
 #. Update documentation for 2.x
+
+Contributions
+-------------
+All contributions are welcome (pull requests, constructive criticism, feature requests and musings).
+All pull requests should follow the `styleguide <./styleguide.rst>`_ so as to keep code formatting consistent and readable.
+Any proposed commit which does not follow the styleguide may be subject to rejection or reformatting for conformance before being merged.
