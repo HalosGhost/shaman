@@ -13,6 +13,4 @@ Status & Documentation
 To-Do
 -----
 #. Add basic functionality (e.g., fetch and parse weather XML file)
-#. Update parsing code from legacy branch for new config setup
 #. Update documentation for 2.x
-
