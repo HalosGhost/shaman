@@ -79,12 +79,12 @@ Below are a few examples of good conditional block formatting::
    if ( a == b )
 
 *Note that the opening brace of each of these (should they have multiple lines of conditional execution) will follow the Indentation and Bracing guidelines.*
-An if...elseif...else block will look like the following::
+An if...else if...else block will look like the following::
    if ( a > 0 )
    {   _runFunction();
        exit(1);
    }
-   elseif ( a == 0 )
+   else if ( a == 0 )
    {   _someOtherFunction();
        exit(2);
    }
@@ -93,7 +93,7 @@ An if...elseif...else block will look like the following::
        exit(3);
    }
 
-Where applicable, if there are more than three cases (if it would require more than a single elseif), use of the ``switch`` function is preferred.
+Where applicable, if there are more than three cases (if it would require more than a single ``else if``), use of the ``switch`` function is preferred.
 
 Section Labeling
 ----------------
@@ -123,6 +123,6 @@ Below is an example of good commenting::
 
 Disclaimer
 ----------
-Personally, I find the above rules to create source documents that are incredibly well-formatted and easy-to-read.
+Personally, I find the above guidelines to create source documents that are incredibly well-formatted and easy-to-read.
 They reflect experience and conclusions made from working with other styles.
 Code submitted to this repository should follow this style guide; if it does not, the commit may either be rejected, or it will be reformatted to conform before being merged.
