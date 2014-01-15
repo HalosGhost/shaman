@@ -4,6 +4,7 @@
 * License: GPLv2                         *
 \****************************************/
 
+/* Libraries */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,50 +16,50 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
+/* Variables */
 #define BUFFER_SIZE 80
 
-// Variables //
 char formatString[BUFFER_SIZE] = {'\0'};
 char passLoc[BUFFER_SIZE] = {'\0'};
 
-typedef struct
+typedef struct 
 {   char * buffer;
     size_t size;
     size_t offset;
-}data_t;
+} data_t;
 
-// Prototypes //
-static void * _malloc(size_t size);
-static void * _realloc(void * ptr, size_t size);
-static void * _memoryAbort(void);
-static void _usage(void);
-static void _getData(const char * location, const int scale);
-static size_t _writeDataToBuffer(char * ptr, size_t size, size_t nmemb, void * userdata);
-static void _parseDataInBuffer(const char * buffer, int buffer_size);
-static void _parseData(xmlDocPtr weather, xmlNodePtr cur);
-static void _formatOutput(char * formatStr);
+/* Prototypes */
+static void * _malloc (size_t size);
+static void * _realloc (void * ptr, size_t size);
+static void * _memoryAbort (void);
+static void _usage (void);
+static void _getData (const char * location, const int scale);
+static size_t _writeDataToBuffer (char * ptr, size_t size, size_t nmemb, void * userdata);
+static void _parseDataInBuffer (const char * buffer, int buffer_size);
+static void _parseData (xmlDocPtr weather, xmlNodePtr cur);
+static void _formatOutput (char * formatStr);
 
-// Main Function //
-int main(int argc, char ** argv)
+/* Main Function */
+int main (int argc, char ** argv)
 {   static int flag_help;
     static int flag_metric;
 
     if ( argc > 1 )
     {   int c;
         
-        while (1)
+        while ( 1 )
         {   static struct option long_options[] =
-            {   // Long Option Flags //
+            {   // Flags //
                 {"help",      no_argument,         0,    'h'   },
                 {"imperial",  no_argument,         0,    'i'   },
                 {"metric",    no_argument,         0,    'm'   },
-                // Long Option Switches //
+                // Switches //
                 {"format",    required_argument,   0,    'f'   },
                 {"location",  required_argument,   0,    'l'   },
                 {0,           0,                   0,    0     },
             };
 
-            int option_index = 0; // Stores the option index
+            int option_index = 0;
 
             c = getopt_long(argc, argv, "hif:l:m", long_options, &option_index);
 
@@ -90,7 +91,7 @@ int main(int argc, char ** argv)
 
     if ( flag_help == 1 ) _usage();
 
-    if ( *passLoc ) // Inspiration: http://www.geekhideout.com/urlcode.shtml
+    if ( *passLoc )
     {   char * end;
         const long sl = strtol(passLoc, &end, 10);
 
@@ -137,41 +138,40 @@ int main(int argc, char ** argv)
     return 0;
 }
 
-// Memory Safety //
-void * _malloc(size_t size)
+/* Memory Safety */
+void * _malloc (size_t size)
 {   void * e = malloc(size);
     if ( e ) return e;
     else return _memoryAbort();
 }
 
-void * _realloc(void * ptr, size_t size)
+void * _realloc (void * ptr, size_t size)
 {   void * e = realloc(ptr, size);
     if ( e ) return e;
     else return _memoryAbort();
 }
 
-void * _memoryAbort(void)
+void * _memoryAbort (void)
 {   puts("Failed to allocate memory");
     exit(1);
     return NULL;
 }
 
-// Usage //
-void _usage(void)
-{   fputs("\
-Usage: shaman [options]\n\n\
-Options:\n\
-  -h, --help                    print help and exit\n\
-  -i, --imperial                use Imperial units (default)\n\
-  -m, --metric                  use Metric units\n\
-  -f, --format=\"FORMAT\"         format output according to \"FORMAT\"\n\
-  -l, --location=\"location\"     print weather information for \"location\"\n\n\
-See `man 1 shaman` for more information\n", stderr);
+/* Usage */
+void _usage (void)
+{   fputs("Usage: shaman [options]\n\n"
+          "Options:\n"
+          "-h, --help                    print help and exit\n"
+          "-i, --imperial                use Imperial units (default)\n"
+          "-m, --metric                  use Metric units\n"
+          "-f, --format=\"FORMAT\"         format output according to \"FORMAT\"\n"
+          "-l, --location=\"location\"     print weather information for \"location\"\n\n"
+          "See `man 1 shaman` for more information\n", stderr);
     exit(0);
 }
 
-// Data and Analysis Functions //
-void _getData(const char * location, const int scale)
+/* Data and Analysis Functions */
+void _getData (const char * location, const int scale)
 {   CURL * handle;
     CURLcode res;
     char url[256] = "";
@@ -183,7 +183,7 @@ void _getData(const char * location, const int scale)
     curl_global_init(CURL_GLOBAL_ALL);
     handle = curl_easy_init();
 
-    if (handle)
+    if ( handle )
     {   snprintf(url, sizeof(url), "http://forecast.weather.gov/zipcity.php?inputstring=%s", location);
         curl_easy_setopt(handle, CURLOPT_WRITEDATA, suppressOutput);
         curl_easy_setopt(handle, CURLOPT_URL, url);
@@ -225,7 +225,6 @@ void _getData(const char * location, const int scale)
     curl_easy_cleanup(handle);
     curl_global_cleanup();
 
-    // Uncomment the following line to see the fetched file
     //puts(data.buffer);
 
     _parseDataInBuffer(data.buffer, data.size);
@@ -239,7 +238,7 @@ void _getData(const char * location, const int scale)
     }
 }
 
-size_t _writeDataToBuffer(char * ptr, size_t size, size_t nmemb, void * userdata)
+size_t _writeDataToBuffer (char * ptr, size_t size, size_t nmemb, void * userdata)
 {   data_t * data = (data_t * )userdata;
     size_t s = size * nmemb;
 
@@ -255,7 +254,7 @@ size_t _writeDataToBuffer(char * ptr, size_t size, size_t nmemb, void * userdata
     return s;
 }
 
-void _parseDataInBuffer(const char * buffer, int buffer_size)
+void _parseDataInBuffer (const char * buffer, int buffer_size)
 {   xmlDocPtr weather;
     xmlNodePtr cur;
 
@@ -283,7 +282,7 @@ void _parseDataInBuffer(const char * buffer, int buffer_size)
     cur = cur->xmlChildrenNode;
 
     while ( cur )
-    {   if ( !xmlStrcmp((const xmlChar * )cur->name, (const xmlChar * )"head") )
+    {   if ( !xmlStrcmp((const xmlChar * )cur->name, (const xmlChar * )"head") ) 
         {   _parseData(weather, cur);
         }
 
@@ -293,8 +292,8 @@ void _parseDataInBuffer(const char * buffer, int buffer_size)
     xmlFreeDoc(weather);
 }
 
-void _parseData(xmlDocPtr weather, xmlNodePtr cur)
-{   xmlChar *datum;
+void _parseData (xmlDocPtr weather, xmlNodePtr cur)
+{   xmlChar * datum;
     cur = cur->xmlChildrenNode;
 
     while ( cur )
@@ -307,7 +306,7 @@ void _parseData(xmlDocPtr weather, xmlNodePtr cur)
     }
 }
 
-void _formatOutput(char * formatStr)
+void _formatOutput (char * formatStr)
 {   for ( ; *formatStr; ++formatStr)
     {   if ( *formatStr == '%' )
         {   if ( *formatStr == '0' ) formatStr++;
@@ -376,4 +375,4 @@ void _formatOutput(char * formatStr)
         }
     }
 }
-// vim: set tabstop=4 shiftwidth=4 expandtab
+// vim:set ts=4 sw=4 et:
