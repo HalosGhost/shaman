@@ -12,9 +12,8 @@ When declaring a variable, the name should be separate from the data type.
 Furthermore, variable names should be representative of what they are (avoid cryptic names) and, should be camel-case.
 Next, pointer dereferencing should be separated from both the data type and the name.
 If declared with an initializer, the initializer should be separated from the equals sign, just as the name is.
-Below is an example of a good variable declaration:
-
-``char * variableName = "data";``
+Below is an example of a good variable declaration::
+   char * variableName = "data";
 
 Variable (Re)Definition and Usage
 ---------------------------------
@@ -27,15 +26,23 @@ Below is an example of a good variable definition and a good variable usage:
 
 ``if ( *variableName )``
 
+Casting
+-------
+A variable is cast in a very similar style to how it is declared.
+The data type, (pointer reference if applicable) and space are simply surrounded by parentheses.
+Below is an example of good casting::
+   (char * )castedVariable;
+
+*Note that there is a space between the last piece of the cast and the close parenthesis, but no space between the close parenthesis and the variable name.*
+
 Function Declaration
 --------------------
 Similar to variable declarations, function names should be representative and camel-case.
 Also similar, data types should be separated from the function name.
 The declarative argument list should be separated from the function name, and each item in the list should be separated by a comma, and a space.
 When creating functions with generic names, prefix their names with an '_'.
-Below is an example of a good function declaration with an argument list:
-
-``char * _genericFunction (int firstArgument, char * secondArgument);``
+Below is an example of a good function declaration with an argument list::
+   char * _genericFunction (int firstArgument, char * secondArgument);
 
 *Note that each argument is formatted as if it were a regular variable declaration*
 
@@ -55,17 +62,15 @@ Below is an example of a good function definition showing good indentation and b
 
 *Note how this bracing style is similar to Horstmann's compromise between "K&R" and "Allman."*
 Also note that *all* indentations should be spaces (not tabs).
-This bracing style can be easily achieved in vim using the following modesetting line which should be the last line of the source file.
-
-``// vim:set ts=4 sw=4 et:``
+This bracing style can be easily achieved in vim using the following modesetting line which should be the last line of the source file::
+   // vim:set ts=4 sw=4 et:
 
 Calling Functions
 -----------------
 When calling a function, the function's argument list should be attached to the name.
 All other guidelines from the function declaration and definition sections apply.
-Below is an example of a good function call:
-
-``_genericFunction(7, "data");``
+Below is an example of a good function call::
+   _genericFunction(7, "data");
 
 Conditions
 ----------
@@ -97,7 +102,7 @@ Where applicable, if there are more than three cases (if it would require more t
 
 Section Labeling
 ----------------
-It is often desireable to label various sections of the source document with comments.
+It is often desirable to label various sections of the source document with comments.
 When doing so, one should pick a consistent style of headings and sub-headings.
 I prefer to use the following style::
    /* Section */
