@@ -3,7 +3,7 @@ Code Style
 One of the benefits of coding in C is that it offers a great deal of leeway in how the coding is done.
 Though many people define certain conventions as being "right", there really *is* no one correct way of doing things.
 However, there is one relatively agreed-upon point:
-Whatever style should you choose to use, you should use it consistently.
+Whatever style should you choose, you should use it consistently.
 Thus, in an effort to define standards for code submission (and just to keep me consistent in my coding style), what follows is a small style-sheet on how I write C code.
 
 Variable Declaration
