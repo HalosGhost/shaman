@@ -2,14 +2,14 @@ Code Style
 ==========
 One of the benefits of coding in C is that it offers a great deal of leeway in how the coding is done.
 Though many people define certain conventions as being "right", there really *is* no one correct way of doing things.
-However, there is one relatively agreed-upon point.
-Whatever style you should use, you should use it consistently.
-Thus, in an effort to define standards for code submission (and just to keep me consistent in my coding style), what follows is a small style book on how I write C code.
+However, there is one relatively agreed-upon point:
+Whatever style should you choose to use, you should use it consistently.
+Thus, in an effort to define standards for code submission (and just to keep me consistent in my coding style), what follows is a small style-sheet on how I write C code.
 
 Variable Declaration
 --------------------
 When declaring a variable, the name should be separate from the data type.
-Furthermore, variable names should be representative of what they are (avoid cryptic names) and, should be camel-case.
+Furthermore, variable names should be representative of what they are (avoid cryptic names) and should be lowerCamelCase.
 Next, pointer dereferencing should be separated from both the data type and the name.
 If declared with an initializer, the initializer should be separated from the equals sign, just as the name is.
 Below is an example of a good variable declaration::
@@ -17,7 +17,7 @@ Below is an example of a good variable declaration::
 
 Variable (Re)Definition and Usage
 ---------------------------------
-If a variable was declared with no initializer and it is now being defined, or it is being redefined (regardless of whether or not it had an initializer), its assigned value should still be separated from the equals sign.
+If a variable was declared with no initializer and it is now being defined, or it is being redefined, its assigned value should still be separated from the equals sign.
 However, pointer dereferencing and referencing both are attached to the name.
 Having the pointer (de)reference attached to the name is the same for usage.
 Below is an example of a good variable definition and a good variable usage:
@@ -37,7 +37,7 @@ Below is an example of good casting::
 
 Function Declaration
 --------------------
-Similar to variable declarations, function names should be representative and camel-case.
+Similar to variable declarations, function names should be representative and lowerCamelCase.
 Also similar, data types should be separated from the function name.
 The declarative argument list should be separated from the function name, and each item in the list should be separated by a comma, and a space.
 When creating functions with generic names, prefix their names with an '_'.
@@ -128,6 +128,6 @@ Below is an example of good commenting::
 
 Disclaimer
 ----------
-Personally, I find the above guidelines to create source documents that are incredibly well-formatted and easy-to-read.
+Personally, I find the above guidelines to create source documents that are incredibly well formatted and easy to read.
 They reflect experience and conclusions made from working with other styles.
 Code submitted to this repository should follow this style guide; if it does not, the commit may either be rejected, or it will be reformatted to conform before being merged.
