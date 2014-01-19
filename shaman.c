@@ -20,7 +20,7 @@
 #define BUFFER_SIZE 80
 
 char formatString[BUFFER_SIZE] = {'\0'};
-char passLoc[BUFFER_SIZE] = {'\0'};
+char location[BUFFER_SIZE] = {'\0'};
 
 typedef struct 
 {   char * buffer;
@@ -41,14 +41,14 @@ static void _formatOutput (char * formatStr);
 
 /* Main Function */
 int main (int argc, char ** argv)
-{   static int flag_help;
-    static int flag_metric;
+{   static int flagHelp;
+    static int flagMetric;
 
     if ( argc > 1 )
     {   int c;
         
         while ( 1 )
-        {   static struct option long_options[] =
+        {   static struct option longOptions[] =
             {   // Flags //
                 {"help",      no_argument,         0,    'h'   },
                 {"imperial",  no_argument,         0,    'i'   },
@@ -59,19 +59,19 @@ int main (int argc, char ** argv)
                 {0,           0,                   0,    0     },
             };
 
-            int option_index = 0;
+            int optionIndex = 0;
 
-            c = getopt_long(argc, argv, "hif:l:m", long_options, &option_index);
+            c = getopt_long(argc, argv, "hif:l:m", longOptions, &optionIndex);
 
             if ( c == -1 ) break;
 
             switch (c)
             {   case 'h':
-                    flag_help = 1;
+                    flagHelp = 1;
                     break;
 
                 case 'i':
-                    flag_metric = 0;
+                    flagMetric = 0;
                     break;
 
                 case 'f':
@@ -79,25 +79,25 @@ int main (int argc, char ** argv)
                     break;
 
                 case 'l':
-                    snprintf(passLoc, sizeof(passLoc), "%s", optarg);
+                    snprintf(location, sizeof(location), "%s", optarg);
                     break;
 
                 case 'm':
-                    flag_metric = 1;
+                    flagMetric = 1;
                     break;
             }
         }
     }
 
-    if ( flag_help == 1 ) _usage();
+    if ( flagHelp == 1 ) _usage();
 
-    if ( *passLoc )
+    if ( *location )
     {   char * end;
-        const long sl = strtol(passLoc, &end, 10);
+        const long sl = strtol(location, &end, 10);
 
-        if ( end == passLoc )
-        {   char * pass = passLoc;
-            char * buffer = _malloc(strlen(passLoc) * 3 + 1);
+        if ( end == location )
+        {   char * pass = location;
+            char * buffer = _malloc(strlen(location) * 3 + 1);
             char * buff = buffer;
 
             while ( *pass )
@@ -119,14 +119,14 @@ int main (int argc, char ** argv)
             }
 
             *buff = '\0';
-            _getData(buffer, flag_metric);
+            _getData(buffer, flagMetric);
             free(buffer);
         }
         else if ( sl > 99999 || sl < 00000 )
         {   fprintf(stderr, "Invalid zip code: %ld\n", sl);
             exit(1);
         }
-        else _getData((char * )passLoc, flag_metric);
+        else _getData((char * )location, flagMetric);
     }
     else
     {   fprintf(stderr, "No specified location\n");
