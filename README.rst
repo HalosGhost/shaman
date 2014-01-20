@@ -21,6 +21,7 @@ Long Term To-Do
 These are tasks that offer some very nice functionality or usability features but do not make sense to pursue until the short-term tasks have been completed:
 
 #. Separate the source file into separate headers for readability
+#. Update ``_shaman`` (zsh completion) for the re-code
 #. Provide a native C library and interface (rework ``shaman`` to use this interface)
 #. Support non-Linux platforms? (some may already be supported)
 

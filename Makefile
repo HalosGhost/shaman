@@ -1,12 +1,12 @@
 CFLAGS  +=  -Os -Wall
 PROG    =   shaman
 PREFIX  ?=  /usr
-VER     =   0.1
+VER     =   2.0
 MANDIR  ?=  /share/man
 LIBS    =   `pkg-config --libs-only-l libcurl libxml-2.0`
 INCLUDE =   `pkg-config --cflags-only-I libxml-2.0`
 
-.PHONY: all clean clobber docs install
+.PHONY: all clobber docs install
 
 ${PROG}: ${PROG}.c
 	@${CC} ${INCLUDE} ${CFLAGS} ${LIBS} -o ${PROG} ${PROG}.c
