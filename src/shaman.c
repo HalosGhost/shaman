@@ -4,42 +4,9 @@
 * License: GPLv2                         *
 \****************************************/
 
-/* Libraries */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <ctype.h>
-#include <math.h>
-#include <curl/curl.h>
-#include <getopt.h>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
+#include "shaman.h"
 
-/* Variables */
-#define BUFFER_SIZE 80
-
-char formatString[BUFFER_SIZE] = {'\0'};
-char location[BUFFER_SIZE] = {'\0'};
-
-typedef struct 
-{   char * buffer;
-    size_t size;
-    size_t offset;
-} data_t;
-
-/* Prototypes */
-static void * _malloc (size_t size);
-static void * _realloc (void * ptr, size_t size);
-static void * _memoryAbort (void);
-static void _usage (void);
-static void _getData (const char * location, const int scale);
-static size_t _writeDataToBuffer (char * ptr, size_t size, size_t nmemb, void * userdata);
-static void _parseDataInBuffer (const char * buffer, int buffer_size);
-static void _parseData (xmlDocPtr weather, xmlNodePtr cur);
-static void _formatOutput (char * formatStr);
-
-/* Main Function */
+// Main Function //
 int main (int argc, char ** argv)
 {   static int flagHelp;
     static int flagMetric;
@@ -49,11 +16,11 @@ int main (int argc, char ** argv)
         
         while ( 1 )
         {   static struct option longOptions[] =
-            {   // Flags //
+            {   /* Flags */
                 {"help",      no_argument,         0,    'h'   },
                 {"imperial",  no_argument,         0,    'i'   },
                 {"metric",    no_argument,         0,    'm'   },
-                // Switches //
+                /* Switches */
                 {"format",    required_argument,   0,    'f'   },
                 {"location",  required_argument,   0,    'l'   },
                 {0,           0,                   0,    0     },
@@ -75,11 +42,11 @@ int main (int argc, char ** argv)
                     break;
 
                 case 'f':
-                    snprintf(formatString, sizeof(formatString), "%s", optarg);
+                    snprintf(formatString, sizeof(formatString), optarg);
                     break;
 
                 case 'l':
-                    snprintf(location, sizeof(location), "%s", optarg);
+                    snprintf(location, sizeof(location), optarg);
                     break;
 
                 case 'm':
@@ -138,39 +105,7 @@ int main (int argc, char ** argv)
     return 0;
 }
 
-/* Memory Safety */
-void * _malloc (size_t size)
-{   void * e = malloc(size);
-    if ( e ) return e;
-    else return _memoryAbort();
-}
-
-void * _realloc (void * ptr, size_t size)
-{   void * e = realloc(ptr, size);
-    if ( e ) return e;
-    else return _memoryAbort();
-}
-
-void * _memoryAbort (void)
-{   puts("Failed to allocate memory");
-    exit(1);
-    return NULL;
-}
-
-/* Usage */
-void _usage (void)
-{   fputs("Usage: shaman [options]\n\n"
-          "Options:\n"
-          "-h, --help\t\t\tprint help and exit\n"
-          "-i, --imperial\t\t\tuse Imperial units (default)\n"
-          "-m, --metric\t\t\tuse Metric units\n"
-          "-f, --format=\"FORMAT\"\t\tformat output according to \"FORMAT\"\n"
-          "-l, --location=\"location\"\tprint weather information for \"location\"\n\n"
-          "See `man 1 shaman` for more information\n", stderr);
-    exit(0);
-}
-
-/* Data and Analysis Functions */
+// Data and Analysis Functions //
 void _getData (const char * location, const int scale)
 {   CURL * handle;
     CURLcode res;
@@ -303,6 +238,76 @@ void _parseData (xmlDocPtr weather, xmlNodePtr cur)
             xmlFree(datum);
         }
         cur = cur->next;
+    }
+}
+
+void _parseFormat (char * formatStr)
+{   for ( ; *formatStr; ++formatStr)
+    {   if ( *formatStr == '%' )
+        {   if ( *formatStr == '0' ) formatStr++;
+
+            switch (*++formatStr)
+            {   case '\0':
+                    --formatStr;
+                    break;
+
+                case 'c':
+                    // condition
+                    continue;
+
+                case 'd':
+                    // humidity
+                    continue;
+
+                case 'D':
+                    // dew point
+                    continue;
+
+                case 'H':
+                    // hazard warnings
+                    continue;
+
+                case 'p':
+                    // pressure
+                    continue;
+
+                case 'P':
+                    // probability of precipitation
+                    continue;
+
+                case 'r':
+                    // reporter identity
+                    continue;
+
+                case 'R':
+                    // reporter coordinates
+                    continue;
+
+                case 't':
+                    // temperature
+                    continue;
+
+                case 'T':
+                    // apparent temperature
+                    continue;
+
+                case 'v':
+                    // visibility
+                    continue;
+
+                case 'w':
+                    // wind speed
+                    continue;
+
+                case 'W':
+                    // wind direction
+                    continue;
+
+                case '%':
+                default:
+                    break;
+            }
+        }
     }
 }
 

@@ -8,8 +8,8 @@ INCLUDE =   `pkg-config --cflags-only-I libxml-2.0`
 
 .PHONY: all clobber docs install
 
-${PROG}: ${PROG}.c
-	@${CC} ${INCLUDE} ${CFLAGS} ${LIBS} -o ${PROG} ${PROG}.c
+${PROG}: src/${PROG}.c
+	@cd src && ${CC} ${INCLUDE} ${CFLAGS} ${LIBS} -o ../${PROG} ${PROG}.c
 #	@strip ${PROG}
 
 all: ${PROG} docs
@@ -18,8 +18,8 @@ clobber:
 	@rm -f ${PROG}
 	@rm -f ${PROG}.1
 
-docs: man1.tex
-	@latex2man man1.tex ${PROG}.1
+docs: docs/man1.tex
+	@cd docs && latex2man man1.tex ../${PROG}.1
 
 install: ${PROG} ${PROG}.1 _${PROG}
 	@install -Dm755 ${PROG} ${DESTDIR}${PREFIX}/bin/${PROG}
