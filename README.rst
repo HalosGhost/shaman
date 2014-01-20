@@ -2,21 +2,30 @@ Shaman
 ======
 Originally inspired by `weatherman <http://darkhorse.nu/weatherman/>`_, ``shaman`` is a small command-line application written in C for fetching current weather conditions from the `National Weather Service <http://forecast.weather.gov>`_.
 
-For those who aren't familiar with the concept of a forecast stone, think of it like this. This software's most basic function is, essentially, a digital form of this:
-
-.. image:: http://www.theweatherstone.co.uk/images/slide1.jpg
-
 Status & Documentation
 ----------------------
-``shaman`` has grown in functionality a great deal, and to get a good idea of where the program stands, please see the documentation (``man shaman``).
+``shaman`` is being actively developed and re-coded from the ground-up to be all in native C.
+The best ways to follow its status and functionality are to track the commit list and keep up with the To-Do lists below.
 
-To-Do
------
-#. Add basic functionality (e.g., fetch and parse weather XML file)
-#. Update documentation for 2.x
+Short Term To-Do
+----------------
+These are tasks that must be done in order for ``shaman`` to be considered functional and stable:
+
+#. Parse user-supplied ``formatString``
+#. Fetch dwml file with ``libcurl`` according to the NWS API and user-supplied ``formatString``
+#. Parse fetched dwml with ``libxml``
+#. Re-parse ``formatString`` and do the conversions with the fetched data
+
+Long Term To-Do
+---------------
+These are tasks that offer some very nice functionality or usability features but do not make sense to pursue until the short-term tasks have been completed:
+
+#. Separate the source file into separate headers for readability
+#. Provide a native C library and interface (rework ``shaman`` to use this interface)
+#. Support non-Linux platforms? (some may already be supported)
 
 Contributions
 -------------
 All contributions are welcome (pull requests, constructive criticism, feature requests and musings).
-All pull requests should follow my `C styleguide <http://github.com/HalosGhost/styleguides/blob/master/C.rst>`_ so as to keep code formatting consistent and readable.
-Any proposed commit which does not follow the styleguide may be subject to rejection or reformatting for conformance before being merged.
+All pull requests should follow my `C style guide <http://github.com/HalosGhost/styleguides/blob/master/C.rst>`_ so as to keep code formatting consistent and readable.
+Any proposed commit which does not follow the style guide may be subject to rejection or reformatting for conformance before being merged.
