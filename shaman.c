@@ -328,10 +328,6 @@ void _formatOutput (char * formatStr)
                     // dew point
                     continue;
 
-                case 'h':
-                    // heat index
-                    continue;
-
                 case 'H':
                     // hazard warnings
                     continue;
@@ -354,6 +350,10 @@ void _formatOutput (char * formatStr)
 
                 case 't':
                     // temperature
+                    continue;
+
+                case 'T':
+                    // apparent temperature
                     continue;
 
                 case 'v':
