@@ -89,7 +89,7 @@ int main (int argc, char ** argv)
             _getData(buffer, flagMetric);
             free(buffer);
         }
-        else if ( sl > 99999 || sl < 00000 )
+        else if ( sl > 99999 || sl < 1001 )
         {   fprintf(stderr, "Invalid zip code: %ld\n", sl);
             exit(1);
         }
