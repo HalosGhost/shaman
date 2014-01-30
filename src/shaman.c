@@ -58,6 +58,12 @@ int main (int argc, char ** argv)
 
     if ( flagHelp == 1 ) _usage();
 
+    if ( *formatString ) _parseFormat(formatString);
+    else
+    {   fprintf(stderr, "No specified format\n");
+        exit(1);
+    }
+
     if ( *location )
     {   char * end;
         const long sl = strtol(location, &end, 10);
@@ -101,6 +107,7 @@ int main (int argc, char ** argv)
     }
 
     // Call other functions for parsing
+    _formatOutput(formatString);
 
     return 0;
 }

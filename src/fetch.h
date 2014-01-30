@@ -29,7 +29,8 @@ void _getData (const char * location, const int scale)
     handle = curl_easy_init();
 
     if ( handle )
-    {   snprintf(url, sizeof(url), "http://forecast.weather.gov/zipcity.php?inputstring=%s", location);
+    {   static const char * provider = "http://forecast.weather.gov/zipcity.php?inputstring=";
+        snprintf(url, sizeof(url), "%s%s", provider, location);
         curl_easy_setopt(handle, CURLOPT_WRITEDATA, suppressOutput);
         curl_easy_setopt(handle, CURLOPT_URL, url);
         curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1);
@@ -75,12 +76,6 @@ void _getData (const char * location, const int scale)
     _parseDataInBuffer(data.buffer, data.size);
 
     free(data.buffer);
-
-    if ( *formatString ) _formatOutput(formatString);
-    else
-    {   fprintf(stderr, "No specified format\n");
-        exit(1);
-    }
 }
 
 #endif // __FETCH_H__
