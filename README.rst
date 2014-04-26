@@ -2,6 +2,9 @@ Shaman
 ======
 Originally inspired by `weatherman <http://darkhorse.nu/weatherman/>`_, ``shaman`` is a small command-line application written in C for fetching current weather conditions from the `National Weather Service <http://forecast.weather.gov>`_.
 
+**NOTE**: for anyone following ``shaman``'s development, there have been some new developments which will mean a significant change to both its goal, style and function.
+Stay tuned for a big announcement.
+
 Status & Documentation
 ----------------------
 ``shaman`` is being actively developed and re-coded from the ground-up to be all in native C.
