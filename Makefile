@@ -7,7 +7,7 @@ LIBS    =   `pkg-config --libs-only-l libcurl libxml-2.0` #-lweather
 INCLUDE =   `pkg-config --cflags-only-I libxml-2.0` #-L${PWD}/src
 HEADERS =   ${PROG}.h fetch.h format.h memsafety.h parse.h usage.h
 
-.PHONY: all clobber docs install shared
+.PHONY: all clean clobber docs install shared
 
 ${PROG}: shared src/${PROG}.c
 	@cd src && ${CC} ${INCLUDE} ${CFLAGS} ${LIBS} -o ../${PROG} ${PROG}.c
