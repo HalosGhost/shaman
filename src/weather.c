@@ -42,6 +42,20 @@ static size_t write_response (void * ptr, size_t size, size_t nmemb, void * stre
     return size * nmemb;
 }
 
+struct json_write_result * fetch_data_file (char * json_file_path) {
+    char * data = malloc(BUFFER_SIZE);
+    static struct json_write_result written_result;
+    written_result.data = data;
+    written_result.position = 0;
+
+    FILE * json_fp = fopen(json_file_path, "r");
+
+    fread(written_result.data, BUFFER_SIZE, 1, json_fp);
+    fclose(json_fp);
+
+    return &written_result;
+}
+
 // Fetch JSON from OpenWeatherMap
 struct json_write_result * fetch_data_owm (const char method, const char * location, const char scale) {
     CURL * handle;
@@ -145,17 +159,20 @@ struct weather * read_weather (struct json_write_result * json) {
                 fetched_weather.humidity = json_real_value(json_object_get(value, "humidity"));
                 break;
 
-            case 'n':
-                fetched_weather.name = malloc(sizeof(char[32]));
-                snprintf(fetched_weather.name, sizeof(fetched_weather.name), "%s", json_string_value(value));
+            case 'n': {
+                int city_name_length = strlen(json_string_value(value)) + 1;
+                fetched_weather.name = malloc(city_name_length);
+                snprintf(fetched_weather.name, city_name_length, "%s", json_string_value(value));
                 break;
+            }
 
             case 's':
                 if ( key[1] == 'y' ) {
                     fetched_weather.sunrise = json_integer_value(json_object_get(value, "sunrise"));
                     fetched_weather.sunset = json_integer_value(json_object_get(value, "sunset"));
-                    fetched_weather.country = malloc(sizeof(char[2]));
-                    snprintf(fetched_weather.country, sizeof(fetched_weather.country), "%s", json_string_value(json_object_get(value, "country")));
+                    int country_name_length = strlen(json_string_value(json_object_get(value, "country"))) + 1;
+                    fetched_weather.country = malloc(country_name_length);
+                    snprintf(fetched_weather.country, country_name_length, "%s", json_string_value(json_object_get(value, "country")));
                 } else if ( key[1] == 'n' ) {
                     fetched_weather.precipitation_3h = json_real_value(json_object_get(value, "3h"));
                 } break;
