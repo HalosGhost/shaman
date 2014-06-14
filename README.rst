@@ -12,24 +12,7 @@ Hopefully, ``shaman`` 2.x will be ready for testing shortly.
 Status & Documentation
 ----------------------
 ``shaman`` is being actively developed and re-coded from the ground-up to be all in native C.
-The best ways to follow its status and functionality are to track the commit list and keep up with the To-Do lists below.
-
-Short Term To-Do
-----------------
-These are tasks that must be done in order for ``shaman`` to be considered functional and stable:
-
-#. Parse user-supplied ``formatString``
-#. Fetch dwml file with ``libcurl`` according to the NWS API and user-supplied ``formatString``
-#. Parse fetched dwml with ``libxml``
-#. Re-parse ``formatString`` and do the conversions with the fetched data
-
-Long Term To-Do
----------------
-These are tasks that offer some very nice functionality or usability features but do not make sense to pursue until the short-term tasks have been completed:
-
-#. Update ``_shaman`` (zsh completion) for the re-code
-#. Provide a native C library and interface (rework ``shaman`` to use this interface)
-#. Support non-Linux platforms? (some may already be supported)
+The best ways to follow its status and functionality are to track the commit list and keep up with the `To-do lists <http://github.com/HalosGhost/shaman/blob/master/TODO.rst>`_.
 
 Contributions
 -------------
