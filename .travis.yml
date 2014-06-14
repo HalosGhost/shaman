@@ -1,7 +1,7 @@
 before_install:
     - sudo add-apt-repository ppa:pi-rho/security
     - sudo apt-get update -qq
-    - sudo apt-get install pkg-config jansson
+    - sudo apt-get install -qq pkg-config jansson
 
 language: c
 
