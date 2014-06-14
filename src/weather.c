@@ -180,6 +180,9 @@ struct weather * read_weather (struct json_write_result * json) {
             case 'w':
                 if ( key[1] == 'e' ) {
                     fetched_weather.weather_code = json_integer_value(json_object_get(json_array_get(value, 0), "id"));
+                    int condition_length = strlen(json_string_value(json_object_get(json_array_get(value, 0), "description"))) + 1;
+                    fetched_weather.condition = malloc(condition_length);
+                    snprintf(fetched_weather.condition, condition_length, "%s", json_string_value(json_object_get(json_array_get(value, 0), "description")));
                 } else if ( key[1] == 'i' ) {
                     fetched_weather.wind_speed = json_number_value(json_object_get(value, "speed"));
                     fetched_weather.wind_gust = json_number_value(json_object_get(value, "gust"));
@@ -205,6 +208,10 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
                 case '\0':
                     --format;
                     break;
+
+                case 'a':
+                    snprintf(dest_str + current_length, n - current_length, "%s", weather->condition);
+                    continue;
 
                 case 'c':
                     snprintf(dest_str + current_length, n - current_length, "%s, %s", weather->name, weather->country);
@@ -293,6 +300,7 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
     
     free(weather->name);
     free(weather->country);
+    free(weather->condition);
 
     return strlen(dest_str);
 }

@@ -47,6 +47,7 @@ struct weather {
     double wind_gust; // gusting speed
     int wind_direction; // wind heading
     double clouds; // percent cloud cover
+    char * condition; // weather conditions
     int weather_code; // weather code
     double precipitation_3h; // precipitation
 };
