@@ -3,7 +3,6 @@ To-Do Lists
 
 General
 -------
-- Add travis support
 - Update ``_shaman`` (zsh completion)
    - Add Bash completion?
 

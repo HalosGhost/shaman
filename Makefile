@@ -12,7 +12,7 @@ $(PROG): shared $(PROG).c
 	@cd src && $(CC) -L`pwd` $(INCLUDE) $(CFLAGS) $(LIBS) -lweather -o $(PROG) $(PROG).c
 #	@strip $(PROG)
 
-all: $(PROG)
+all: check $(PROG)
 
 check: test
 	@LD_LIBRARY_PATH=`pwd` ./test_suite
