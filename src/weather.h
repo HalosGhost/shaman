@@ -32,11 +32,11 @@ struct json_write_result {
 struct weather {
     long id; // city id number
     long dt; // unixtime of data receipt
-	long sunrise; // unixtime of sunrise
-	long sunset; /// unixtime of sunset
+    long sunrise; // unixtime of sunrise
+    long sunset; /// unixtime of sunset
     double latitude; // latitude
     double longitude; // longitude
-	char * country; // country code
+    char * country; // country code
     char * name; // city name
     double temperature; // temperature
     double humidity; // percent humidity
@@ -44,7 +44,7 @@ struct weather {
     double temp_min; // min temperature
     double pressure; // barometric pressure
     double wind_speed; // wind speed
-	double wind_gust; // gusting speed
+    double wind_gust; // gusting speed
     int wind_direction; // wind heading
     double clouds; // percent cloud cover
     int weather_code; // weather code
@@ -58,3 +58,4 @@ extern struct weather * read_weather (struct json_write_result * json);
 extern size_t strfweather (char * dest_str, size_t max, const char * format, const struct weather * weather);
 
 #endif // __WEATHER_H__
+// vim: set ts=4 sw=4 et:
