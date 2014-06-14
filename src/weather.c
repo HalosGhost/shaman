@@ -137,10 +137,10 @@ struct weather * read_weather (struct json_write_result * json) {
         switch ( key[0] ) {
             case 'c':
                 if ( key[1] == 'l' ) {
-                    fetched_weather.clouds = json_real_value(json_object_get(value, "all"));
+                    fetched_weather.clouds = json_number_value(json_object_get(value, "all"));
                 } else if ( key[2] == 'o' ) {
-                    fetched_weather.longitude = json_real_value(json_object_get(value, "lon"));
-                    fetched_weather.latitude = json_real_value(json_object_get(value, "lat"));
+                    fetched_weather.longitude = json_number_value(json_object_get(value, "lon"));
+                    fetched_weather.latitude = json_number_value(json_object_get(value, "lat"));
                 } break;
 
             case 'd':
@@ -152,11 +152,11 @@ struct weather * read_weather (struct json_write_result * json) {
                 break;
 
             case 'm':
-                fetched_weather.temperature = json_real_value(json_object_get(value, "temp"));
-                fetched_weather.pressure = json_real_value(json_object_get(value, "pressure"));
-                fetched_weather.temp_min = json_real_value(json_object_get(value, "temp_min"));
-                fetched_weather.temp_max = json_real_value(json_object_get(value, "temp_max"));
-                fetched_weather.humidity = json_real_value(json_object_get(value, "humidity"));
+                fetched_weather.temperature = json_number_value(json_object_get(value, "temp"));
+                fetched_weather.pressure = json_number_value(json_object_get(value, "pressure"));
+                fetched_weather.temp_min = json_number_value(json_object_get(value, "temp_min"));
+                fetched_weather.temp_max = json_number_value(json_object_get(value, "temp_max"));
+                fetched_weather.humidity = json_number_value(json_object_get(value, "humidity"));
                 break;
 
             case 'n': {
@@ -174,20 +174,20 @@ struct weather * read_weather (struct json_write_result * json) {
                     fetched_weather.country = malloc(country_name_length);
                     snprintf(fetched_weather.country, country_name_length, "%s", json_string_value(json_object_get(value, "country")));
                 } else if ( key[1] == 'n' ) {
-                    fetched_weather.precipitation_3h = json_real_value(json_object_get(value, "3h"));
+                    fetched_weather.precipitation_3h = json_number_value(json_object_get(value, "3h"));
                 } break;
 
             case 'w':
                 if ( key[1] == 'e' ) {
                     fetched_weather.weather_code = json_integer_value(json_object_get(json_array_get(value, 0), "id"));
                 } else if ( key[1] == 'i' ) {
-                    fetched_weather.wind_speed = json_real_value(json_object_get(value, "speed"));
-                    fetched_weather.wind_gust = json_real_value(json_object_get(value, "gust"));
+                    fetched_weather.wind_speed = json_number_value(json_object_get(value, "speed"));
+                    fetched_weather.wind_gust = json_number_value(json_object_get(value, "gust"));
                     fetched_weather.wind_direction = json_integer_value(json_object_get(value, "deg"));
                 } break;
 
             case 'r':
-                fetched_weather.precipitation_3h = json_real_value(json_object_get(value, "3h"));
+                fetched_weather.precipitation_3h = json_number_value(json_object_get(value, "3h"));
                 break;
         }
     }
