@@ -43,7 +43,7 @@ static size_t write_response (void * ptr, size_t size, size_t nmemb, void * stre
 }
 
 struct json_write_result * fetch_data_file (char * json_file_path) {
-    char * data = malloc(BUFFER_SIZE);
+    char * data = calloc(1, BUFFER_SIZE);
     static struct json_write_result written_result;
     written_result.data = data;
     written_result.position = 0;
@@ -61,7 +61,7 @@ struct json_write_result * fetch_data_owm (const char method, const char * locat
     CURL * handle;
     CURLcode result;
 
-    char * data = malloc(BUFFER_SIZE);
+    char * data = calloc(1, BUFFER_SIZE);
     static struct json_write_result written_result;
     written_result.data = data;
     written_result.position = 0;
