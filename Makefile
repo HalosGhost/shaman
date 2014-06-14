@@ -6,7 +6,7 @@ MANDIR		?=  /share/man
 LIBS		=   `pkg-config --libs-only-l libcurl jansson`
 INCLUDE		=   `pkg-config --cflags-only-I libcurl jansson`
 
-.PHONY: all clean clobber docs install shared test
+.PHONY: all check clean clobber docs install shared test
 
 $(PROG): shared $(PROG).c
 	@cd src && $(CC) -L`pwd` $(INCLUDE) $(CFLAGS) $(LIBS) -lweather -o $(PROG) $(PROG).c
@@ -33,7 +33,7 @@ install: libweather.so $(PROG)
 shared: 
 	@cd src && $(CC) -c $(CFLAGS) -fPIC weather.c
 	@cd src && $(CC) -shared -o ../libweather.so weather.o
-#	@strip ../libweather.so
+#	@strip libweather.so
 
 test: shared
 	@cd src && $(CC) -L`pwd`/.. $(INCLUDE) $(CFLAGS) $(LIBS) -lweather -o ../test_suite suite.c
