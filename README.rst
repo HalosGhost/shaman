@@ -12,7 +12,7 @@ Hopefully, ``shaman`` 2.x will be ready for testing shortly.
 Status & Documentation
 ----------------------
 
-.. image:: https://travis-ci.org/HalosGhost/shaman.png
+.. image:: http://praetorian.erebor.buhman.org:2422/job/shaman/badge/icon
 
 ``shaman`` is being actively developed and re-coded from the ground-up to be all in native C.
 The best ways to follow its status and functionality are to track the commit list and keep up with the `To-do lists <http://github.com/HalosGhost/shaman/blob/master/TODO.rst>`_.
