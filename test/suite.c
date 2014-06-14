@@ -109,8 +109,9 @@ int test_remote_parsing (struct json_write_result * test) {
     struct weather * weather = read_weather(test);
     int failed_test_counter = 0;
 
-    if ( strcmp(weather->country, "US") != 0 ) { failed_test_counter++; };
-    if ( strcmp(weather->name, "Saint Paul") != 0 ) { failed_test_counter++; };
+    if ( strcmp(weather->country, "US") != 0 ) { failed_test_counter ++; };
+    if ( strcmp(weather->name, "Saint Paul") != 0 ) { failed_test_counter ++; };
+	if ( weather->id != 5045360 ) { failed_test_counter ++; };
 
     printf("Testing remote JSON Parsing\t[ %s ]\n", (failed_test_counter == 0 ? "PASS" : "FAIL"));
 
