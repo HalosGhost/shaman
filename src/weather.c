@@ -1,14 +1,281 @@
-#include "parse.h"
-#include "fetch.h"
-#include "format.h"
+/*******************************************************************\
+* A small, native C library for fetching weather                    *
+* Copyright (C) 2013-2014, Sam Stuewe                               *
+*                                                                   *
+* This program is free software; you can redistribute it and/or     *
+* modify it under the terms of the GNU General Public License       *
+* as published by the Free Software Foundation; either version 2    *
+* of the License, or (at your option) any later version.            *
+*                                                                   *
+* This program is distributed in the hope that it will be useful,   *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of    *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      *
+* GNU General Public License for more details.                      *
+*                                                                   *
+* You should have received a copy of the GNU General Public License *
+* along with this program; if not, write to the Free Software       *
+* Foundation, Inc., 51 Franklin Street, Fifth Floor,                *
+* Boston, MA  02110-1301, USA.                                      *
+\*******************************************************************/
 
-int strfweather(void)
-{   /* Parse formatString;
-     * Submit DWML to NWS for requested values;
-     * Parse returned NWS DWML;
-     * Format outpug string to include conversions of the requested values;
-     */
+// Libraries //
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <curl/curl.h>
+#include <jansson.h>
+#include "weather.h"
 
-    return 0;
+// Function drawn from Petri Lehtinen's GitHub Jansson example
+static size_t write_response (void * ptr, size_t size, size_t nmemb, void * stream) {
+
+    struct json_write_result * result = (struct json_write_result * )stream;
+    if ( result->position + size * nmemb >= BUFFER_SIZE - 1 ) {
+        fprintf(stderr, "Write Buffer is too small\n");
+        return 0;
+    }
+
+    memcpy(result->data + result->position, ptr, size * nmemb);
+    result->position += size * nmemb;
+
+    return size * nmemb;
 }
-// vim:set ts=4 sw=4 et:
+
+// Fetch JSON from OpenWeatherMap
+struct json_write_result * fetch_data_owm (const char method, const char * location, const char scale) {
+    CURL * handle;
+    CURLcode result;
+
+    char * data = malloc(BUFFER_SIZE);
+    static struct json_write_result written_result;
+    written_result.data = data;
+    written_result.position = 0;
+
+    char url [256] = {'\0'};
+    char * fetch_method;
+    char * fetch_scale;
+
+    switch ( method ) {
+        case 'i':
+            fetch_method = "id";
+            break;
+
+        default:
+            fetch_method = "q";
+            break;
+    }
+
+    switch ( scale ) {
+        case 'i':
+            fetch_scale = "imperial";
+            break;
+
+        default:
+            fetch_scale = "metric";
+            break;
+    }
+
+    curl_global_init(CURL_GLOBAL_ALL);
+    handle = curl_easy_init();
+
+    if ( handle ) {
+        static const char * provider = "http://api.openweathermap.org/data/2.5/weather";
+        
+        snprintf(url, sizeof(url), "%s?%s=%s&units=%s", provider, fetch_method, location, fetch_scale);
+
+        curl_easy_setopt(handle, CURLOPT_URL, url);
+        curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_response);
+        curl_easy_setopt(handle, CURLOPT_WRITEDATA, &written_result);
+
+        result = curl_easy_perform(handle);
+        if ( result != CURLE_OK ) {
+            fprintf(stderr, "Failed to retrieve data (%s)\n", curl_easy_strerror(result));
+
+            curl_easy_cleanup(handle);
+            curl_global_cleanup();
+            exit(1);
+        }
+    }
+
+    curl_easy_cleanup(handle);
+    curl_global_cleanup();
+
+    return &written_result;
+}
+
+// Read JSON into a weather struct
+struct weather * read_weather (struct json_write_result * json) {
+    json_error_t error;
+    json_t * root = json_loads(json->data, 0, &error);
+    free(json->data);
+
+    if ( !root ) {
+        fprintf(stderr, "Error on line %d (%s)\n", error.line, error.text);
+        return NULL;
+    }
+
+    static struct weather fetched_weather;
+
+    const char * key;
+    json_t * value;
+    json_object_foreach(root, key, value) {
+        switch ( key[0] ) {
+            case 'c':
+                if ( key[1] == 'l' ) {
+                    fetched_weather.clouds = json_real_value(json_object_get(value, "all"));
+                } else if ( key[2] == 'o' ) {
+                    fetched_weather.longitude = json_real_value(json_object_get(value, "lon"));
+                    fetched_weather.latitude = json_real_value(json_object_get(value, "lat"));
+                } break;
+
+            case 'd':
+                fetched_weather.dt = json_integer_value(value);
+                break;
+
+            case 'i':
+                fetched_weather.id = json_integer_value(value);
+                break;
+
+            case 'm':
+                fetched_weather.temperature = json_real_value(json_object_get(value, "temp"));
+                fetched_weather.pressure = json_real_value(json_object_get(value, "pressure"));
+                fetched_weather.temp_min = json_real_value(json_object_get(value, "temp_min"));
+                fetched_weather.temp_max = json_real_value(json_object_get(value, "temp_max"));
+                fetched_weather.humidity = json_real_value(json_object_get(value, "humidity"));
+                break;
+
+            case 'n':
+                fetched_weather.name = malloc(sizeof(char[32]));
+                snprintf(fetched_weather.name, sizeof(fetched_weather.name), "%s", json_string_value(value));
+                break;
+
+            case 's':
+                if ( key[1] == 'y' ) {
+                    fetched_weather.sunrise = json_integer_value(json_object_get(value, "sunrise"));
+                    fetched_weather.sunset = json_integer_value(json_object_get(value, "sunset"));
+                    fetched_weather.country = malloc(sizeof(char[2]));
+                    snprintf(fetched_weather.country, sizeof(fetched_weather.country), "%s", json_string_value(json_object_get(value, "country")));
+                } else if ( key[1] == 'n' ) {
+                    fetched_weather.precipitation_3h = json_real_value(json_object_get(value, "3h"));
+                } break;
+
+            case 'w':
+                if ( key[1] == 'e' ) {
+                    fetched_weather.weather_code = json_integer_value(json_object_get(json_array_get(value, 0), "id"));
+                } else if ( key[1] == 'i' ) {
+                    fetched_weather.wind_speed = json_real_value(json_object_get(value, "speed"));
+                    fetched_weather.wind_gust = json_real_value(json_object_get(value, "gust"));
+                    fetched_weather.wind_direction = json_integer_value(json_object_get(value, "deg"));
+                } break;
+
+            case 'r':
+                fetched_weather.precipitation_3h = json_real_value(json_object_get(value, "3h"));
+                break;
+        }
+    }
+
+    return &fetched_weather;
+}
+
+// TODO: write data from weather to dest_str according to format up to n bytes
+size_t strfweather (char * dest_str, size_t n, const char * format, const struct weather * weather) {
+    for ( ; *format; ++format) {
+        if ( *format == '%' ) {
+            switch ( *++format ) {
+                case '\0':
+                    --format;
+                    break;
+
+                case 'c':
+                    snprintf(dest_str, n - strlen(dest_str), "%s, %s", weather->name, weather->country);
+                    continue;
+
+                case 'C':
+                    snprintf(dest_str, n - strlen(dest_str), "%ld", weather->id);
+                    continue;
+
+                case 'd':
+                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->clouds);
+                    continue;
+
+                case 'D':
+                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->humidity);
+                    continue;
+
+                case 'g':
+                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->wind_gust);
+                    continue;
+
+                case 'G':
+                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->wind_speed);
+                    continue;
+
+                case 'l':
+                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->latitude);
+                    continue;
+
+                case 'L':
+                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->longitude);
+                    continue;
+
+                case 'm':
+                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->temp_min);
+                    continue;
+
+                case 'M':
+                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->temp_max);
+                    continue;
+
+                case 'p':
+                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->pressure);
+                    continue;
+
+                case 'P':
+                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->precipitation_3h);
+                    continue;
+
+                case 'r':
+                    snprintf(dest_str, n - strlen(dest_str), "%ld", weather->dt);
+                    continue;
+
+                case 's':
+                    snprintf(dest_str, n - strlen(dest_str), "%ld", weather->sunrise);
+                    continue;
+
+                case 'S':
+                    snprintf(dest_str, n - strlen(dest_str), "%ld", weather->sunset);
+                    continue;
+
+                case 't':
+                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->temperature);
+                    continue;
+
+                case 'T':
+                    // AU / "Feels Like"
+                    continue;
+
+                case 'w':
+                    snprintf(dest_str, n - strlen(dest_str), "%d", weather->wind_direction);
+                    continue;
+
+                case 'W':
+                    snprintf(dest_str, n - strlen(dest_str), "%d", weather->weather_code);
+                    continue;
+
+                case '%':
+                default:
+                    break;
+            }
+        } else {
+            snprintf(dest_str, n - strlen(dest_str), "%c", *format);
+        }
+    }
+    
+    free(weather->name);
+    free(weather->country);
+
+    return strlen(dest_str);
+}
+
+// vim: set ts=4 sw=4 et:

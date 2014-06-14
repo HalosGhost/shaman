@@ -1,41 +1,41 @@
-CFLAGS  +=  -Os -Wall
-PROG    =   shaman
-PREFIX  ?=  /usr
-VER     =   2.0
-MANDIR  ?=  /share/man
-LIBS    =   `pkg-config --libs-only-l libcurl libxml-2.0` #-lweather
-INCLUDE =   `pkg-config --cflags-only-I libxml-2.0` #-L${PWD}/src
-HEADERS =   ${PROG}.h fetch.h format.h memsafety.h parse.h usage.h
+CFLAGS		+=  -Wall -g # -Os
+PROG		=   shaman
+PREFIX		?=  /usr
+VER			=   2.0
+MANDIR		?=  /share/man
+LIBS		=   `pkg-config --libs-only-l libcurl jansson`
+INCLUDE		=   `pkg-config --cflags-only-I libcurl jansson`
 
-.PHONY: all clean clobber docs install shared
+.PHONY: all clean clobber docs install shared test
 
-${PROG}: shared src/${PROG}.c
-	@cd src && ${CC} ${INCLUDE} ${CFLAGS} ${LIBS} -o ../${PROG} ${PROG}.c
-	@strip ${PROG}
+$(PROG): shared $(PROG).c
+	@cd src && $(CC) -L`pwd` $(INCLUDE) $(CFLAGS) $(LIBS) -lweather -o $(PROG) $(PROG).c
+#	@strip $(PROG)
 
-all: ${PROG} docs
+all: $(PROG)
+
+check: test
+	@LD_LIBRARY_PATH=`pwd` ./test_suite
 
 clean:
-	@rm -f src/weather.o
+	@rm -f weather.o
 
 clobber:
-	@rm -f ${PROG}
-	@rm -f ${PROG}.1
-	@rm -f strfwthr.3
-	@rm -f src/libweather.so
+	@rm -f $(PROG)
+	@rm -f test_suite
+	@rm -f libweather.so
 	@rm -f src/weather.o
 
-docs: docs/man1.tex docs/man3.tex
-	@cd docs && latex2man man1.tex ../${PROG}.1 && latex2man man3.tex ../strfwthr.3
+install: libweather.so $(PROG)
+	@install -Dm755 libweather.so $(DESTDIR)$(PREFIX)/lib/libweather.so
+	@install -Dm755 $(PROG) $(DESTDIR)$(PREFIX)/bin/$(PROG)
 
-install: src/libstrfwthr.so ${PROG} ${PROG}.1 _${PROG} 
-	@install -Dm755 src/libweather.so ${DESTDIR}${PREFIX}/lib/libweather.so
-	@install -Dm755 ${PROG} ${DESTDIR}${PREFIX}/bin/${PROG}
-	@install -Dm644 ${PROG}.1 ${DESTDIR}${PREFIX}${MANDIR}/man1/${PROG}.1
-	@install -Dm644 _${PROG} ${DESTDIR}${PREFIX}/share/zsh/site-functions/_${PROG}
+shared: 
+	@cd src && $(CC) -c $(CFLAGS) -fPIC weather.c
+	@cd src && $(CC) -shared -o ../libweather.so weather.o
+#	@strip ../libweather.so
 
-shared: src/weather.c
-	@cd src && ${CC} -c ${INCLUDE} ${CFLAGS} ${LIBS} -fPIC weather.c
-	@cd src && ${CC} -shared -o libweather.so weather.o
+test: shared
+	@cd src && $(CC) -L`pwd`/.. $(INCLUDE) $(CFLAGS) $(LIBS) -lweather -o ../test_suite suite.c
 
 # vim:set tabstop=4 shiftwidth=4:
