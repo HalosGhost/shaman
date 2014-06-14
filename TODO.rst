@@ -8,8 +8,7 @@ General
 
 libweather
 ----------
-- Track down ``temp_max`` bug
-- Add functions for creating and opening a local ``.json`` file (needed for API compliance)
+- Add functions for creating a local ``.json`` file (needed for API compliance)
 - Add function for declaring an API key
 
 shaman
