@@ -49,7 +49,7 @@ int main (void) {
 
 struct json_write_result * test_local_fetching (void) {
     printf("Testing local JSON Fetching\t[ PEND ]\r");
-    struct json_write_result * test = fetch_data_file("./test/test.json");
+    struct json_write_result * test = fetch_data_file("test.json");
     printf("Testing local JSON Fetching\t[ %s ]\n", (test->data ? "PASS" : "FAIL"));
 
     if ( test->data ) {
