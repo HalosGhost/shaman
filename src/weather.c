@@ -181,6 +181,8 @@ struct weather * read_weather (struct json_write_result * json) {
 // TODO: write data from weather to dest_str according to format up to n bytes
 size_t strfweather (char * dest_str, size_t n, const char * format, const struct weather * weather) {
     for ( ; *format; ++format) {
+        int current_length = strlen(dest_str);
+
         if ( *format == '%' ) {
             switch ( *++format ) {
                 case '\0':
@@ -188,67 +190,67 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
                     break;
 
                 case 'c':
-                    snprintf(dest_str, n - strlen(dest_str), "%s, %s", weather->name, weather->country);
+                    snprintf(dest_str + current_length, n - current_length, "%s, %s", weather->name, weather->country);
                     continue;
 
                 case 'C':
-                    snprintf(dest_str, n - strlen(dest_str), "%ld", weather->id);
+                    snprintf(dest_str + current_length, n - current_length, "%ld", weather->id);
                     continue;
 
                 case 'd':
-                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->clouds);
+                    snprintf(dest_str + current_length, n - current_length, "%g", weather->clouds);
                     continue;
 
                 case 'D':
-                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->humidity);
+                    snprintf(dest_str + current_length, n - current_length, "%g", weather->humidity);
                     continue;
 
                 case 'g':
-                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->wind_gust);
+                    snprintf(dest_str + current_length, n - current_length, "%g", weather->wind_gust);
                     continue;
 
                 case 'G':
-                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->wind_speed);
+                    snprintf(dest_str + current_length, n - current_length, "%g", weather->wind_speed);
                     continue;
 
                 case 'l':
-                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->latitude);
+                    snprintf(dest_str + current_length, n - current_length, "%g", weather->latitude);
                     continue;
 
                 case 'L':
-                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->longitude);
+                    snprintf(dest_str + current_length, n - current_length, "%g", weather->longitude);
                     continue;
 
                 case 'm':
-                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->temp_min);
+                    snprintf(dest_str + current_length, n - current_length, "%g", weather->temp_min);
                     continue;
 
                 case 'M':
-                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->temp_max);
+                    snprintf(dest_str + current_length, n - current_length, "%g", weather->temp_max);
                     continue;
 
                 case 'p':
-                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->pressure);
+                    snprintf(dest_str + current_length, n - current_length, "%g", weather->pressure);
                     continue;
 
                 case 'P':
-                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->precipitation_3h);
+                    snprintf(dest_str + current_length, n - current_length, "%g", weather->precipitation_3h);
                     continue;
 
                 case 'r':
-                    snprintf(dest_str, n - strlen(dest_str), "%ld", weather->dt);
+                    snprintf(dest_str + current_length, n - current_length, "%ld", weather->dt);
                     continue;
 
                 case 's':
-                    snprintf(dest_str, n - strlen(dest_str), "%ld", weather->sunrise);
+                    snprintf(dest_str + current_length, n - current_length, "%ld", weather->sunrise);
                     continue;
 
                 case 'S':
-                    snprintf(dest_str, n - strlen(dest_str), "%ld", weather->sunset);
+                    snprintf(dest_str + current_length, n - current_length, "%ld", weather->sunset);
                     continue;
 
                 case 't':
-                    snprintf(dest_str, n - strlen(dest_str), "%g", weather->temperature);
+                    snprintf(dest_str + current_length, n - current_length, "%g", weather->temperature);
                     continue;
 
                 case 'T':
@@ -256,11 +258,11 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
                     continue;
 
                 case 'w':
-                    snprintf(dest_str, n - strlen(dest_str), "%d", weather->wind_direction);
+                    snprintf(dest_str + current_length, n - current_length, "%d", weather->wind_direction);
                     continue;
 
                 case 'W':
-                    snprintf(dest_str, n - strlen(dest_str), "%d", weather->weather_code);
+                    snprintf(dest_str + current_length, n - current_length, "%d", weather->weather_code);
                     continue;
 
                 case '%':
@@ -268,7 +270,7 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
                     break;
             }
         } else {
-            snprintf(dest_str, n - strlen(dest_str), "%c", *format);
+            snprintf(dest_str + current_length, n - current_length, "%c", *format);
         }
     }
     
