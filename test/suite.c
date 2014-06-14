@@ -66,6 +66,7 @@ int test_local_parsing (struct json_write_result * test) {
 
     if ( strcmp(weather->country, "US") != 0 ) { failed_test_counter ++; };
     if ( strcmp(weather->name, "Georgetown") != 0 ) { failed_test_counter ++; };
+    if ( strcmp(weather->condition, "Sky is Clear") != 0 ) { failed_test_counter ++; };
     if ( weather->latitude != 30.63 ) { failed_test_counter ++; };
     if ( weather->longitude != -97.68 ) { failed_test_counter ++; };
     if ( weather->sunrise != 1402486044 ) { failed_test_counter ++; };
@@ -88,6 +89,7 @@ int test_local_parsing (struct json_write_result * test) {
 
     free(weather->name);
     free(weather->country);
+    free(weather->condition);
 
     return failed_test_counter;
 }
@@ -107,6 +109,15 @@ struct json_write_result * test_remote_fetching (void) {
 int test_remote_parsing (struct json_write_result * test) {
     printf("Testing remote JSON Parsing\t[ PEND ]\r");
     struct weather * weather = read_weather(test);
+
+    if ( !weather ) {
+        free(weather->name);
+        free(weather->country);
+        free(weather->condition);
+
+        return 1;
+    }
+
     int failed_test_counter = 0;
 
     if ( strcmp(weather->country, "US") != 0 ) { failed_test_counter ++; };
@@ -117,6 +128,7 @@ int test_remote_parsing (struct json_write_result * test) {
 
     free(weather->name);
     free(weather->country);
+    free(weather->condition);
 
     return failed_test_counter;
 }
