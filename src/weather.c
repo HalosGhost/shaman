@@ -28,7 +28,7 @@
 #include "weather.h"
 
 // Function drawn from Petri Lehtinen's GitHub Jansson example
-static size_t write_response (void * ptr, size_t size, size_t nmemb, void * stream) {
+static size_t write_data_buffer (void * ptr, size_t size, size_t nmemb, void * stream) {
 
     struct json_write_result * result = (struct json_write_result * )stream;
     if ( result->position + size * nmemb >= BUFFER_SIZE - 1 ) {
@@ -42,6 +42,7 @@ static size_t write_response (void * ptr, size_t size, size_t nmemb, void * stre
     return size * nmemb;
 }
 
+// Fetch JSON from file
 struct json_write_result * fetch_data_file (char * json_file_path) {
     char * data = calloc(1, BUFFER_SIZE);
     static struct json_write_result written_result;
@@ -55,6 +56,63 @@ struct json_write_result * fetch_data_file (char * json_file_path) {
 
     return &written_result;
 }
+
+void cache_data_file (const char method, const char * location, const char scale, char * data_file_path) {
+	CURL * handle;
+	CURLcode result;
+
+	char url [256] = {'\0'};
+	char * fetch_method;
+	char * fetch_scale;
+
+	switch ( method ) {
+		case 'i':
+			fetch_method = "id";
+			break;
+
+		default:
+			fetch_method = "q";
+			break;
+	}
+
+	switch ( method ) {
+		case 'i':
+			fetch_scale = "imperial";
+			break;
+
+		default:
+			fetch_scale = "metric";
+			break;
+	}
+
+	curl_global_init(CURL_GLOBAL_ALL);
+	handle = curl_easy_init();
+
+	if ( handle ) {
+		static const char * provider = "http://api.openweathermap.org/data/2.5/weather";
+
+		snprintf(url, sizeof(url), "%s?%s=%s&units=%s", provider, fetch_method, location, fetch_scale);
+
+		FILE * json_cache = fopen(data_file_path, "w");
+
+		curl_easy_setopt(handle, CURLOPT_URL, url);
+		curl_easy_setopt(handle, CURLOPT_WRITEDATA, json_cache);
+
+		result = curl_easy_perform(handle);
+		if ( result != CURLE_OK ) {
+			fprintf(stderr, "Failed to retrieve data (%s)\n", curl_easy_strerror(result));
+
+			curl_easy_cleanup(handle);
+			curl_global_cleanup();
+			exit(1);
+		}
+
+		fclose(json_cache);
+		curl_easy_cleanup(handle);
+		curl_global_cleanup();
+	}
+}
+
 
 // Fetch JSON from OpenWeatherMap
 struct json_write_result * fetch_data_owm (const char method, const char * location, const char scale) {
@@ -99,7 +157,7 @@ struct json_write_result * fetch_data_owm (const char method, const char * locat
         snprintf(url, sizeof(url), "%s?%s=%s&units=%s", provider, fetch_method, location, fetch_scale);
 
         curl_easy_setopt(handle, CURLOPT_URL, url);
-        curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_response);
+        curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_data_buffer);
         curl_easy_setopt(handle, CURLOPT_WRITEDATA, &written_result);
 
         result = curl_easy_perform(handle);

@@ -54,6 +54,8 @@ struct weather {
 
 extern struct json_write_result * fetch_data_file (char * json_file_path);
 
+extern void cache_data_file (const char method, const char * location, const char scale, char * data_file_path);
+
 extern struct json_write_result * fetch_data_owm (const char method, const char * location, const char scale);
 
 extern struct weather * read_weather (struct json_write_result * json);

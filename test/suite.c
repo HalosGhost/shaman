@@ -22,11 +22,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "weather.h"
 
 // Forward Declarations //
 struct json_write_result * test_local_fetching (void);
 int test_local_parsing (struct json_write_result * test);
+int test_caching (void);
 struct json_write_result * test_remote_fetching (void);
 int test_remote_parsing (struct json_write_result * test);
 
@@ -38,11 +40,14 @@ int main (void) {
     int test2_result = test_local_parsing(test1_result);
     if ( test2_result ) { return test2_result; };
 
-    struct json_write_result * test3_result = test_remote_fetching();
+    int test3_result = test_caching();
+    if ( test3_result ) { return test3_result; };
+
+    struct json_write_result * test4_result = test_remote_fetching();
     if ( !test1_result->data ) { return 3; };
 
-    int test4_result = test_remote_parsing(test3_result);
-    if ( test4_result ) { return 4; };
+    int test5_result = test_remote_parsing(test4_result);
+    if ( test5_result ) { return 4; };
 
     return 0;
 }
@@ -92,6 +97,31 @@ int test_local_parsing (struct json_write_result * test) {
     free(weather->condition);
 
     return failed_test_counter;
+}
+
+int test_caching (void) {
+	printf("Testing JSON Caching\t[ PEND ]\r");
+	char * test_path = "./cache_test.json";
+	cache_data_file('q', "Saint%20Paul,us", 'i', test_path);
+
+	struct json_write_result * test = fetch_data_file(test_path);
+    struct weather * weather = read_weather(test);
+
+	int failed_test_counter = 0;
+
+    if ( strcmp(weather->country, "US") != 0 ) { failed_test_counter ++; };
+    if ( strcmp(weather->name, "Saint Paul") != 0 ) { failed_test_counter ++; };
+	if ( weather->id != 5045360 ) { failed_test_counter ++; };
+
+	printf("Testing JSON Caching\t[ %s ]\n", (failed_test_counter == 0 ? "PASS" : "FAIL"));
+
+    unlink(test_path);
+
+	free(weather->country);
+	free(weather->name);
+	free(weather->condition);
+
+	return failed_test_counter;
 }
 
 struct json_write_result * test_remote_fetching (void) {
