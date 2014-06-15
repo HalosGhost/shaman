@@ -12,6 +12,16 @@ The only requirement for a new provider (which may become less stringent) is tha
 If you would like to see support for a particular weather provider added to ``shaman`` and ``libweather``, please open a bug report listing the name of the provider, along with a link to their JSON API.
 *NOTE*: Implementing other providers is a lower priority than getting ``shaman`` and ``libweather`` usable with current functionality.
 
+Dependencies
+------------
+``shaman`` and ``libweather`` are being written to use as few dependencies as possible while still trying to keep the utilities themselves light-weight.
+To that end, they now both require only two external dependencies:
+
+* `curl <http://curl.haxx.se/libcurl/>`_, which handles all network interaction very gracefully
+* `jansson <http://www.digip.org/jansson/>`_, which allows for very efficient JSON Parsing
+
+Finally, `Jenkins <https://praetorian.erebor.buhman.org:2421/job/shaman/>`_ builds shaman against ``gcc`` and ``clang`` each build, so you can use whichever compiler you prefer.
+
 Status & Documentation
 ----------------------
 ``shaman`` is still under heavy active development.
