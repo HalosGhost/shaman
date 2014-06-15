@@ -53,82 +53,19 @@ struct json_write_result * fetch_data_file (char * json_file_path) {
 
     size_t bytes_read = fread(written_result.data, BUFFER_SIZE, 1, json_fp);
 
-	if ( bytes_read ) {
-		fclose(json_fp);
-		fprintf(stderr, "End of file not reached\n");
-		exit(1);
-	} else if ( ferror(json_fp) ) {
-		fclose(json_fp);
-		fprintf(stderr, "Error reading file\n");
-		exit(1);
-	}
+    if ( ferror(json_fp) ) {
+        fclose(json_fp);
+        fprintf(stderr, "Error reading file\n");
+        exit(1);
+    }
 
     fclose(json_fp);
 
     return &written_result;
 }
 
-// Cache a JSON data file for later use
-// TODO: modularize code for different providers
-void cache_data_file (const char method, const char * location, const char scale, char * data_file_path) {
-	CURL * handle;
-	CURLcode result;
-
-	char url [256] = {'\0'};
-	char * fetch_method;
-	char * fetch_scale;
-
-	switch ( method ) {
-		case 'i':
-			fetch_method = "id";
-			break;
-
-		default:
-			fetch_method = "q";
-			break;
-	}
-
-	switch ( method ) {
-		case 'i':
-			fetch_scale = "imperial";
-			break;
-
-		default:
-			fetch_scale = "metric";
-			break;
-	}
-
-	curl_global_init(CURL_GLOBAL_ALL);
-	handle = curl_easy_init();
-
-	if ( handle ) {
-		static const char * provider = "http://api.openweathermap.org/data/2.5/weather";
-
-		snprintf(url, sizeof(url), "%s?%s=%s&units=%s", provider, fetch_method, location, fetch_scale);
-
-		FILE * json_cache = fopen(data_file_path, "w");
-
-		curl_easy_setopt(handle, CURLOPT_URL, url);
-		curl_easy_setopt(handle, CURLOPT_WRITEDATA, json_cache);
-
-		result = curl_easy_perform(handle);
-		if ( result != CURLE_OK ) {
-			fprintf(stderr, "Failed to retrieve data (%s)\n", curl_easy_strerror(result));
-
-			curl_easy_cleanup(handle);
-			curl_global_cleanup();
-			exit(1);
-		}
-
-		fclose(json_cache);
-		curl_easy_cleanup(handle);
-		curl_global_cleanup();
-	}
-}
-
-
 // Fetch JSON from OpenWeatherMap
-struct json_write_result * fetch_data_owm (const char method, const char * location, const char scale) {
+struct json_write_result * fetch_data_owm (const char method, const char * location, const char scale, const char * file_cache_path) {
     CURL * handle;
     CURLcode result;
 
@@ -181,6 +118,20 @@ struct json_write_result * fetch_data_owm (const char method, const char * locat
             curl_global_cleanup();
             exit(1);
         }
+    }
+
+    int bytes_written;
+    if ( file_cache_path ) {
+        FILE * json_cache = fopen(file_cache_path, "w");
+        bytes_written = fwrite(written_result.data, BUFFER_SIZE, 1, json_cache);
+
+        if ( ferror(json_cache) ) {
+            fclose(json_cache);
+            fprintf(stderr, "Error caching file\n");
+            exit(1);
+        }
+
+        fclose(json_cache);
     }
 
     curl_easy_cleanup(handle);

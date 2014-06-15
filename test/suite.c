@@ -1,5 +1,5 @@
 /*******************************************************************\
-* A small, native C library for fetching weather                    *
+* A small, native C test suite for libweather                       *
 * Copyright (C) 2013-2014, Sam Stuewe                               *
 *                                                                   *
 * This program is free software; you can redistribute it and/or     *
@@ -28,7 +28,6 @@
 // Forward Declarations //
 struct json_write_result * test_local_fetching (void);
 int test_local_parsing (struct json_write_result * test);
-int test_caching (void);
 struct json_write_result * test_remote_fetching (void);
 int test_remote_parsing (struct json_write_result * test);
 
@@ -40,14 +39,11 @@ int main (void) {
     int test2_result = test_local_parsing(test1_result);
     if ( test2_result ) { return test2_result; };
 
-    int test3_result = test_caching();
-    if ( test3_result ) { return test3_result; };
-
-    struct json_write_result * test4_result = test_remote_fetching();
+    struct json_write_result * test3_result = test_remote_fetching();
     if ( !test1_result->data ) { return 3; };
 
-    int test5_result = test_remote_parsing(test4_result);
-    if ( test5_result ) { return 4; };
+    int test4_result = test_remote_parsing(test3_result);
+    if ( test4_result ) { return 4; };
 
     return 0;
 }
@@ -99,37 +95,19 @@ int test_local_parsing (struct json_write_result * test) {
     return failed_test_counter;
 }
 
-int test_caching (void) {
-	printf("Testing JSON Caching\t[ PEND ]\r");
-	char * test_path = "./cache_test.json";
-	cache_data_file('q', "Saint%20Paul,us", 'i', test_path);
-
-	struct json_write_result * test = fetch_data_file(test_path);
-    struct weather * weather = read_weather(test);
-
-	int failed_test_counter = 0;
-
-    if ( strcmp(weather->country, "US") != 0 ) { failed_test_counter ++; };
-    if ( strcmp(weather->name, "Saint Paul") != 0 ) { failed_test_counter ++; };
-	if ( weather->id != 5045360 ) { failed_test_counter ++; };
-
-	printf("Testing JSON Caching\t[ %s ]\n", (failed_test_counter == 0 ? "PASS" : "FAIL"));
-
-    unlink(test_path);
-
-	free(weather->country);
-	free(weather->name);
-	free(weather->condition);
-
-	return failed_test_counter;
-}
-
 struct json_write_result * test_remote_fetching (void) {
+    char * test_path = "./cache_test.json";
     printf("Testing remote JSON Fetching\t[ PEND ]\r");
-    struct json_write_result * test = fetch_data_owm('q', "Saint%20Paul,us", 'i');
+    struct json_write_result * test = fetch_data_owm('q', "Saint%20Paul,us", 'i', test_path);
     printf("Testing remote JSON Fetching\t[ %s ]\n", (test->data ? "PASS" : "FAIL"));
 
     if ( test->data ) {
+        printf("Testing JSON Caching\t\t[ PEND ]\r");
+        struct json_write_result * test2 = fetch_data_file(test_path);
+        printf("Testing JSON Caching\t\t[ %s ]\n", ( strcmp(test->data, test2->data) == 0 ? "PASS" : "FAIL"));
+        free(test2->data);
+        unlink(test_path);
+
         return test;
     } else {
         return NULL;
@@ -152,7 +130,7 @@ int test_remote_parsing (struct json_write_result * test) {
 
     if ( strcmp(weather->country, "US") != 0 ) { failed_test_counter ++; };
     if ( strcmp(weather->name, "Saint Paul") != 0 ) { failed_test_counter ++; };
-	if ( weather->id != 5045360 ) { failed_test_counter ++; };
+    if ( weather->id != 5045360 ) { failed_test_counter ++; };
 
     printf("Testing remote JSON Parsing\t[ %s ]\n", (failed_test_counter == 0 ? "PASS" : "FAIL"));
 

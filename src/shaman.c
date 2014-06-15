@@ -26,9 +26,9 @@
 #include "weather.h"
 
 // Main Function //
-int main (void) {
+int main (int argc, char ** argv) {
 //    struct json_write_result * test = fetch_data_file("./test/test.json");
-    struct json_write_result * test = fetch_data_owm('q', "Saint%20Paul,US", 'i');
+    struct json_write_result * test = fetch_data_owm('q', "Saint%20Paul,US", 'i', NULL);
     struct weather * weather = read_weather(test);
 	char test_string [1024] = {'\0'};
 
