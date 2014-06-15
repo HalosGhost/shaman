@@ -57,6 +57,8 @@ struct json_write_result * fetch_data_file (char * json_file_path) {
     return &written_result;
 }
 
+// Cache a JSON data file for later use
+// TODO: modularize code for different providers
 void cache_data_file (const char method, const char * location, const char scale, char * data_file_path) {
 	CURL * handle;
 	CURLcode result;
@@ -256,7 +258,8 @@ struct weather * read_weather (struct json_write_result * json) {
     return &fetched_weather;
 }
 
-// TODO: write data from weather to dest_str according to format up to n bytes
+// TODO: Add support for formatting time variables
+// TODO: Add support for Apparent Temperature
 size_t strfweather (char * dest_str, size_t n, const char * format, const struct weather * weather) {
     for ( ; *format; ++format) {
         int current_length = strlen(dest_str);

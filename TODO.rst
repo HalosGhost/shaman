@@ -3,13 +3,14 @@ To-Do Lists
 
 General
 -------
-- Update ``_shaman`` (zsh completion)
+* Update ``_shaman`` (zsh completion)
    - Add Bash completion?
 
 libweather
 ----------
-- Add function and parameter allowing for a format for time variables
-- Add function for declaring an API key
+* Add support for formatting time variables
+* Modularize JSON file caching
+* Add function for declaring an API key
 
 shaman
 ------
