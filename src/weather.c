@@ -51,7 +51,13 @@ struct json_write_result * fetch_data_file (char * json_file_path) {
 
     FILE * json_fp = fopen(json_file_path, "r");
 
-    fread(written_result.data, BUFFER_SIZE, 1, json_fp);
+    size_t bytes_read = fread(written_result.data, BUFFER_SIZE, 1, json_fp);
+	if ( !bytes_read ) {
+		fclose(json_fp);
+		fprintf(stderr, "Failed to read data\n");
+		exit(1);
+	}
+	  
     fclose(json_fp);
 
     return &written_result;
