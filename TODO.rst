@@ -17,3 +17,8 @@ shaman
    - Caching and Freshening
    - Encode location string correctly
    - Adaptively allocate space for output string
+
+test suite
+----------
+* Split tests into separate binaries
+* Add unit tests for ``shaman``
