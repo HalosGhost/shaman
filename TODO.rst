@@ -9,9 +9,11 @@ General
 libweather
 ----------
 * Add support for formatting time variables
-* Modularize JSON file caching
 * Add function for declaring an API key
 
 shaman
 ------
-- Write it (:P)
+* Implement the rest of the planned initial feature set:
+   - Caching and Freshening
+   - Encode location string correctly
+   - Adaptively allocate space for output string
