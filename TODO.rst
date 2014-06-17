@@ -4,7 +4,7 @@ To-Do Lists
 General
 -------
 * Update ``_shaman`` (zsh completion)
-   - Add Bash completion?
+   * Add Bash completion?
 
 libweather
 ----------
@@ -14,9 +14,8 @@ libweather
 shaman
 ------
 * Implement the rest of the planned initial feature set:
-   - Caching and Freshening
-   - Encode location string correctly
-   - Adaptively allocate space for output string
+   * Caching and Freshening
+   * Adaptively allocate space for output string
 
 test suite
 ----------
