@@ -98,7 +98,7 @@ int test_local_parsing (struct json_write_result * test) {
 struct json_write_result * test_remote_fetching (void) {
     char * test_path = "./cache_test.json";
     printf("Testing remote JSON Fetching\t[ PEND ]\r");
-    struct json_write_result * test = fetch_data_owm('q', "Saint%20Paul,us", 'i', test_path);
+    struct json_write_result * test = fetch_data_owm('q', "Saint Paul,US", 'i', test_path);
     printf("Testing remote JSON Fetching\t[ %s ]\n", (test->data ? "PASS" : "FAIL"));
 
     if ( test->data ) {
