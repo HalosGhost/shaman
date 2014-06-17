@@ -102,9 +102,10 @@ struct json_write_result * fetch_data_owm (const char method, const char * locat
     handle = curl_easy_init();
 
     if ( handle ) {
-        static const char * provider = "http://api.openweathermap.org/data/2.5/weather";
+        const char * provider = "http://api.openweathermap.org/data/2.5/weather";
+        char * encoded_location = curl_easy_escape(handle, location, 0);
         
-        snprintf(url, sizeof(url), "%s?%s=%s&units=%s", provider, fetch_method, location, fetch_scale);
+        snprintf(url, sizeof(url), "%s?%s=%s&units=%s", provider, fetch_method, encoded_location, fetch_scale);
 
         curl_easy_setopt(handle, CURLOPT_URL, url);
         curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_data_buffer);
@@ -116,8 +117,11 @@ struct json_write_result * fetch_data_owm (const char method, const char * locat
 
             curl_easy_cleanup(handle);
             curl_global_cleanup();
+            curl_free(encoded_location);
             exit(1);
         }
+
+        curl_free(encoded_location);
     }
 
     int bytes_written;
