@@ -3,11 +3,13 @@ To-Do Lists
 
 General
 -------
+* Update documentation
 * Update ``_shaman`` (zsh completion)
    * Add Bash completion?
 
 libweather
 ----------
+* Improve internal error handling
 * Add support for formatting time variables
 * Add function for declaring an API key
 
