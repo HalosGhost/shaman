@@ -30,26 +30,27 @@ struct json_write_result {
 };
 
 struct weather {
-    long id; // city id number
-    long dt; // unixtime of data receipt
-    long sunrise; // unixtime of sunrise
-    long sunset; /// unixtime of sunset
-    double latitude; // latitude
-    double longitude; // longitude
-    char * country; // country code
-    char * name; // city name
-    double temperature; // temperature
-    double humidity; // percent humidity
-    double temp_max; // max temperature
-    double temp_min; // min temperature
-    double pressure; // barometric pressure
-    double wind_speed; // wind speed
-    double wind_gust; // gusting speed
-    int wind_direction; // wind heading
-    double clouds; // percent cloud cover
-    char * condition; // weather conditions
-    int weather_code; // weather code
-    double precipitation_3h; // precipitation
+    long dt;                  // %a  time data received
+    double pressure;          // %b  barometric pressure
+    char * condition;         // %c  weather conditions
+    int weather_code;         // %C  weather condition code
+    double clouds;            // %d  cloud coverage
+    double temp_min;          // %h  low temperature
+    double temp_max;          // %H  high temperature
+    long id;                  // %i  city id number
+    char * name;              // %I  city name
+    char * country;           // %j  country code
+    double latitude;          // %l  latitude
+    double longitude;         // %L  longitude
+    double precipitation_3h;  // %p  precipitation
+    double humidity;          // %P  relative humidity
+    long sunrise;             // %s  time of sunrise
+    long sunset;              // %S  time of sunset
+    double temperature;       // %t  current temperature
+                              // %T  apparent temperature
+    double wind_speed;        // %w  sustained wind speed
+    double wind_gust;         // %W  gusting wind speed
+    int wind_direction;       // %x  wind heading
 };
 
 extern struct json_write_result * fetch_data_file (char * json_file_path);
