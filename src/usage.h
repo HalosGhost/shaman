@@ -34,7 +34,7 @@ void _usage (int error) {
           "  -m, --metric\t\t\tuse Metric units\n"
           "  -r, --refresh\t\t\tforce update of local cache\n"
           "  -c, --cache\t\t\tspecify location of local cache\n"
-          "  -f, --format=\"FORMAT\"\t\tformat output according to \"FORMAT\"\n"
+          "  -f, --format=\"format\"\t\tformat output according to \"format\"\n"
           "  -l, --location=\"location\"\tprint weather information for \"location\"\n\n"
           "See `man 1 shaman` for more information\n", (error ? stderr : stdout));
     exit(error);
