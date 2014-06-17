@@ -7,5 +7,4 @@ libweather_la_LIBADD = $(AM_CFLAGS) $(CURL_LIBS) $(JANSSON_LIBS)
 bin_PROGRAMS = shaman
 
 shaman_SOURCES = shaman.c
-LDADD = libweather.la
-#shaman_LDADD = .libs/libweather.so
+shaman_LDADD = libweather.la
