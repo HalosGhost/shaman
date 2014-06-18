@@ -1,56 +1,77 @@
 \documentclass{latex2man}
 
-\begin{Name}{1}{shaman}{Sam Stuewe}{Fetch Weather Information}{Shaman - A lightweight tool to fetch weather information from the National Weather Service}
-   \Prog{Shaman} - A lightweight tool to fetch weather information from the National Weather Service
+\begin{Name}{1}{shaman}{Sam Stuewe}{Fetch Weather Data}{Shaman - A lightweight tool to fetch weather data}
+    \Prog{Shaman} - A lightweight tool to fetch weather data
 \end{Name}
 
 \section{Synopsis}
-\Prog{shaman}
-   \oOpt{-h}
-   \oOptArg{-f}{\SP "format"}
-   \oOpt{-i|-m}
-   \oOptArg{-l}{\SP "location"}
+\Prog{shaman} \oOpt{options}
 
 \section{Description}
-\Prog{Shaman} is a very lightweight application to fetch weather information from the National Weather Service.
+\Prog{Shaman} is a very lightweight application to fetch weather data.
+
+If \Prog{shaman} is not given a location, it will take the data from the cache file.
+If \Prog{shaman} is not given a format string, it will default to "\%c (\%t°F)".
+
+\section{Caching and Refreshing}
+\Prog{Shaman} will look for the cache in the following locations stopping upon the first file found:\\
+
+\File{\$XDG\_CONFIG\_HOME/shaman/cache.json}\\
+\File{\$HOME/.config/shaman/cache.json}\\
+\File{\$HOME/.shaman/cache.json}
+
+In accordance with OpenWeatherMap's API, a call for new data should be made no more often than once per 10 minutes per device.
+\Prog{Shaman} will, therefore, automatically use data from the cache (assuming the requested location is the same) until the file's last-modified timestamp is over 10 minutes old (or the \Opt{--refresh} flag has been passed).
 
 \section{Options}
 \begin{description}
-   \item[\Opt{-h}, \Opt{--help}]
-      Print usage information and exit
-   \item[\OptArg{-f}{\SP "format"}, \OptArg{--format=}{"format"}]
-      Specify an output format
-   \item[\Opt{-i, --imperial}]
-      Print information using Imperial units
-   \item[\OptArg{-l}{\SP "location"}, \OptArg{--location=}{"location"}]
-      Specify location to query. Note that \Arg{"location"} may be given either as a zipcode or as "City, ST"
-   \item[\Opt{-m, --metric}]
-      Print information using Metric units
+    \item[\Opt{-h}, \Opt{--help}]
+        Print usage information and exit
+    \item[\OptArg{-c}{\SP "cache.json"}, \OptArg{--cache=}{"cache.json"}]
+        Use the file located at \Arg{"cache.json"} for data caching
+    \item[\OptArg{-f}{\SP "format"}, \OptArg{--format=}{"format"}]
+        Specify an output format
+    \item[\Opt{-i, --imperial}]
+        Print information using Imperial units
+    \item[\OptArg{-l}{\SP "location"}, \OptArg{--location=}{"location"}]
+        Specify location to query. Note that \Arg{"location"} should be formatted as "City Name,CC" where "CC" is the country code.
+    \item[\Opt{-m, --metric}]
+        Print information using Metric units
+    \item[\Opt{-r, --refresh}]
+        Force updating the cache
 \end{description}
 
 \section{Format}
-The following escapes may be used in the formatString:
+The following format specifiers may be used in the format string:
 
 \begin{verbatim}
 %%    A literal percent sign
-%c    Weather condition
-%d    Relative Humidity
-%D    Dew point
-%H    Hazard Warnings
-%p    Pressure
-%P    Probability of precipitation
-%r    Reporter Identity
-%R    Reporter Coordinates
-%t    Temperature
-%T    Apparent Temperature
-%v    Visibility
-%w    Wind Speed
-%W    Wind Direction
+%a    Time of data receipt
+%b    Barometric pressure
+%c    Weather condition string
+%C    Weather condition code
+%d    Cloud coverage
+%h    Low temperature
+%H    High temperature
+%i    City ID number
+%I    City name
+%j    Country Code
+%l    Latitude
+%L    Longitude
+%p    Precipitation
+%P    Relative humidity
+%s    Time of sunrise
+%S    Time of sunset
+%t    Current temperature
+%T    Apparent temperature
+%w    Sustained wind speed
+%W    Gusting wind speed
+%x    Wind heading
 \end{verbatim}
-Some other basic escape characters may be used such as newline characters (\Bs n) and literal backslashes (\Bs\Bs).
+All other valid escape characters may also be used (e.g., \Bs n and \Bs\Bs).
 
 \section{Author}
-Copyright \copyright 2012-2013 Sam Stuewe\\
+Copyright \copyright 2012-2014 Sam Stuewe\\
 License GPLv2: GPL version 2 \URL{https://www.gnu.org/licenses/gpl-2.0.html} \\
 This is free software: you are free to change and redistribute it. \\
 There is NO WARRANTY, to the extent permitted by law.
@@ -58,6 +79,6 @@ There is NO WARRANTY, to the extent permitted by law.
 Feature requests, bug reports and other comments may be submitted via GitHub (\URL{https://github.com/HalosGhost/shaman.git}) or E-mail (\Email{halosghost@archlinux.info})
 
 \section{See Also}
-\Cmd{libcurl}{3}
+\Cmd{libcurl}{3}, \Cmd{libweather}{3}
 
 \LatexManEnd

@@ -1,0 +1,125 @@
+'\" t
+.\" Manual page created with latex2man on Tue Jun 17 19:09:45 CDT 2014
+.\" NOTE: This file is generated, DO NOT EDIT.
+.de Vb
+.ft CW
+.nf
+..
+.de Ve
+.ft R
+
+.fi
+..
+.TH "SHAMAN" "1" "17 June 2014" "Fetch Weather Data " "Fetch Weather Data "
+.SH NAME
+
+Shaman
+\- A lightweight tool to fetch weather data 
+.PP
+.SH SYNOPSIS
+
+shaman
+[\fBoptions\fP]
+.PP
+.SH DESCRIPTION
+
+Shaman
+is a very lightweight application to fetch weather data. 
+.PP
+If shaman
+is not given a location, it will take the data from the cache file. 
+If shaman
+is not given a format string, it will default to "%c (%t°F)". 
+.PP
+.SH CACHING AND REFRESHING
+
+Shaman
+will look for the cache in the following locations stopping upon the first file found:
+.br
+.PP
+$XDG_CONFIG_HOME/shaman/cache.json
+.br
+$HOME/.config/shaman/cache.json
+.br
+$HOME/.shaman/cache.json
+.PP
+In accordance with OpenWeatherMap\&'s API, a call for new data should be made no more often than once per 10 minutes per device. 
+Shaman
+will, therefore, automatically use data from the cache (assuming the requested location is the same) until the file\&'s last\-modified timestamp is over 10 minutes old (or the \fB\-\-refresh\fP
+flag has been passed). 
+.PP
+.SH OPTIONS
+
+.TP
+\fB\-h\fP, \fB\-\-help\fP
+ Print usage information and exit 
+.TP
+\fB\-c\fP\fI\fB \fP"cache.json"\fP, \fB\-\-cache=\fP\fI"cache.json"\fP
+ Use the file located at \fI"cache.json"\fP
+for data caching 
+.TP
+\fB\-f\fP\fI\fB \fP"format"\fP, \fB\-\-format=\fP\fI"format"\fP
+ Specify an output format 
+.TP
+\fB\-i, \-\-imperial\fP
+ Print information using Imperial units 
+.TP
+\fB\-l\fP\fI\fB \fP"location"\fP, \fB\-\-location=\fP\fI"location"\fP
+ Specify location to query. Note that \fI"location"\fP
+should be formatted as "City Name,CC" where "CC" is the country code. 
+.TP
+\fB\-m, \-\-metric\fP
+ Print information using Metric units 
+.TP
+\fB\-r, \-\-refresh\fP
+ Force updating the cache 
+.PP
+.SH FORMAT
+
+The following format specifiers may be used in the format string: 
+.PP
+.Vb
+%%    A literal percent sign
+%a    Time of data receipt
+%b    Barometric pressure
+%c    Weather condition string
+%C    Weather condition code
+%d    Cloud coverage
+%h    Low temperature
+%H    High temperature
+%i    City ID number
+%I    City name
+%j    Country Code
+%l    Latitude
+%L    Longitude
+%p    Precipitation
+%P    Relative humidity
+%s    Time of sunrise
+%S    Time of sunset
+%t    Current temperature
+%T    Apparent temperature
+%w    Sustained wind speed
+%W    Gusting wind speed
+%x    Wind heading
+.Ve
+All other valid escape characters may also be used (e.g., \\n and \\\\).
+.PP
+.SH AUTHOR
+
+Copyright (C)2012\-2014 Sam Stuewe
+.br
+License GPLv2: GPL version 2 \fBhttps://www.gnu.org/licenses/gpl\-2.0.html\fP
+.br
+This is free software: you are free to change and redistribute it. 
+.br
+There is NO WARRANTY, to the extent permitted by law. 
+.PP
+Feature requests, bug reports and other comments may be submitted via GitHub (\fBhttps://github.com/HalosGhost/shaman.git\fP)
+or E\-mail (\fBhalosghost@archlinux.info\fP)
+.PP
+.SH SEE ALSO
+
+\fIlibcurl\fP(3),
+\fIlibweather\fP(3)
+.PP
+.\" NOTE: This file is generated, DO NOT EDIT.
