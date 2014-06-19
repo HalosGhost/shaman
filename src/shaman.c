@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "weather.h"
 #include "usage.h"
 
@@ -30,8 +32,8 @@
 int main (int argc, char ** argv) {
     char flag_scale = 'i';
     char flag_refresh = 0;
-    char * format;
-    char * location;
+    char * format = NULL;
+    char * location = NULL;
     char * cache_path = NULL;
 
     if ( argc <= 1 ) { 
@@ -75,33 +77,56 @@ int main (int argc, char ** argv) {
 
                 case 'c': {
                     size_t cache_path_length = strlen(optarg) + 1;
-                    cache_path = malloc(cache_path_length);
-                    snprintf(cache_path, cache_path_length, "%s", optarg);
+                    cache_path = strndup(optarg, cache_path_length);
                     break;
                 }
 
                 case 'f': {
                     size_t format_length = strlen(optarg) + 1;
-                    format = malloc(format_length);
-                    strncpy(format, optarg, format_length);
+                    format = strndup(optarg, format_length);
                     break;
                 }
 
                 case 'l': {
-                    // TODO: Correctly encode location
                     size_t location_length = strlen(optarg) + 1;
-                    location = malloc(location_length);
-                    snprintf(location, location_length, "%s", optarg);
+                    location = strndup(optarg, location_length);
                     break;
                 }
             }
         }
     }
+    
+    if ( !format ) {
+        format = malloc(11);
+        snprintf(format, 11, "%%c (%%t°%c)", ( flag_scale == 'm' ? 'C' : 'F' ));
+    }
+
+    if ( !location ) { _usage(1); };
 
     struct json_write_result * json;
 
     if ( !cache_path ) {
-        // TODO: Correctly check for default cache
+        //char * xdg_config_home = getenv("XDG_CONFIG_HOME");
+    
+        //if ( xdg_config_home ) {
+        //    size_t config_home_length = strlen(xdg_config_home);
+        //    char * shaman_config_path;
+    
+        //    snprintf(shaman_config_path, config_home_length + 8, "%s/shaman", xdg_config_home);
+        //    int error = mkdir(shaman_config_path, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); // mode == 0644
+        //    
+        //    if ( !error ) {
+        //        size_t shaman_config_length = strlen(shaman_config_path);
+        //        snprintf(cache_path, shaman_config_length + 12, "%s/cache.json", shaman_config_path);
+        //    } else {
+        //        cache_path = NULL;
+        //    }
+        //} else if (1/* check if $HOME/.config exists */) {
+        //    // use $HOME/.config/shaman/cache.json
+        //} else {
+        //    // use $HOME/.shaman/cache.json
+        //}
+
         json = fetch_data_owm('q', location, flag_scale, cache_path);
     } else {
         // TODO: Handle cache freshening
