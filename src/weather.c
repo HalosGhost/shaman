@@ -157,66 +157,130 @@ struct weather * read_weather (struct json_write_result * json) {
 
     static struct weather fetched_weather;
 
-    const char * key;
-    json_t * value;
-    json_object_foreach(root, key, value) {
-        switch ( key[0] ) {
-            case 'c':
-                if ( key[1] == 'l' ) {
-                    fetched_weather.clouds = json_number_value(json_object_get(value, "all"));
-                } else if ( key[2] == 'o' ) {
-                    fetched_weather.longitude = json_number_value(json_object_get(value, "lon"));
-                    fetched_weather.latitude = json_number_value(json_object_get(value, "lat"));
-                } break;
+    const char * root_key;
+    json_t * root_value;
+    json_object_foreach(root, root_key, root_value) {
+        switch ( root_key[0] ) {
+            case 'c': {
+                if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
+                    const char * sub_key;
+                    json_t * sub_value;
+                    json_object_foreach(root_value, sub_key, sub_value) {
+                        switch ( root_key[1] ) {
+                            case 'l':
+                                fetched_weather.clouds = json_number_value(sub_value);
+                                break;
+
+                            case 'o':
+                                if ( sub_key[1] == 'o' ) {
+                                    fetched_weather.longitude = json_number_value(sub_value);
+                                } else if ( sub_key[1] == 'a' ) {
+                                    fetched_weather.latitude = json_number_value(sub_value);
+                                } break;
+                        }
+                    }
+                }
+            }
 
             case 'd':
-                fetched_weather.dt = json_integer_value(value);
+                fetched_weather.dt = json_integer_value(root_value);
                 break;
 
             case 'i':
-                fetched_weather.id = json_integer_value(value);
+                fetched_weather.id = json_integer_value(root_value);
                 break;
 
-            case 'm':
-                fetched_weather.temperature = json_number_value(json_object_get(value, "temp"));
-                fetched_weather.pressure = json_number_value(json_object_get(value, "pressure"));
-                fetched_weather.temp_min = json_number_value(json_object_get(value, "temp_min"));
-                fetched_weather.temp_max = json_number_value(json_object_get(value, "temp_max"));
-                fetched_weather.humidity = json_number_value(json_object_get(value, "humidity"));
-                break;
+            case 'm': {
+			    const char * sub_key;
+				json_t * sub_value;
+				json_object_foreach(root_value, sub_key, sub_value) {
+					switch ( sub_key[0] ) {
+						case 't':
+							if ( strlen(sub_key) == 4 ) {
+								fetched_weather.temperature = json_number_value(sub_value);
+							} else if ( sub_key[6] == 'i' ) {
+								fetched_weather.temp_min = json_number_value(sub_value);
+							} else if ( sub_key[6] == 'a' ) {
+								fetched_weather.temp_max = json_number_value(sub_value);
+							} break;
+
+						case 'p':
+							fetched_weather.pressure = json_number_value(sub_value);
+							break;
+
+						case 'h':
+							fetched_weather.humidity = json_number_value(sub_value);
+							break;
+					}
+				} break;
+			}
 
             case 'n': {
-                int city_name_length = strlen(json_string_value(value)) + 1;
-                fetched_weather.name = malloc(city_name_length);
-                snprintf(fetched_weather.name, city_name_length, "%s", json_string_value(value));
+                fetched_weather.name = strdup(json_string_value(root_value));
                 break;
             }
 
-            case 's':
-                if ( key[1] == 'y' ) {
-                    fetched_weather.sunrise = json_integer_value(json_object_get(value, "sunrise"));
-                    fetched_weather.sunset = json_integer_value(json_object_get(value, "sunset"));
-                    int country_name_length = strlen(json_string_value(json_object_get(value, "country"))) + 1;
-                    fetched_weather.country = malloc(country_name_length);
-                    snprintf(fetched_weather.country, country_name_length, "%s", json_string_value(json_object_get(value, "country")));
-                } else if ( key[1] == 'n' ) {
-                    fetched_weather.precipitation_3h = json_number_value(json_object_get(value, "3h"));
-                } break;
+            case 's': {
+                const char * sub_key;
+                json_t * sub_value;
+                json_object_foreach(root_value, sub_key, sub_value) {
+                    if ( root_key[1] == 'y' ) {
+                        switch ( sub_key[3] ) {
+                            case 'r':
+                                fetched_weather.sunrise = json_integer_value(sub_value);
+                                break;
 
-            case 'w':
-                if ( key[1] == 'e' ) {
-                    fetched_weather.weather_code = json_integer_value(json_object_get(json_array_get(value, 0), "id"));
-                    int condition_length = strlen(json_string_value(json_object_get(json_array_get(value, 0), "description"))) + 1;
-                    fetched_weather.condition = malloc(condition_length);
-                    snprintf(fetched_weather.condition, condition_length, "%s", json_string_value(json_object_get(json_array_get(value, 0), "description")));
-                } else if ( key[1] == 'i' ) {
-                    fetched_weather.wind_speed = json_number_value(json_object_get(value, "speed"));
-                    fetched_weather.wind_gust = json_number_value(json_object_get(value, "gust"));
-                    fetched_weather.wind_direction = json_integer_value(json_object_get(value, "deg"));
+                            case 's':
+                                fetched_weather.sunset = json_integer_value(sub_value);
+                                break;
+
+                            case 'n':
+                                fetched_weather.country = strdup(json_string_value(sub_value));
+                                break;
+                        }
+                    } else if ( root_key[1] == 'n' ) {
+                        // TODO: Deal with non-3h measures of precipitation
+                        fetched_weather.precipitation_3h = json_number_value(sub_value);
+                    }
                 } break;
+            }
+
+            case 'w': {
+                if ( json_typeof(root_value) == (int )JSON_ARRAY ) {
+                    fetched_weather.weather_code = json_integer_value(json_object_get(json_array_get(root_value, 0), "id"));
+                    fetched_weather.condition = strdup(json_string_value(json_object_get(json_array_get(root_value, 0), "description")));
+                } else if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
+                    const char * sub_key;
+                    json_t * sub_value;
+                    json_object_foreach(root_value, sub_key, sub_value) {
+                        if ( root_key[1] == 'e' ) {
+                            if ( sub_key[1] == 'd' ) {
+                                fetched_weather.weather_code = json_integer_value(json_array_get(sub_value, 0));
+                            } else if ( sub_key[1] == 'e' ) {
+                                fetched_weather.condition = strdup(json_string_value(json_array_get(sub_value, 0)));
+                            }
+                        } else if ( root_key[1] == 'i' ) {
+                            switch ( sub_key[0] ) {
+                                case 's':
+                                    fetched_weather.wind_speed = json_number_value(sub_value);
+                                    break;
+    
+                                case 'g':
+                                    fetched_weather.wind_gust = json_number_value(sub_value);
+                                    break;
+    
+                                case 'd':
+                                    fetched_weather.wind_direction = json_integer_value(sub_value);
+                                    break;
+                            }
+                        }
+                    }
+                } break;
+            }
 
             case 'r':
-                fetched_weather.precipitation_3h = json_number_value(json_object_get(value, "3h"));
+                // TODO: Deal with non-3h measures of precipitation
+                fetched_weather.precipitation_3h = json_number_value(json_object_get(root_value, "3h"));
                 break;
         }
     }
