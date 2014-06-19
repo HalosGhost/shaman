@@ -76,20 +76,17 @@ int main (int argc, char ** argv) {
                     break;
 
                 case 'c': {
-                    size_t cache_path_length = strlen(optarg) + 1;
-                    cache_path = strndup(optarg, cache_path_length);
+                    cache_path = strdup(optarg);
                     break;
                 }
 
                 case 'f': {
-                    size_t format_length = strlen(optarg) + 1;
-                    format = strndup(optarg, format_length);
+                    format = strdup(optarg);
                     break;
                 }
 
                 case 'l': {
-                    size_t location_length = strlen(optarg) + 1;
-                    location = strndup(optarg, location_length);
+                    location = strdup(optarg);
                     break;
                 }
             }
