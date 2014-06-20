@@ -44,29 +44,31 @@ In accordance with OpenWeatherMap's API, a call for new data should be made no m
 \section{Format}
 The following format specifiers may be used in the format string:
 
+% Verify and finish documenting units for each value
 \begin{verbatim}
 %%    A literal percent sign
-%a    Time of data receipt
-%b    Barometric pressure
+%a    Time of data receipt       (unixtime)
+%b    Barometric pressure        (hectoPascals)
 %c    Weather condition string
 %C    Weather condition code
-%d    Cloud coverage
-%h    Low temperature
-%H    High temperature
+%d    Cloud coverage             (percent)
+%h    Low temperature            (°F | °C)
+%H    High temperature           (°F | °C)
 %i    City ID number
 %I    City name
 %j    Country Code
 %l    Latitude
 %L    Longitude
-%p    Precipitation
-%P    Relative humidity
-%s    Time of sunrise
-%S    Time of sunset
-%t    Current temperature
-%T    Apparent temperature
-%w    Sustained wind speed
-%W    Gusting wind speed
-%x    Wind heading
+%p    Precipitation              (in | mm)
+%P    Relative humidity          (percent)
+%s    Time of sunrise            (unixtime)
+%S    Time of sunset             (unixtime)
+%t    Current temperature        (°F | °C)
+%T    Apparent temperature       (°F | °C)
+%w    Sustained wind speed       (mph|kmph)
+%W    Gusting wind speed         (mph|kmph)
+%x    Wind heading               (degrees)
+%X    Wind heading               (Cardinal / Ordinal direction)
 \end{verbatim}
 All other valid escape characters may also be used (e.g., \Bs n and \Bs\Bs).
 
