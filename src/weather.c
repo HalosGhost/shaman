@@ -299,6 +299,8 @@ struct weather * read_weather (struct json_write_result * json) {
         }
     }
 
+    free(root);
+
     return &fetched_weather;
 }
 
