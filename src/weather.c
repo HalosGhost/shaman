@@ -226,17 +226,14 @@ struct weather * read_weather (struct json_write_result * json) {
                                 switch ( sub_key[4] ) {
                                     case 'i':
                                         fetched_weather.sunrise = json_integer_value(sub_value);
-                                        printf("%d\n", fetched_weather.sunrise);
                                         break;
 
                                     case 'e':
                                         fetched_weather.sunset = json_integer_value(sub_value);
-                                        printf("%d\n", fetched_weather.sunset);
                                         break;
 
                                     case 't':
                                         fetched_weather.country = strdup(json_string_value(sub_value));
-                                        puts(fetched_weather.country);
                                         break;
                                 } break;
     
@@ -408,7 +405,9 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
     free(weather->country);
     free(weather->condition);
 
-    return strlen(dest_str);
+    int bytes_written = strlen(dest_str);
+
+    return (bytes_written == n ? 0 : bytes_written);
 }
 
 // vim: set ts=4 sw=4 et:
