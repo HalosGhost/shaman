@@ -134,9 +134,10 @@ int main (int argc, char ** argv) {
     if ( location ) { free(location); };
 
     struct weather * weather = read_weather(json);
-    char output_string [1024] = {'\0'};
+    char output_string [BUFFER_SIZE];
 
-    strfweather(output_string, 1024, format, weather);
+    strfweather(output_string, BUFFER_SIZE, format, weather);
+
     if ( format ) { free(format); };
 
     printf("%s\n", output_string);
