@@ -213,8 +213,10 @@ struct weather * read_weather (struct json_write_result * json) {
                 } break;
 
             case 'n':
-                fetched_weather.name = strdup(json_string_value(root_value));
-                break;
+                fetched_weather.name = json_string_value(root_value);
+                if ( !fetched_weather.name ) {
+                    fetched_weather.name = "Unavailable";
+                } break;
 
             case 's':
                 if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
@@ -233,8 +235,10 @@ struct weather * read_weather (struct json_write_result * json) {
                                         break;
 
                                     case 't':
-                                        fetched_weather.country = strdup(json_string_value(sub_value));
-                                        break;
+                                        fetched_weather.country = json_string_value(sub_value);
+                                        if ( !fetched_weather.country ) {
+                                            fetched_weather.country = "Unavailable";
+                                        } break;
                                 } break;
     
                             case 'n':
@@ -256,8 +260,10 @@ struct weather * read_weather (struct json_write_result * json) {
                                 break;
 
                             case 'e':
-                                fetched_weather.condition = strdup(json_string_value(sub_value));
-                                break;
+                                fetched_weather.condition = json_string_value(sub_value);
+                                if ( !fetched_weather.condition ) {
+                                    fetched_weather.condition = "Unavailable";
+                                } break;
                         }
                     }
                 } else if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
@@ -408,10 +414,6 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
         }
     }
     
-    free(weather->name);
-    free(weather->country);
-    free(weather->condition);
-
     return (cl == n ? 0 : cl);
 }
 

@@ -88,10 +88,6 @@ int test_local_parsing (struct json_write_result * test) {
 
     printf("Testing local JSON Parsing\t[ %s ]\n", (failed_test_counter == 0 ? "PASS" : "FAIL"));
 
-    free(weather->name);
-    free(weather->country);
-    free(weather->condition);
-
     return failed_test_counter;
 }
 
@@ -119,10 +115,6 @@ int test_remote_parsing (struct json_write_result * test) {
     struct weather * weather = read_weather(test);
 
     if ( !weather ) {
-        free(weather->name);
-        free(weather->country);
-        free(weather->condition);
-
         return 1;
     }
 
@@ -133,10 +125,6 @@ int test_remote_parsing (struct json_write_result * test) {
     if ( weather->id != 5045360 ) { failed_test_counter ++; };
 
     printf("Testing remote JSON Parsing\t[ %s ]\n", (failed_test_counter == 0 ? "PASS" : "FAIL"));
-
-    free(weather->name);
-    free(weather->country);
-    free(weather->condition);
 
     return failed_test_counter;
 }

@@ -32,14 +32,14 @@ struct json_write_result {
 struct weather {
     long dt;                  // %a  time data received
     double pressure;          // %b  barometric pressure
-    char * condition;         // %c  weather conditions
+    const char * condition;         // %c  weather conditions
     int weather_code;         // %C  weather condition code
     double clouds;            // %d  cloud coverage
     double temp_min;          // %h  low temperature
     double temp_max;          // %H  high temperature
     long id;                  // %i  city id number
-    char * name;              // %I  city name
-    char * country;           // %j  country code
+    const char * name;              // %I  city name
+    const char * country;           // %j  country code
     double latitude;          // %l  latitude
     double longitude;         // %L  longitude
     double precipitation_3h;  // %p  precipitation
