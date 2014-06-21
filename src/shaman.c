@@ -39,7 +39,7 @@ int main (int argc, char ** argv) {
     if ( argc <= 1 ) { 
         _usage(1); 
     } else {
-        int c;
+        int c = 0;
 
         while ( c != -1 ) {
             static struct option options [] = {
