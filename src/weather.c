@@ -412,9 +412,7 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
     free(weather->country);
     free(weather->condition);
 
-    int bytes_written = strlen(dest_str) + 1;
-
-    return (bytes_written == n ? 0 : bytes_written);
+    return (cl == n ? 0 : cl);
 }
 
 // vim: set ts=4 sw=4 et:
