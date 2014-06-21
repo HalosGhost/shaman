@@ -216,59 +216,83 @@ struct weather * read_weather (struct json_write_result * json) {
                 fetched_weather.name = strdup(json_string_value(root_value));
                 break;
 
-            // TODO: Grab data with an embedded json_object_foreach()
             case 's':
-                //if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
-                //    const char * sub_key;
-                //    json_t * sub_value;
-                //    json_object_foreach(root_value, sub_key, sub_value) {
-                //        switch ( root_key[1] ) {
-                //            case 'y':
-                //                switch ( sub_key[3] ) {
-                //                    case 'r':
-                //                        fetched_weather.sunrise = json_integer_value(sub_value);
-                //                        printf("%d\n", fetched_weather.sunrise);
-                //                        break;
+                if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
+                    const char * sub_key;
+                    json_t * sub_value;
+                    json_object_foreach(root_value, sub_key, sub_value) {
+                        switch ( root_key[1] ) {
+                            case 'y':
+                                switch ( sub_key[4] ) {
+                                    case 'i':
+                                        fetched_weather.sunrise = json_integer_value(sub_value);
+                                        printf("%d\n", fetched_weather.sunrise);
+                                        break;
 
-                //                    case 's':
-                //                        fetched_weather.sunset = json_integer_value(sub_value);
-                //                        printf("%d\n", fetched_weather.sunset);
-                //                        break;
+                                    case 'e':
+                                        fetched_weather.sunset = json_integer_value(sub_value);
+                                        printf("%d\n", fetched_weather.sunset);
+                                        break;
 
-                //                    case 'n':
-                //                        fetched_weather.country = strdup(json_string_value(sub_value));
-                //                        puts(fetched_weather.country);
-                //                        break;
-                //                } break;
+                                    case 't':
+                                        fetched_weather.country = strdup(json_string_value(sub_value));
+                                        puts(fetched_weather.country);
+                                        break;
+                                } break;
     
-                //            case 'n':
-                //                fetched_weather.precipitation_3h = json_number_value(sub_value);
-                //                break;
-                //        }
-                //    }
-                //} break;
-                if ( root_key[1] == 'y' ) {
-                    fetched_weather.sunrise = json_integer_value(json_object_get(root_value, "sunrise"));
-                    fetched_weather.sunset = json_integer_value(json_object_get(root_value, "sunset"));
-                    fetched_weather.country = strdup(json_string_value(json_object_get(root_value, "country")));
-                } else if ( root_key[1] == 'n' ) {
-                    fetched_weather.precipitation_3h = json_number_value(json_object_get(root_value, "3h"));
+                            case 'n':
+                                fetched_weather.precipitation_3h = json_number_value(sub_value);
+                                break;
+                        }
+                    }
                 } break;
 
-            // TODO: Grab data with an embedded json_object_foreach()
             case 'w':
-                if ( root_key[1] == 'e' ) {
-                    fetched_weather.weather_code = json_integer_value(json_object_get(json_array_get(root_value, 0), "id"));
-                    fetched_weather.condition = strdup(json_string_value(json_object_get(json_array_get(root_value, 0), "description")));
-                } else if ( root_key[1] == 'i' ) {
-                    fetched_weather.wind_speed = json_number_value(json_object_get(root_value, "speed"));
-                    fetched_weather.wind_gust = json_number_value(json_object_get(root_value, "gust"));
-                    fetched_weather.wind_direction = json_integer_value(json_object_get(root_value, "deg"));
+                if ( json_typeof(root_value) == (int )JSON_ARRAY ) {
+                    json_t * weather = json_array_get(root_value, 0);
+                    const char * sub_key;
+                    json_t * sub_value;
+                    json_object_foreach(weather, sub_key, sub_value) {
+                        switch ( sub_key[1] ) {
+                            case 'd':
+                                fetched_weather.weather_code = json_integer_value(sub_value);
+                                break;
+
+                            case 'e':
+                                fetched_weather.condition = strdup(json_string_value(sub_value));
+                                break;
+                        }
+                    }
+                } else if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
+                    const char * sub_key;
+                    json_t * sub_value;
+                    json_object_foreach(root_value, sub_key, sub_value) {
+                        switch ( sub_key[0] ) {
+                            case 's':
+                                fetched_weather.wind_speed = json_number_value(sub_value);
+                                break;
+    
+                            case 'g':
+                                fetched_weather.wind_gust = json_number_value(sub_value);
+                                break;
+    
+                            case 'd':
+                                fetched_weather.wind_direction = json_integer_value(sub_value);
+                                break;
+                        }
+                    }
                 } break;
 
             case 'r':
-                fetched_weather.precipitation_3h = json_number_value(json_object_get(root_value, "3h"));
-                break;
+                if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
+                    const char * sub_key;
+                    json_t * sub_value;
+                    json_object_foreach(root_value, sub_key, sub_value) {
+                        if ( sub_key[0] == '3' ) {
+                            fetched_weather.precipitation_3h = json_number_value(sub_value);
+                        }
+                    }
+                } break;
         }
     }
 
