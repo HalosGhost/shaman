@@ -187,7 +187,11 @@ struct weather * read_weather (struct json_write_result * json) {
                 break;
 
             case 'm':
-                if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
+                if ( root_key[1] == 'e' ) {
+                    fprintf(stderr, "%s\n", json_string_value(root_value));
+                    free(root);
+                    exit(1);
+                } else if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
                     const char * sub_key;
                     json_t * sub_value;
                     json_object_foreach(root_value, sub_key, sub_value) {
