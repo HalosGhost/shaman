@@ -28,6 +28,8 @@
 #include "weather.h"
 #include "usage.h"
 
+char * locate_cache (void);
+
 // Main Function //
 int main (int argc, char ** argv) {
     char flag_scale = 'i';
@@ -103,27 +105,7 @@ int main (int argc, char ** argv) {
     struct json_write_result * json;
 
     if ( !cache_path ) {
-        //char * xdg_config_home = getenv("XDG_CONFIG_HOME");
-    
-        //if ( xdg_config_home ) {
-        //    size_t config_home_length = strlen(xdg_config_home);
-        //    char * shaman_config_path;
-    
-        //    snprintf(shaman_config_path, config_home_length + 8, "%s/shaman", xdg_config_home);
-        //    int error = mkdir(shaman_config_path, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); // mode == 0644
-        //    
-        //    if ( !error ) {
-        //        size_t shaman_config_length = strlen(shaman_config_path);
-        //        snprintf(cache_path, shaman_config_length + 12, "%s/cache.json", shaman_config_path);
-        //    } else {
-        //        cache_path = NULL;
-        //    }
-        //} else if (1/* check if $HOME/.config exists */) {
-        //    // use $HOME/.config/shaman/cache.json
-        //} else {
-        //    // use $HOME/.shaman/cache.json
-        //}
-
+        //cache_path = locate_cache();
         json = fetch_data_owm('q', location, flag_scale, cache_path);
     } else {
         // TODO: Handle cache freshening
@@ -143,6 +125,33 @@ int main (int argc, char ** argv) {
     printf("%s\n", output_string);
 
     return 0;
+}
+
+// TODO: Fix cache locating code
+char * locate_cache (void) {
+    char * cache_path;
+    char * xdg_config_home = getenv("XDG_CONFIG_HOME");
+
+    if ( xdg_config_home ) {
+        size_t config_home_length = strlen(xdg_config_home);
+        char * shaman_config_path;
+
+        snprintf(shaman_config_path, config_home_length + 8, "%s/shaman", xdg_config_home);
+        int error = mkdir(shaman_config_path, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); // mode == 0644
+
+        if ( !error ) {
+            size_t shaman_config_length = strlen(shaman_config_path);
+            snprintf(cache_path, shaman_config_length + 12, "%s/cache.json", shaman_config_path);
+        } else {
+            cache_path = NULL;
+        }
+    } else if (1/* check if $HOME/.config exists */) {
+        // use $HOME/.config/shaman/cache.json
+    } else {
+        // use $HOME/.shaman/cache.json
+    }
+
+    return "things";
 }
 
 // vim: set ts=4 sw=4 et:
