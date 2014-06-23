@@ -28,7 +28,7 @@
 #include <math.h>
 #include "weather.h"
 
-const char * cardinal_directions []= {
+const char * cardinal_directions [] = {
     "N", "NbE", "NNE", "NEbN",
     "NE", "NEbE", "ENE", "EbN",
     "E", "EbS", "ESE", "SEbE",
