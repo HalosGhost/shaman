@@ -284,7 +284,7 @@ struct weather * read_weather (struct json_write_result * json) {
                                 break;
     
                             case 'd':
-                                fetched_weather.wind_direction = json_integer_value(sub_value);
+                                fetched_weather.wind_direction = json_number_value(sub_value);
                                 break;
                         }
                     }
@@ -401,7 +401,7 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
                     continue;
 
                 case 'x':
-                    cl += snprintf(dest_str + cl, n - cl, "%d", weather->wind_direction);
+                    cl += snprintf(dest_str + cl, n - cl, "%g", weather->wind_direction);
                     continue;
 
                 case 'X':

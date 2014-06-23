@@ -50,7 +50,7 @@ struct weather {
                               // %T  apparent temperature
     double wind_speed;        // %w  sustained wind speed
     double wind_gust;         // %W  gusting wind speed
-    int wind_direction;       // %x  wind heading
+    double wind_direction;    // %x  wind heading
 };
 
 extern struct json_write_result * fetch_data_file (char * json_file_path);
