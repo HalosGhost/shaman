@@ -25,7 +25,19 @@
 #include <string.h>
 #include <curl/curl.h>
 #include <jansson.h>
+#include <math.h>
 #include "weather.h"
+
+char * cardinal_directions []= {
+	"N", "NbE", "NNE", "NEbN",
+	"NE", "NEbE", "ENE", "EbN",
+	"E", "EbS", "ESE", "SEbE",
+	"SE", "SEbS", "SSE", "SbE",
+	"S", "SbW", "SSW", "SWbS",
+	"SW", "SWbW", "WSW", "WbS",
+	"W", "WbN", "WNW", "NWbW",
+	"NW", "NWbN", "NNW", "NbW"
+};
 
 // Function drawn from Petri Lehtinen's GitHub Jansson example
 static size_t write_data_buffer (void * ptr, size_t size, size_t nmemb, void * stream) {
@@ -404,9 +416,11 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
                     cl += snprintf(dest_str + cl, n - cl, "%g", weather->wind_direction);
                     continue;
 
-                case 'X':
-                    // Cardinal / Ordinal wind heading
+                case 'X': {
+					char * textual_direction = cardinal_directions[((int )round(weather->wind_direction / (360/32)) % 32)];
+					cl += snprintf(dest_str + cl, n - cl, "%s", textual_direction);
                     continue;
+			    }
 
                 case '%':
                     cl += snprintf(dest_str + cl, n - cl, "%c", *format);
