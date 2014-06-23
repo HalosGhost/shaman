@@ -29,14 +29,14 @@
 #include "weather.h"
 
 const char * cardinal_directions []= {
-	"N", "NbE", "NNE", "NEbN",
-	"NE", "NEbE", "ENE", "EbN",
-	"E", "EbS", "ESE", "SEbE",
-	"SE", "SEbS", "SSE", "SbE",
-	"S", "SbW", "SSW", "SWbS",
-	"SW", "SWbW", "WSW", "WbS",
-	"W", "WbN", "WNW", "NWbW",
-	"NW", "NWbN", "NNW", "NbW"
+    "N", "NbE", "NNE", "NEbN",
+    "NE", "NEbE", "ENE", "EbN",
+    "E", "EbS", "ESE", "SEbE",
+    "SE", "SEbS", "SSE", "SbE",
+    "S", "SbW", "SSW", "SWbS",
+    "SW", "SWbW", "WSW", "WbS",
+    "W", "WbN", "WNW", "NWbW",
+    "NW", "NWbN", "NNW", "NbW"
 };
 
 // Function drawn from Petri Lehtinen's GitHub Jansson example
@@ -397,11 +397,11 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
                     continue;
 
                 case 't':
-                    cl +=snprintf(dest_str + cl, n - cl, "%g", weather->temperature);
+                    cl += snprintf(dest_str + cl, n - cl, "%g", weather->temperature);
                     continue;
 
                 case 'T':
-                    // AU / "Feels Like"
+                    // cl += snprintf(dest_str + cl, n - cl, "%g", weather->au);
                     continue;
 
                 case 'w':
@@ -417,7 +417,7 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
                     continue;
 
                 case 'X':
-					cl += snprintf(dest_str + cl, n - cl, "%s", cardinal_directions[((int )round(weather->wind_direction / (360/32)) % 32)]);
+                    cl += snprintf(dest_str + cl, n - cl, "%s", cardinal_directions[((int )round(weather->wind_direction / (360/32)) % 32)]);
                     continue;
 
                 case '%':

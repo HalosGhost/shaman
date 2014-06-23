@@ -47,7 +47,7 @@ struct weather {
     long sunrise;             // %s  time of sunrise
     long sunset;              // %S  time of sunset
     double temperature;       // %t  current temperature
-                              // %T  apparent temperature
+    //double au;                // %T  apparent temperature
     double wind_speed;        // %w  sustained wind speed
     double wind_gust;         // %W  gusting wind speed
     double wind_direction;    // %x  wind heading
