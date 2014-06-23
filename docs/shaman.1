@@ -1,5 +1,5 @@
 '\" t
-.\" Manual page created with latex2man on Tue Jun 17 19:09:45 CDT 2014
+.\" Manual page created with latex2man on Mon Jun 23 15:50:51 CDT 2014
 .\" NOTE: This file is generated, DO NOT EDIT.
 .de Vb
 .ft CW
@@ -10,7 +10,7 @@
 
 .fi
 ..
-.TH "SHAMAN" "1" "17 June 2014" "Fetch Weather Data " "Fetch Weather Data "
+.TH "SHAMAN" "1" "23 June 2014" "Fetch Weather Data " "Fetch Weather Data "
 .SH NAME
 
 Shaman
@@ -66,7 +66,7 @@ for data caching
 .TP
 \fB\-l\fP\fI\fB \fP"location"\fP, \fB\-\-location=\fP\fI"location"\fP
  Specify location to query. Note that \fI"location"\fP
-should be formatted as "City Name,CC" where "CC" is the country code. 
+should be formatted as "City Name,CC" where "CC" is the ISO 3166 Country Code. 
 .TP
 \fB\-m, \-\-metric\fP
  Print information using Metric units 
@@ -80,27 +80,28 @@ The following format specifiers may be used in the format string:
 .PP
 .Vb
 %%    A literal percent sign
-%a    Time of data receipt
-%b    Barometric pressure
+%a    Time of data receipt       (unixtime)
+%b    Barometric pressure        (hectoPascals)
 %c    Weather condition string
 %C    Weather condition code
-%d    Cloud coverage
-%h    Low temperature
-%H    High temperature
+%d    Cloud coverage             (percent)
+%h    Low temperature            (°F | °C)
+%H    High temperature           (°F | °C)
 %i    City ID number
 %I    City name
-%j    Country Code
-%l    Latitude
-%L    Longitude
-%p    Precipitation
-%P    Relative humidity
-%s    Time of sunrise
-%S    Time of sunset
-%t    Current temperature
-%T    Apparent temperature
-%w    Sustained wind speed
-%W    Gusting wind speed
-%x    Wind heading
+%j    Country Code               (ISO3166)
+%l    Latitude                   (degrees)
+%L    Longitude                  (degrees)
+%p    Precipitation              (in | mm)
+%P    Relative humidity          (percent)
+%s    Time of sunrise            (unixtime)
+%S    Time of sunset             (unixtime)
+%t    Current temperature        (°F | °C)
+%T    Apparent temperature       (°F | °C)
+%w    Sustained wind speed       (mph|mps)
+%W    Gusting wind speed         (mph|mps)
+%x    Wind heading               (degrees)
+%X    Wind heading               (Cardinal direction)
 .Ve
 All other valid escape characters may also be used (e.g., \\n and \\\\).
 .PP

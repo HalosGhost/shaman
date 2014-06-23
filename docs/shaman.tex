@@ -34,7 +34,7 @@ In accordance with OpenWeatherMap's API, a call for new data should be made no m
     \item[\Opt{-i, --imperial}]
         Print information using Imperial units
     \item[\OptArg{-l}{\SP "location"}, \OptArg{--location=}{"location"}]
-        Specify location to query. Note that \Arg{"location"} should be formatted as "City Name,CC" where "CC" is the country code.
+        Specify location to query. Note that \Arg{"location"} should be formatted as "City Name,CC" where "CC" is the ISO 3166 Country Code.
     \item[\Opt{-m, --metric}]
         Print information using Metric units
     \item[\Opt{-r, --refresh}]
@@ -56,19 +56,19 @@ The following format specifiers may be used in the format string:
 %H    High temperature           (°F | °C)
 %i    City ID number
 %I    City name
-%j    Country Code
-%l    Latitude
-%L    Longitude
+%j    Country Code               (ISO3166)
+%l    Latitude                   (degrees)
+%L    Longitude                  (degrees)
 %p    Precipitation              (in | mm)
 %P    Relative humidity          (percent)
 %s    Time of sunrise            (unixtime)
 %S    Time of sunset             (unixtime)
 %t    Current temperature        (°F | °C)
 %T    Apparent temperature       (°F | °C)
-%w    Sustained wind speed       (mph|kmph)
-%W    Gusting wind speed         (mph|kmph)
+%w    Sustained wind speed       (mph|mps)
+%W    Gusting wind speed         (mph|mps)
 %x    Wind heading               (degrees)
-%X    Wind heading               (Cardinal / Ordinal direction)
+%X    Wind heading               (Cardinal direction)
 \end{verbatim}
 All other valid escape characters may also be used (e.g., \Bs n and \Bs\Bs).
 
