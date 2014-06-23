@@ -416,11 +416,9 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
                     cl += snprintf(dest_str + cl, n - cl, "%g", weather->wind_direction);
                     continue;
 
-                case 'X': {
-					char * textual_direction = cardinal_directions[((int )round(weather->wind_direction / (360/32)) % 32)];
-					cl += snprintf(dest_str + cl, n - cl, "%s", textual_direction);
+                case 'X':
+					cl += snprintf(dest_str + cl, n - cl, "%s", cardinal_directions[((int )round(weather->wind_direction / (360/32)) % 32)]);
                     continue;
-			    }
 
                 case '%':
                     cl += snprintf(dest_str + cl, n - cl, "%c", *format);
