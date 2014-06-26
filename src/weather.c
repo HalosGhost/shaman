@@ -77,7 +77,7 @@ struct json_write_result * fetch_data_file (char * json_file_path) {
 }
 
 // Fetch JSON from OpenWeatherMap
-struct json_write_result * fetch_data_owm (const char method, const char * location, const char scale, const char * file_cache_path) {
+struct json_write_result * fetch_data_owm (const char method, const char * location, const char scale, const char * file_cache_path, const char * api_key) {
     CURL * handle;
     CURLcode result;
 
@@ -117,7 +117,7 @@ struct json_write_result * fetch_data_owm (const char method, const char * locat
         const char * provider = "http://api.openweathermap.org/data/2.5/weather";
         char * encoded_location = curl_easy_escape(handle, location, 0);
         
-        snprintf(url, sizeof(url), "%s?%s=%s&units=%s", provider, fetch_method, encoded_location, fetch_scale);
+        snprintf(url, sizeof(url), "%s?%s=%s&units=%s&APPID=%s", provider, fetch_method, encoded_location, fetch_scale, api_key);
 
         curl_easy_setopt(handle, CURLOPT_URL, url);
         curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_data_buffer);
