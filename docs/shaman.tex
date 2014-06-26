@@ -11,13 +11,12 @@
 \Prog{Shaman} is a very lightweight application to fetch weather data.
 
 If \Prog{shaman} is not given a location, it will take the data from the cache file.
-If \Prog{shaman} is not given a format string, it will default to "\%c (\%t°F)".
+If \Prog{shaman} is not given a format string, it will default to "\%c (\%t°U)" (where "U" is either "F" or "C" depending on the units requested).
 
 \section{Caching and Refreshing}
 \Prog{Shaman} will look for the cache in the following locations stopping upon the first file found:\\
 
 \File{\$XDG\_CONFIG\_HOME/shaman/cache.json}\\
-\File{\$HOME/.config/shaman/cache.json}\\
 \File{\$HOME/.shaman/cache.json}
 
 In accordance with OpenWeatherMap's API, a call for new data should be made no more often than once per 10 minutes per device.

@@ -1,5 +1,5 @@
 '\" t
-.\" Manual page created with latex2man on Mon Jun 23 15:50:51 CDT 2014
+.\" Manual page created with latex2man on Thu Jun 26 17:05:08 CDT 2014
 .\" NOTE: This file is generated, DO NOT EDIT.
 .de Vb
 .ft CW
@@ -10,7 +10,7 @@
 
 .fi
 ..
-.TH "SHAMAN" "1" "23 June 2014" "Fetch Weather Data " "Fetch Weather Data "
+.TH "SHAMAN" "1" "26 June 2014" "Fetch Weather Data " "Fetch Weather Data "
 .SH NAME
 
 Shaman
@@ -29,7 +29,7 @@ is a very lightweight application to fetch weather data.
 If shaman
 is not given a location, it will take the data from the cache file. 
 If shaman
-is not given a format string, it will default to "%c (%t°F)". 
+is not given a format string, it will default to "%c (%t°U)" (where "U" is either "F" or "C" depending on the units requested). 
 .PP
 .SH CACHING AND REFRESHING
 
@@ -38,8 +38,6 @@ will look for the cache in the following locations stopping upon the first file 
 .br
 .PP
 $XDG_CONFIG_HOME/shaman/cache.json
-.br
-$HOME/.config/shaman/cache.json
 .br
 $HOME/.shaman/cache.json
 .PP
