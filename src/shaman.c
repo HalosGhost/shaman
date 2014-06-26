@@ -23,12 +23,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
+#include <errno.h>
+#include <time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include "weather.h"
 #include "usage.h"
 
+/**
+ * If you fork this code, please DO NOT use this key.
+ * Getting an API key with OWM is free, but this key is exclusively
+ * for shaman
+ */
+#define APIKEY "83a3a133bc7541a6608536d490f7a11d"
+
+// Forward Declarations //
 char * locate_cache (void);
+int check_if_stale (const char * cache_path);
 
 // Main Function //
 int main (int argc, char ** argv) {
@@ -104,12 +115,17 @@ int main (int argc, char ** argv) {
 
     struct json_write_result * json;
 
-    if ( !cache_path ) {
-        //cache_path = locate_cache();
-        json = fetch_data_owm('q', location, flag_scale, cache_path);
+    if ( !cache_path ) { cache_path = locate_cache(); };
+
+    if ( flag_refresh > 0 || check_if_stale(cache_path) ) {
+        json = fetch_data_owm('q', location, flag_scale, cache_path, APIKEY);
     } else {
-        // TODO: Handle cache freshening
         json = fetch_data_file(cache_path);
+        // TODO: Also freshen if requested location differs from cache location
+        //if ( !strstr(json->data, location) ) {
+        //    free(json->data);
+        //    json = fetch_data_owm('q', location, flag_scale, cache_path, APIKEY);
+        //}
     }
 
     if ( cache_path ) { free(cache_path); };
@@ -127,31 +143,64 @@ int main (int argc, char ** argv) {
     return 0;
 }
 
-// TODO: Fix cache locating code
 char * locate_cache (void) {
     char * cache_path;
     char * xdg_config_home = getenv("XDG_CONFIG_HOME");
 
     if ( xdg_config_home ) {
-        size_t config_home_length = strlen(xdg_config_home);
-        char * shaman_config_path;
+        size_t xdg_conf_len = strlen(xdg_config_home);
+        char * xdg_conf_shaman = malloc(xdg_conf_len + 9);
 
-        snprintf(shaman_config_path, config_home_length + 8, "%s/shaman", xdg_config_home);
-        int error = mkdir(shaman_config_path, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); // mode == 0644
+        snprintf(xdg_conf_shaman, xdg_conf_len + 8, "%s/shaman", xdg_config_home);
+        int error = mkdir(xdg_conf_shaman, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); // mode == 0644
 
-        if ( !error ) {
-            size_t shaman_config_length = strlen(shaman_config_path);
-            snprintf(cache_path, shaman_config_length + 12, "%s/cache.json", shaman_config_path);
+        if ( error && errno != EEXIST ) {
+            fprintf(stderr, "Error checking cache in $XDG_CONFIG_HOME/.shaman: %s\n", strerror(errno));
+            free(xdg_conf_shaman);
+            exit(1);
         } else {
-            cache_path = NULL;
+            size_t xdg_conf_shaman_len = strlen(xdg_conf_shaman);
+            cache_path = malloc(xdg_conf_shaman_len + 13);
+            snprintf(cache_path, xdg_conf_shaman_len + 12, "%s/cache.json", xdg_conf_shaman);
         }
-    } else if (1/* check if $HOME/.config exists */) {
-        // use $HOME/.config/shaman/cache.json
+
+        free(xdg_conf_shaman);
+
     } else {
-        // use $HOME/.shaman/cache.json
+        char * home = getenv("HOME");
+        size_t home_len = strlen(home);
+        char * home_shaman = malloc(home_len + 10);
+
+        snprintf(home_shaman, home_len + 9, "%s/.shaman", home);
+        int error = mkdir(home_shaman, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); // mode == 0644
+
+        if ( error && errno != EEXIST ) {
+            fprintf(stderr, "Error checking cache in $HOME/.shaman: %s\n", strerror(errno));
+            free(home_shaman);
+            exit(1);
+        } else {
+            size_t home_shaman_len = strlen(home_shaman);
+            cache_path = malloc(home_shaman_len + 13);
+            snprintf(cache_path, home_shaman_len + 12, "%s/cache.json", home_shaman);
+        }
+
+        free(home_shaman);
     }
 
-    return "things";
+    return cache_path;
+}
+
+int check_if_stale (const char * cache_path) {
+    struct stat cache_stats;
+    int status = stat(cache_path, &cache_stats);
+    int errsv = errno;
+
+    if ( status == 0 ) {
+        return ((time(NULL) - cache_stats.st_mtim.tv_sec) >= 600);
+    } else {
+        fprintf(stderr, "Determining if cache should be freshened failed: %s\n", strerror(errsv));
+        return -1;
+    }
 }
 
 // vim: set ts=4 sw=4 et:
