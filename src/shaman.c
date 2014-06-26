@@ -70,7 +70,7 @@ int main (int argc, char ** argv) {
 
             int option_index = 0;
 
-            c = getopt_long(argc, argv, "himc:f:l:", options, &option_index);
+            c = getopt_long(argc, argv, "himrc:f:l:", options, &option_index);
             switch ( c ) {
                 case 'h':
                     _usage(0);
@@ -84,7 +84,7 @@ int main (int argc, char ** argv) {
                     flag_scale = 'm';
                     break;
 
-                case 'x':
+                case 'r':
                     flag_refresh ++;
                     break;
 
