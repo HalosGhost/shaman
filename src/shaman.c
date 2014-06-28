@@ -145,48 +145,28 @@ int main (int argc, char ** argv) {
 
 char * locate_cache (void) {
     char * cache_path;
-    char * xdg_config_home = getenv("XDG_CONFIG_HOME");
+    char * conf_prefix = getenv("XDG_CONFIG_HOME");
 
-    if ( xdg_config_home ) {
-        size_t xdg_conf_len = strlen(xdg_config_home);
-        char * xdg_conf_shaman = malloc(xdg_conf_len + 9);
+    char location = ( conf_prefix ? 'x' : 'h' );
+    if ( location == 'h' ) { conf_prefix = getenv("HOME"); };
 
-        snprintf(xdg_conf_shaman, xdg_conf_len + 8, "%s/shaman", xdg_config_home);
-        int error = mkdir(xdg_conf_shaman, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); // mode == 0755
+    size_t conf_prefix_len = strlen(conf_prefix);
+    char * conf_dir = malloc(conf_prefix_len + 10);
 
-        if ( error && errno != EEXIST ) {
-            fprintf(stderr, "Error checking cache in $XDG_CONFIG_HOME/.shaman: %s\n", strerror(errno));
-            free(xdg_conf_shaman);
-            exit(1);
-        } else {
-            size_t xdg_conf_shaman_len = strlen(xdg_conf_shaman);
-            cache_path = malloc(xdg_conf_shaman_len + 13);
-            snprintf(cache_path, xdg_conf_shaman_len + 12, "%s/cache.json", xdg_conf_shaman);
-        }
+    snprintf(conf_dir, conf_prefix_len + 9, "%s/%s", conf_prefix, ( location == 'x' ? "shaman" : ".shaman" ));
+    int error = mkdir(conf_dir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); // mode == 0755
 
-        free(xdg_conf_shaman);
-
+    if ( error && errno != EEXIST ) {
+        fprintf(stderr, "Error checking cache at %s: %s\n", conf_dir, strerror(errno));
+        free(conf_dir);
+        exit(1);
     } else {
-        char * home = getenv("HOME");
-        size_t home_len = strlen(home);
-        char * home_shaman = malloc(home_len + 10);
-
-        snprintf(home_shaman, home_len + 9, "%s/.shaman", home);
-        int error = mkdir(home_shaman, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); // mode == 0755
-
-        if ( error && errno != EEXIST ) {
-            fprintf(stderr, "Error checking cache in $HOME/.shaman: %s\n", strerror(errno));
-            free(home_shaman);
-            exit(1);
-        } else {
-            size_t home_shaman_len = strlen(home_shaman);
-            cache_path = malloc(home_shaman_len + 13);
-            snprintf(cache_path, home_shaman_len + 12, "%s/cache.json", home_shaman);
-        }
-
-        free(home_shaman);
+        size_t conf_dir_len = strlen(conf_dir);
+        cache_path = malloc(conf_dir_len + 13);
+        snprintf(cache_path, conf_dir_len + 12, "%s/cache.json", conf_dir);
     }
 
+    free(conf_dir);
     return cache_path;
 }
 
