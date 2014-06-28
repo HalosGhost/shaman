@@ -152,7 +152,7 @@ char * locate_cache (void) {
         char * xdg_conf_shaman = malloc(xdg_conf_len + 9);
 
         snprintf(xdg_conf_shaman, xdg_conf_len + 8, "%s/shaman", xdg_config_home);
-        int error = mkdir(xdg_conf_shaman, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); // mode == 0644
+        int error = mkdir(xdg_conf_shaman, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); // mode == 0755
 
         if ( error && errno != EEXIST ) {
             fprintf(stderr, "Error checking cache in $XDG_CONFIG_HOME/.shaman: %s\n", strerror(errno));
@@ -172,7 +172,7 @@ char * locate_cache (void) {
         char * home_shaman = malloc(home_len + 10);
 
         snprintf(home_shaman, home_len + 9, "%s/.shaman", home);
-        int error = mkdir(home_shaman, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); // mode == 0644
+        int error = mkdir(home_shaman, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); // mode == 0755
 
         if ( error && errno != EEXIST ) {
             fprintf(stderr, "Error checking cache in $HOME/.shaman: %s\n", strerror(errno));
