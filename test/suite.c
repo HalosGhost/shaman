@@ -26,6 +26,10 @@
 #include "weather.h"
 
 // Forward Declarations //
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
 struct json_write_result * test_local_fetching (void);
 int test_local_parsing (struct json_write_result * test);
 struct json_write_result * test_remote_fetching (void);
@@ -51,7 +55,7 @@ int main (void) {
 struct json_write_result * test_local_fetching (void) {
     printf("Testing local JSON Fetching\t[ PEND ]\r");
     struct json_write_result * test = fetch_data_file("test.json");
-    printf("Testing local JSON Fetching\t[ %s ]\n", (test->data ? "PASS" : "FAIL"));
+    printf("Testing local JSON Fetching\t[ %s " ANSI_COLOR_RESET "]\n", (test->data ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
 
     if ( test->data ) {
         return test;
@@ -86,7 +90,7 @@ int test_local_parsing (struct json_write_result * test) {
     if ( weather->dt != 1402513288 ) { failed_test_counter ++; };
     if ( weather->id != 4693342 ) { failed_test_counter ++; };
 
-    printf("Testing local JSON Parsing\t[ %s ]\n", (failed_test_counter == 0 ? "PASS" : "FAIL"));
+    printf("Testing local JSON Parsing\t[ %s " ANSI_COLOR_RESET "]\n", (failed_test_counter == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
 
     return failed_test_counter;
 }
@@ -95,12 +99,12 @@ struct json_write_result * test_remote_fetching (void) {
     char * test_path = "./cache_test.json";
     printf("Testing remote JSON Fetching\t[ PEND ]\r");
     struct json_write_result * test = fetch_data_owm('q', "Saint Paul,US", 'i', test_path, NULL);
-    printf("Testing remote JSON Fetching\t[ %s ]\n", (test->data ? "PASS" : "FAIL"));
+    printf("Testing remote JSON Fetching\t[ %s " ANSI_COLOR_RESET "]\n", (test->data ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
 
     if ( test->data ) {
         printf("Testing JSON Caching\t\t[ PEND ]\r");
         struct json_write_result * test2 = fetch_data_file(test_path);
-        printf("Testing JSON Caching\t\t[ %s ]\n", ( strcmp(test->data, test2->data) == 0 ? "PASS" : "FAIL"));
+        printf("Testing JSON Caching\t\t[ %s " ANSI_COLOR_RESET "]\n", ( strcmp(test->data, test2->data) == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
         free(test2->data);
         unlink(test_path);
 
@@ -124,7 +128,7 @@ int test_remote_parsing (struct json_write_result * test) {
     if ( strcmp(weather->name, "Saint Paul") != 0 ) { failed_test_counter ++; };
     if ( weather->id != 5045360 ) { failed_test_counter ++; };
 
-    printf("Testing remote JSON Parsing\t[ %s ]\n", (failed_test_counter == 0 ? "PASS" : "FAIL"));
+    printf("Testing remote JSON Parsing\t[ %s " ANSI_COLOR_RESET "]\n", (failed_test_counter == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
 
     return failed_test_counter;
 }
