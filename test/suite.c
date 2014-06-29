@@ -30,32 +30,79 @@
 #define ANSI_COLOR_GREEN   "\x1b[32m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
-struct json_write_result * test_local_fetching (void);
-int test_local_parsing (struct json_write_result * test);
-struct json_write_result * test_remote_fetching (void);
-int test_remote_parsing (struct json_write_result * test);
+int test_strfweather (void);
+
+/* OWM */
+struct json_write_result * test_owm_local_fetch (void);
+int test_owm_local_parse (struct json_write_result * test);
+struct json_write_result * test_owm_remote_fetch (void);
+int test_owm_remote_parse (struct json_write_result * test);
+
+/* Shaman */
+
 
 // Run Suite //
 int main (void) {
-    struct json_write_result * test1_result = test_local_fetching();
-    if ( !test1_result->data ) { return 1; };
+    int strfweather_result = test_strfweather();
+    if ( strfweather_result != 0 ) { return 1; };
 
-    int test2_result = test_local_parsing(test1_result);
-    if ( test2_result ) { return test2_result; };
+    struct json_write_result * olf_result = test_owm_local_fetch();
+    if ( !olf_result->data ) { return 2; };
 
-    struct json_write_result * test3_result = test_remote_fetching();
-    if ( !test1_result->data ) { return 3; };
+    int olp_result = test_owm_local_parse(olf_result);
+    if ( olp_result ) { return 3; };
 
-    int test4_result = test_remote_parsing(test3_result);
-    if ( test4_result ) { return 4; };
+    struct json_write_result * orf_result = test_owm_remote_fetch();
+    if ( !orf_result->data ) { return 4; };
+
+    int orp_result = test_owm_remote_parse(orf_result);
+    if ( orp_result ) { return 5; };
 
     return 0;
 }
 
-struct json_write_result * test_local_fetching (void) {
-    printf("Testing local JSON Fetching\t[ PEND ]\r");
+int test_strfweather (void) {
+    printf("Testing strfweather()\t\t[ PEND ]\r");
+    struct weather wthr = {
+        .dt = 1402513288,
+        .pressure = 1011,
+        .condition = "Sky is Clear",
+        .weather_code = 800,
+        .clouds = 18,
+        .temp_min = 305.15,
+        .temp_max = 307.59,
+        .id = 4693342,
+        .name = "Georgetown",
+        .country = "US",
+        .latitude = 30.63,
+        .longitude = -97.68,
+        .precipitation_3h = 18,
+        .humidity = 62,
+        .sunrise = 1402486044,
+        .sunset = 1402536816,
+        .temperature = 306.35,
+        .wind_speed = 1.54,
+        .wind_gust = 5.14,
+        .wind_direction = 214
+    };
+
+    char * comp_str = "14025132881011Sky is Clear80018305.15307.594693342GeorgetownUS30.63-97.68186214024860441402536816306.351.545.14214";
+    char * dest_str = malloc(115);
+    strfweather(dest_str, 115, "%a%b%c%C%d%h%H%i%I%j%l%L%p%P%s%S%t%w%W%x%X", &wthr);
+
+    int test = strncmp(comp_str, dest_str, 114);
+
+    if ( dest_str ) { free(dest_str); };
+
+    printf("Testing strfweather()\t\t[ %s " ANSI_COLOR_RESET "]\n", (test == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
+
+    return test;
+}
+
+struct json_write_result * test_owm_local_fetch (void) {
+    printf("Testing OWM Local Fetching\t[ PEND ]\r");
     struct json_write_result * test = fetch_data_file("test.json");
-    printf("Testing local JSON Fetching\t[ %s " ANSI_COLOR_RESET "]\n", (test->data ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
+    printf("Testing OWM Local Fetching\t[ %s " ANSI_COLOR_RESET "]\n", (test->data ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
 
     if ( test->data ) {
         return test;
@@ -64,8 +111,8 @@ struct json_write_result * test_local_fetching (void) {
     }
 }
 
-int test_local_parsing (struct json_write_result * test) {
-    printf("Testing local JSON Parsing\t[ PEND ]\r");
+int test_owm_local_parse (struct json_write_result * test) {
+    printf("Testing OWM Local Parsing\t[ PEND ]\r");
     struct weather * weather = read_weather(test);
     int failed_test_counter = 0;
 
@@ -90,21 +137,21 @@ int test_local_parsing (struct json_write_result * test) {
     if ( weather->dt != 1402513288 ) { failed_test_counter ++; };
     if ( weather->id != 4693342 ) { failed_test_counter ++; };
 
-    printf("Testing local JSON Parsing\t[ %s " ANSI_COLOR_RESET "]\n", (failed_test_counter == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
+    printf("Testing OWM Local Parsing\t[ %s " ANSI_COLOR_RESET "]\n", (failed_test_counter == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
 
     return failed_test_counter;
 }
 
-struct json_write_result * test_remote_fetching (void) {
+struct json_write_result * test_owm_remote_fetch (void) {
     char * test_path = "./cache_test.json";
-    printf("Testing remote JSON Fetching\t[ PEND ]\r");
+    printf("Testing OWM Remote Fetching\t[ PEND ]\r");
     struct json_write_result * test = fetch_data_owm('q', "Saint Paul,US", 'i', test_path, NULL);
-    printf("Testing remote JSON Fetching\t[ %s " ANSI_COLOR_RESET "]\n", (test->data ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
+    printf("Testing OWM Remote Fetching\t[ %s " ANSI_COLOR_RESET "]\n", (test->data ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
 
     if ( test->data ) {
-        printf("Testing JSON Caching\t\t[ PEND ]\r");
+        printf("Testing OWM Caching\t\t[ PEND ]\r");
         struct json_write_result * test2 = fetch_data_file(test_path);
-        printf("Testing JSON Caching\t\t[ %s " ANSI_COLOR_RESET "]\n", ( strcmp(test->data, test2->data) == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
+        printf("Testing OWM Caching\t\t[ %s " ANSI_COLOR_RESET "]\n", ( strcmp(test->data, test2->data) == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
         free(test2->data);
         unlink(test_path);
 
@@ -114,8 +161,8 @@ struct json_write_result * test_remote_fetching (void) {
     }
 }
 
-int test_remote_parsing (struct json_write_result * test) {
-    printf("Testing remote JSON Parsing\t[ PEND ]\r");
+int test_owm_remote_parse (struct json_write_result * test) {
+    printf("Testing OWM Remote Parsing\t[ PEND ]\r");
     struct weather * weather = read_weather(test);
 
     if ( !weather ) {
@@ -128,7 +175,7 @@ int test_remote_parsing (struct json_write_result * test) {
     if ( strcmp(weather->name, "Saint Paul") != 0 ) { failed_test_counter ++; };
     if ( weather->id != 5045360 ) { failed_test_counter ++; };
 
-    printf("Testing remote JSON Parsing\t[ %s " ANSI_COLOR_RESET "]\n", (failed_test_counter == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
+    printf("Testing OWM Remote Parsing\t[ %s " ANSI_COLOR_RESET "]\n", (failed_test_counter == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
 
     return failed_test_counter;
 }
