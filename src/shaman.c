@@ -35,7 +35,7 @@
  * Getting an API key with OWM is free, but this key is exclusively
  * for shaman
  */
-#define APIKEY "83a3a133bc7541a6608536d490f7a11d"
+#define OWMAPIKEY "83a3a133bc7541a6608536d490f7a11d"
 
 // Forward Declarations //
 char * locate_cache (void);
@@ -118,14 +118,16 @@ int main (int argc, char ** argv) {
     if ( !cache_path ) { cache_path = locate_cache(); };
 
     if ( flag_refresh > 0 || check_if_stale(cache_path) ) {
-        json = fetch_data_owm('q', location, flag_scale, cache_path, APIKEY);
+        json = fetch_data_owm('q', location, flag_scale, cache_path, OWMAPIKEY);
     } else {
         json = fetch_data_file(cache_path);
-        // TODO: Also freshen if requested location differs from cache location
-        //if ( !strstr(json->data, location) ) {
-        //    free(json->data);
-        //    json = fetch_data_owm('q', location, flag_scale, cache_path, APIKEY);
-        //}
+		char * city = malloc(strlen(location) - 3);
+		sscanf(location, "%[^,]", city);
+        if ( !strstr(json->data, city) ) {
+            free(json->data);
+            json = fetch_data_owm('q', location, flag_scale, cache_path, OWMAPIKEY);
+        }
+		free(city);
     }
 
     if ( cache_path ) { free(cache_path); };
