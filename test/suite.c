@@ -27,17 +27,17 @@
 
 // Forward Declarations //
 #define TEST_COUNT 6
-typedef int (* func_ptr) (void);
+typedef int (* test_p) (void);
 
 struct test {
     char * desc;
-    func_ptr func;
+    test_p func;
 };
 
 struct json_write_result * json;
 
 /* Test Utilities */
-void run_test (char * test_name, func_ptr function);
+void run_test (char * test_name, test_p function);
 
 /* Test Functions */
 int test_strfweather (void);
@@ -51,13 +51,13 @@ int test_shaman_owm (void);
 // Run Suite //
 int main (void) {
     struct test test_list [] = {
-        { "Formatted Weather",   (func_ptr )test_strfweather      },
-        { "OWM Local Fetching",  (func_ptr )test_owm_local_fetch  },
-        { "OWM Local Parsing",   (func_ptr )test_owm_local_parse  },
-        { "OWM Remote Fetching", (func_ptr )test_owm_remote_fetch },
-        { "OWM Caching\t",       (func_ptr )test_owm_cache        },
-        { "OWM Remote Parsing",  (func_ptr )test_owm_remote_parse },
-        { "Shaman with OWM\t",   (func_ptr )test_shaman_owm       }
+        { "Formatted Weather",   (test_p )test_strfweather      },
+        { "OWM Local Fetching",  (test_p )test_owm_local_fetch  },
+        { "OWM Local Parsing",   (test_p )test_owm_local_parse  },
+        { "OWM Remote Fetching", (test_p )test_owm_remote_fetch },
+        { "OWM Caching\t",       (test_p )test_owm_cache        },
+        { "OWM Remote Parsing",  (test_p )test_owm_remote_parse },
+        { "Shaman with OWM\t",   (test_p )test_shaman_owm       }
     };
 
     for ( char i = 0; i < TEST_COUNT; i ++ ) {
@@ -65,7 +65,7 @@ int main (void) {
     } return 0;
 }
 
-void run_test (char * test_name, func_ptr test) {
+void run_test (char * test_name, test_p test) {
     printf("Testing %s\t\t[ PEND ]\r", test_name);
     char * test_result = (test() ? "\x1b[32mPASS" : "\x1b[31mFAIL");
     printf("Testing %s\t\t[ %s \x1b[0m]\n", test_name, test_result);
