@@ -26,7 +26,7 @@
 #include "weather.h"
 
 // Forward Declarations //
-#define TEST_COUNT 7
+#define TEST_COUNT 6
 typedef int (* func_ptr) (void);
 
 struct test {
