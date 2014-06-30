@@ -140,7 +140,7 @@ int test_owm_local_parse (void) {
 }
 
 int test_owm_remote_fetch (void) {
-    struct json_write_result * test = fetch_data_owm('q', "Saint Paul,US", 'i', NULL, NULL);
+    json = fetch_data_owm('q', "Saint Paul,US", 'i', NULL, NULL);
     return ( *json->data );
 }
 
