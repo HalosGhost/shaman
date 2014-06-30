@@ -26,43 +26,52 @@
 #include "weather.h"
 
 // Forward Declarations //
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
+#define TEST_COUNT 7
+typedef int (* func_ptr) (void);
 
+struct test {
+    char * desc;
+    func_ptr func;
+};
+
+struct json_write_result * json;
+
+/* Test Utilities */
+void run_test (char * test_name, func_ptr function);
+
+/* Test Functions */
 int test_strfweather (void);
-
-/* OWM */
-struct json_write_result * test_owm_local_fetch (void);
-int test_owm_local_parse (struct json_write_result * test);
-struct json_write_result * test_owm_remote_fetch (void);
-int test_owm_remote_parse (struct json_write_result * test);
-
-/* Shaman */
-
+int test_owm_local_fetch (void);
+int test_owm_local_parse (void);
+int test_owm_remote_fetch (void);
+int test_owm_cache (void);
+int test_owm_remote_parse (void);
+int test_shaman_owm (void);
 
 // Run Suite //
 int main (void) {
-    int strfweather_result = test_strfweather();
-    if ( strfweather_result != 0 ) { return 1; };
+    struct test test_list [] = {
+        { "Formatted Weather",   (func_ptr )test_strfweather      },
+        { "OWM Local Fetching",  (func_ptr )test_owm_local_fetch  },
+        { "OWM Local Parsing",   (func_ptr )test_owm_local_parse  },
+        { "OWM Remote Fetching", (func_ptr )test_owm_remote_fetch },
+        { "OWM Caching\t",       (func_ptr )test_owm_cache        },
+        { "OWM Remote Parsing",  (func_ptr )test_owm_remote_parse },
+        { "Shaman with OWM\t",   (func_ptr )test_shaman_owm       }
+    };
 
-    struct json_write_result * olf_result = test_owm_local_fetch();
-    if ( !olf_result->data ) { return 2; };
+    for ( char i = 0; i < TEST_COUNT; i ++ ) {
+        run_test(test_list[i].desc, test_list[i].func);
+    } return 0;
+}
 
-    int olp_result = test_owm_local_parse(olf_result);
-    if ( olp_result ) { return 3; };
-
-    struct json_write_result * orf_result = test_owm_remote_fetch();
-    if ( !orf_result->data ) { return 4; };
-
-    int orp_result = test_owm_remote_parse(orf_result);
-    if ( orp_result ) { return 5; };
-
-    return 0;
+void run_test (char * test_name, func_ptr test) {
+    printf("Testing %s\t\t[ PEND ]\r", test_name);
+    char * test_result = (test() ? "\x1b[32mPASS" : "\x1b[31mFAIL");
+    printf("Testing %s\t\t[ %s \x1b[0m]\n", test_name, test_result);
 }
 
 int test_strfweather (void) {
-    printf("Testing strfweather()\t\t[ PEND ]\r");
     struct weather wthr = {
         .dt = 1402513288,
         .pressure = 1011,
@@ -90,30 +99,20 @@ int test_strfweather (void) {
     char * dest_str = malloc(115);
     strfweather(dest_str, 115, "%a%b%c%C%d%h%H%i%I%j%l%L%p%P%s%S%t%w%W%x%X", &wthr);
 
-    int test = strncmp(comp_str, dest_str, 114);
+    int test_result = strncmp(comp_str, dest_str, 114);
 
     if ( dest_str ) { free(dest_str); };
 
-    printf("Testing strfweather()\t\t[ %s " ANSI_COLOR_RESET "]\n", (test == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
-
-    return test;
+    return (test_result == 0);
 }
 
-struct json_write_result * test_owm_local_fetch (void) {
-    printf("Testing OWM Local Fetching\t[ PEND ]\r");
-    struct json_write_result * test = fetch_data_file("test.json");
-    printf("Testing OWM Local Fetching\t[ %s " ANSI_COLOR_RESET "]\n", (test->data ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
-
-    if ( test->data ) {
-        return test;
-    } else {
-        return NULL;
-    }
+int test_owm_local_fetch (void) {
+    json = fetch_data_file("test.json");
+    return (*json->data);
 }
 
-int test_owm_local_parse (struct json_write_result * test) {
-    printf("Testing OWM Local Parsing\t[ PEND ]\r");
-    struct weather * weather = read_weather(test);
+int test_owm_local_parse (void) {
+    struct weather * weather = read_weather(json);
     int failed_test_counter = 0;
 
     if ( strcmp(weather->country, "US") != 0 ) { failed_test_counter ++; };
@@ -137,33 +136,30 @@ int test_owm_local_parse (struct json_write_result * test) {
     if ( weather->dt != 1402513288 ) { failed_test_counter ++; };
     if ( weather->id != 4693342 ) { failed_test_counter ++; };
 
-    printf("Testing OWM Local Parsing\t[ %s " ANSI_COLOR_RESET "]\n", (failed_test_counter == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
-
-    return failed_test_counter;
+    return (failed_test_counter == 0);
 }
 
-struct json_write_result * test_owm_remote_fetch (void) {
-    char * test_path = "./cache_test.json";
-    printf("Testing OWM Remote Fetching\t[ PEND ]\r");
-    struct json_write_result * test = fetch_data_owm('q', "Saint Paul,US", 'i', test_path, NULL);
-    printf("Testing OWM Remote Fetching\t[ %s " ANSI_COLOR_RESET "]\n", (test->data ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
+int test_owm_remote_fetch (void) {
+    struct json_write_result * test = fetch_data_owm('q', "Saint Paul,US", 'i', NULL, NULL);
+    return ( *json->data );
+}
 
-    if ( test->data ) {
-        printf("Testing OWM Caching\t\t[ PEND ]\r");
-        struct json_write_result * test2 = fetch_data_file(test_path);
-        printf("Testing OWM Caching\t\t[ %s " ANSI_COLOR_RESET "]\n", ( strcmp(test->data, test2->data) == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
-        free(test2->data);
+int test_owm_cache (void) {
+    char * test_path = ".cache_test.json";
+    json = fetch_data_owm('q', "Saint Paul,US", 'i', test_path, NULL);
+
+    if ( json->data ) {
+        json = fetch_data_file(test_path);
         unlink(test_path);
 
-        return test;
-    } else {
-        return NULL;
+        return ( *json->data );
     }
+
+    return 0;
 }
 
-int test_owm_remote_parse (struct json_write_result * test) {
-    printf("Testing OWM Remote Parsing\t[ PEND ]\r");
-    struct weather * weather = read_weather(test);
+int test_owm_remote_parse (void) {
+    struct weather * weather = read_weather(json);
 
     if ( !weather ) {
         return 1;
@@ -175,9 +171,11 @@ int test_owm_remote_parse (struct json_write_result * test) {
     if ( strcmp(weather->name, "Saint Paul") != 0 ) { failed_test_counter ++; };
     if ( weather->id != 5045360 ) { failed_test_counter ++; };
 
-    printf("Testing OWM Remote Parsing\t[ %s " ANSI_COLOR_RESET "]\n", (failed_test_counter == 0 ? ANSI_COLOR_GREEN "PASS" : ANSI_COLOR_RED "FAIL"));
+    return (failed_test_counter == 0);
+}
 
-    return failed_test_counter;
+int test_shaman_owm (void) {
+    return 1;
 }
 
 // vim: set ts=4 sw=4 et:
