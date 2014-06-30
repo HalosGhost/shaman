@@ -1,6 +1,10 @@
 #ifndef __WEATHER_H__
 #define __WEATHER_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*******************************************************************\
 * A small, native C library for fetching weather                    *
 * Copyright (C) 2013-2014, Sam Stuewe                               *
@@ -21,6 +25,9 @@
 * Boston, MA  02110-1301, USA.                                      *
 \*******************************************************************/
 
+// Libraries //
+#include <stddef.h>
+
 // Forward Declarations //
 #define BUFFER_SIZE 2048 // 2KiB
 
@@ -32,14 +39,14 @@ struct json_write_result {
 struct weather {
     long dt;                  // %a  time data received
     double pressure;          // %b  barometric pressure
-    const char * condition;         // %c  weather conditions
+    const char * condition;   // %c  weather conditions
     int weather_code;         // %C  weather condition code
     double clouds;            // %d  cloud coverage
     double temp_min;          // %h  low temperature
     double temp_max;          // %H  high temperature
     long id;                  // %i  city id number
-    const char * name;              // %I  city name
-    const char * country;           // %j  country code
+    const char * name;        // %I  city name
+    const char * country;     // %j  country code
     double latitude;          // %l  latitude
     double longitude;         // %L  longitude
     double precipitation_3h;  // %p  precipitation
@@ -60,6 +67,10 @@ extern struct json_write_result * fetch_data_owm (const char method, const char 
 extern struct weather * read_weather (struct json_write_result * json);
 
 extern size_t strfweather (char * dest_str, size_t max, const char * format, const struct weather * weather);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __WEATHER_H__
 // vim: set ts=4 sw=4 et:
