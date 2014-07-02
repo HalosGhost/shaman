@@ -26,6 +26,14 @@
 #include "weather.h"
 
 // Forward Declarations //
+
+/**
+ * If you fork this code, please DO NOT use this key.
+ * Getting an API key with OWM is free, but this key is exclusively
+ * for shaman
+ */
+#define OWMAPIKEY "83a3a133bc7541a6608536d490f7a11d"
+
 #define TEST_COUNT 6
 typedef int (* test_p) (void);
 
@@ -140,13 +148,13 @@ int test_owm_local_parse (void) {
 }
 
 int test_owm_remote_fetch (void) {
-    json = fetch_data_owm('q', "Saint Paul,US", 'i', NULL, NULL);
+    json = fetch_data_owm('q', "Saint Paul,US", 'i', NULL, OWMAPIKEY);
     return ( *json->data );
 }
 
 int test_owm_cache (void) {
     char * test_path = ".cache_test.json";
-    json = fetch_data_owm('q', "Saint Paul,US", 'i', test_path, NULL);
+    json = fetch_data_owm('q', "Saint Paul,US", 'i', test_path, OWMAPIKEY);
 
     if ( json->data ) {
         json = fetch_data_file(test_path);
