@@ -1,5 +1,5 @@
 '\" t
-.\" Manual page created with latex2man on Thu Jun 26 17:05:08 CDT 2014
+.\" Manual page created with latex2man on Sat Jul  5 22:04:04 CDT 2014
 .\" NOTE: This file is generated, DO NOT EDIT.
 .de Vb
 .ft CW
@@ -10,7 +10,7 @@
 
 .fi
 ..
-.TH "SHAMAN" "1" "26 June 2014" "Fetch Weather Data " "Fetch Weather Data "
+.TH "SHAMAN" "1" "05 July 2014" "Fetch Weather Data " "Fetch Weather Data "
 .SH NAME
 
 Shaman
@@ -41,6 +41,7 @@ $XDG_CONFIG_HOME/shaman/cache.json
 .br
 $HOME/.shaman/cache.json
 .PP
+In both the paths above, "cache" may be either "imperial" or "metric" depending on the units requested. 
 In accordance with OpenWeatherMap\&'s API, a call for new data should be made no more often than once per 10 minutes per device. 
 Shaman
 will, therefore, automatically use data from the cache (assuming the requested location is the same) until the file\&'s last\-modified timestamp is over 10 minutes old (or the \fB\-\-refresh\fP
@@ -64,13 +65,16 @@ for data caching
 .TP
 \fB\-l\fP\fI\fB \fP"location"\fP, \fB\-\-location=\fP\fI"location"\fP
  Specify location to query. Note that \fI"location"\fP
-should be formatted as "City Name,CC" where "CC" is the ISO 3166 Country Code. 
+should be formatted as "City Name,CC" where "CC" is the ISO 3166 two\-digit Country Code. 
 .TP
 \fB\-m, \-\-metric\fP
  Print information using Metric units 
 .TP
 \fB\-r, \-\-refresh\fP
  Force updating the cache 
+.TP
+\fB\-v, \-\-verbose\fP
+ Show more output 
 .PP
 .SH FORMAT
 

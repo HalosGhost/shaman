@@ -38,13 +38,14 @@
 #define OWMAPIKEY "83a3a133bc7541a6608536d490f7a11d"
 
 // Forward Declarations //
-char * locate_cache (void);
-int check_if_stale (const char * cache_path);
+char * locate_cache (char scale);
+int check_if_stale (const char * cache_path, char verbosity);
 
 // Main Function //
 int main (int argc, char ** argv) {
     char flag_scale = 'i';
     char flag_refresh = 0;
+    char flag_verbose = 0;
     char * format = NULL;
     char * location = NULL;
     char * cache_path = NULL;
@@ -61,6 +62,7 @@ int main (int argc, char ** argv) {
                 { "imperial", no_argument,         0, 'i'   },
                 { "metric",   no_argument,         0, 'm'   },
                 { "refresh",  no_argument,         0, 'r'   },
+                { "verbose",  no_argument,         0, 'v'   },
                 /* Swtiches */
                 { "cache",    required_argument,   0, 'c'   },
                 { "format",   required_argument,   0, 'f'   },
@@ -70,7 +72,7 @@ int main (int argc, char ** argv) {
 
             int option_index = 0;
 
-            c = getopt_long(argc, argv, "himrc:f:l:", options, &option_index);
+            c = getopt_long(argc, argv, "himrvc:f:l:", options, &option_index);
             switch ( c ) {
                 case 'h':
                     _usage(0);
@@ -86,6 +88,10 @@ int main (int argc, char ** argv) {
 
                 case 'r':
                     flag_refresh ++;
+                    break;
+
+                case 'v':
+                    flag_verbose ++;
                     break;
 
                 case 'c': {
@@ -115,19 +121,19 @@ int main (int argc, char ** argv) {
 
     struct json_write_result * json;
 
-    if ( !cache_path ) { cache_path = locate_cache(); };
+    if ( !cache_path ) { cache_path = locate_cache(flag_scale); };
 
-    if ( flag_refresh > 0 || check_if_stale(cache_path) ) {
+    if ( flag_refresh > 0 || check_if_stale(cache_path, flag_verbose) ) {
         json = fetch_data_owm('q', location, flag_scale, cache_path, OWMAPIKEY);
     } else {
         json = fetch_data_file(cache_path);
-		char * city = malloc(strlen(location) - 3);
-		sscanf(location, "%[^,]", city);
+        char * city = malloc(strlen(location) - 3);
+        sscanf(location, "%[^,]", city);
         if ( !strstr(json->data, city) ) {
             free(json->data);
             json = fetch_data_owm('q', location, flag_scale, cache_path, OWMAPIKEY);
         }
-		free(city);
+        free(city);
     }
 
     if ( cache_path ) { free(cache_path); };
@@ -145,7 +151,7 @@ int main (int argc, char ** argv) {
     return 0;
 }
 
-char * locate_cache (void) {
+char * locate_cache (char scale) {
     char * cache_path;
     char * conf_prefix = getenv("XDG_CONFIG_HOME");
 
@@ -164,15 +170,15 @@ char * locate_cache (void) {
         exit(1);
     } else {
         size_t conf_dir_len = strlen(conf_dir);
-        cache_path = malloc(conf_dir_len + 13);
-        snprintf(cache_path, conf_dir_len + 12, "%s/cache.json", conf_dir);
+        cache_path = malloc(conf_dir_len + 16);
+        snprintf(cache_path, conf_dir_len + 15, (scale == 'i' ? "%s/imperial.json" : "%s/metric.json"), conf_dir);
     }
 
     free(conf_dir);
     return cache_path;
 }
 
-int check_if_stale (const char * cache_path) {
+int check_if_stale (const char * cache_path, char verbosity) {
     struct stat cache_stats;
     int status = stat(cache_path, &cache_stats);
     int errsv = errno;
@@ -180,8 +186,9 @@ int check_if_stale (const char * cache_path) {
     if ( status == 0 ) {
         return ((time(NULL) - cache_stats.st_mtim.tv_sec) >= 600);
     } else {
-        fprintf(stderr, "Determining if cache should be freshened failed: %s\n", strerror(errsv));
-        return -1;
+        if ( verbosity > 0 ) {
+            fprintf(stderr, "Determining if cache should be freshened failed: %s\n", strerror(errsv));
+        } return -1;
     }
 }
 

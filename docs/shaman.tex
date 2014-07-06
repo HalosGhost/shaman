@@ -19,6 +19,7 @@ If \Prog{shaman} is not given a format string, it will default to "\%c (\%t°U)"
 \File{\$XDG\_CONFIG\_HOME/shaman/cache.json}\\
 \File{\$HOME/.shaman/cache.json}
 
+In both the paths above, "cache" may be either "imperial" or "metric" depending on the units requested.
 In accordance with OpenWeatherMap's API, a call for new data should be made no more often than once per 10 minutes per device.
 \Prog{Shaman} will, therefore, automatically use data from the cache (assuming the requested location is the same) until the file's last-modified timestamp is over 10 minutes old (or the \Opt{--refresh} flag has been passed).
 
@@ -33,11 +34,13 @@ In accordance with OpenWeatherMap's API, a call for new data should be made no m
     \item[\Opt{-i, --imperial}]
         Print information using Imperial units
     \item[\OptArg{-l}{\SP "location"}, \OptArg{--location=}{"location"}]
-        Specify location to query. Note that \Arg{"location"} should be formatted as "City Name,CC" where "CC" is the ISO 3166 Country Code.
+        Specify location to query. Note that \Arg{"location"} should be formatted as "City Name,CC" where "CC" is the ISO 3166 two-digit Country Code.
     \item[\Opt{-m, --metric}]
         Print information using Metric units
     \item[\Opt{-r, --refresh}]
         Force updating the cache
+    \item[\Opt{-v, --verbose}]
+        Show more output
 \end{description}
 
 \section{Format}
