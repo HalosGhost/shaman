@@ -41,9 +41,6 @@
 char * 
 locate_cache (char scale);
 
-int 
-check_if_stale (const char * cache_path, char verbosity);
-
 // Main Function //
 int 
 main (int argc, char ** argv) {
