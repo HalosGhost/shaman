@@ -26,7 +26,9 @@
 #include <stdlib.h>
 
 // Usage //
-void _usage (int error) {
+void 
+_usage (int error) {
+
     fputs("Usage: shaman [options]\n\n"
           "Options:\n"
           "  -h, --help\t\t\tprint help and exit\n"
@@ -35,8 +37,10 @@ void _usage (int error) {
           "  -r, --refresh\t\t\tforce update of local cache\n"
           "  -c, --cache\t\t\tspecify location of local cache\n"
           "  -f, --format=\"format\"\t\tformat output according to \"format\"\n"
-          "  -l, --location=\"location\"\tprint weather information for \"location\"\n\n"
-          "See `man 1 shaman` for more information\n", (error ? stderr : stdout));
+          "  -l, --location=\"location\"\tprint weather information for "
+          "\"location\"\n\n"
+          "See `man 1 shaman` for more information\n", 
+          (error ? stderr : stdout));
     exit(error);
 }
 

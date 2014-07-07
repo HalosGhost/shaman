@@ -38,11 +38,15 @@
 #define OWMAPIKEY "83a3a133bc7541a6608536d490f7a11d"
 
 // Forward Declarations //
-char * locate_cache (char scale);
-int check_if_stale (const char * cache_path, char verbosity);
+char * 
+locate_cache (char scale);
+
+int 
+check_if_stale (const char * cache_path, char verbosity);
 
 // Main Function //
-int main (int argc, char ** argv) {
+int 
+main (int argc, char ** argv) {
     char flag_scale = 'i';
     char flag_refresh = 0;
     char flag_verbose = 0;
@@ -114,35 +118,22 @@ int main (int argc, char ** argv) {
     
     if ( !format ) {
         format = malloc(11);
-        snprintf(format, 11, "%%c (%%t°%c)", ( flag_scale == 'm' ? 'C' : 'F' ));
+        snprintf(format, 11, "%%c (%%t°%c)", (flag_scale == 'm' ? 'C' : 'F'));
     }
 
     if ( !location ) { _usage(1); };
 
-    struct json_write_result * json;
-
     if ( !cache_path ) { cache_path = locate_cache(flag_scale); };
 
-    if ( flag_refresh > 0 || check_if_stale(cache_path, flag_verbose) ) {
-        json = owm_fetch_remote('q', location, flag_scale, cache_path, OWMAPIKEY);
-    } else {
-        json = owm_fetch_local(cache_path);
-        char * city = malloc(strlen(location) - 3);
-        sscanf(location, "%[^,]", city);
-        if ( !strstr(json->data, city) ) {
-            free(json->data);
-            json = owm_fetch_remote('q', location, flag_scale, cache_path, OWMAPIKEY);
-        }
-        free(city);
-    }
+    struct weather * wthr = owm_easy('q', location, flag_scale, cache_path, 
+                                     (flag_refresh > 0 ? 0 : 600), OWMAPIKEY, 
+                                     flag_verbose);
 
     if ( cache_path ) { free(cache_path); };
     if ( location ) { free(location); };
 
-    struct weather * weather = owm_read(json);
     char output_string [BUFFER_SIZE];
-
-    strfweather(output_string, BUFFER_SIZE, format, weather);
+    strfweather(output_string, BUFFER_SIZE, format, wthr);
 
     if ( format ) { free(format); };
 
@@ -151,7 +142,9 @@ int main (int argc, char ** argv) {
     return 0;
 }
 
-char * locate_cache (char scale) {
+char * 
+locate_cache (char scale) {
+
     char * cache_path;
     char * conf_prefix = getenv("XDG_CONFIG_HOME");
 
@@ -161,35 +154,28 @@ char * locate_cache (char scale) {
     size_t conf_prefix_len = strlen(conf_prefix);
     char * conf_dir = malloc(conf_prefix_len + 10);
 
-    snprintf(conf_dir, conf_prefix_len + 9, "%s/%s", conf_prefix, ( location == 'x' ? "shaman" : ".shaman" ));
-    int error = mkdir(conf_dir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); // mode == 0755
+    snprintf(conf_dir, conf_prefix_len + 9, "%s/%s", conf_prefix, 
+             (location == 'x' ? "shaman" : ".shaman"));
+    int error = mkdir(conf_dir, 
+                      S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); 
+                      // mode == 0755
 
     if ( error && errno != EEXIST ) {
-        fprintf(stderr, "Error checking cache at %s: %s\n", conf_dir, strerror(errno));
+        fprintf(stderr, "Error checking cache at %s: %s\n", conf_dir, 
+                strerror(errno));
+
         free(conf_dir);
         exit(1);
     } else {
         size_t conf_dir_len = strlen(conf_dir);
         cache_path = malloc(conf_dir_len + 16);
-        snprintf(cache_path, conf_dir_len + 15, (scale == 'i' ? "%s/imperial.json" : "%s/metric.json"), conf_dir);
+        snprintf(cache_path, conf_dir_len + 15, 
+                 (scale == 'i' ? "%s/imperial.json" : "%s/metric.json"), 
+                 conf_dir);
     }
 
     free(conf_dir);
     return cache_path;
-}
-
-int check_if_stale (const char * cache_path, char verbosity) {
-    struct stat cache_stats;
-    int status = stat(cache_path, &cache_stats);
-    int errsv = errno;
-
-    if ( status == 0 ) {
-        return ((time(NULL) - cache_stats.st_mtim.tv_sec) >= 600);
-    } else {
-        if ( verbosity > 0 ) {
-            fprintf(stderr, "Determining if cache should be freshened failed: %s\n", strerror(errsv));
-        } return -1;
-    }
 }
 
 // vim: set ts=4 sw=4 et:

@@ -45,19 +45,35 @@ struct test {
 struct json_write_result * json;
 
 /* Test Utilities */
-void run_test (char * test_name, test_p function);
+void 
+run_test (char * test_name, test_p function);
 
 /* Test Functions */
-int test_strfweather (void);
-int test_owm_local_fetch (void);
-int test_owm_local_parse (void);
-int test_owm_remote_fetch (void);
-int test_owm_cache (void);
-int test_owm_remote_parse (void);
-int test_shaman_owm (void);
+int 
+test_strfweather (void);
+
+int 
+test_owm_local_fetch (void);
+
+int 
+test_owm_local_parse (void);
+
+int 
+test_owm_remote_fetch (void);
+
+int 
+test_owm_cache (void);
+
+int 
+test_owm_remote_parse (void);
+
+int 
+test_shaman_owm (void);
 
 // Run Suite //
-int main (void) {
+int 
+main (void) {
+
     struct test test_list [] = {
         { "Formatted Weather",   (test_p )test_strfweather      },
         { "OWM Local Fetching",  (test_p )test_owm_local_fetch  },
@@ -73,13 +89,17 @@ int main (void) {
     } return 0;
 }
 
-void run_test (char * test_name, test_p test) {
+void 
+run_test (char * test_name, test_p test) {
+
     printf("Testing %s\t\t[ PEND ]\r", test_name);
     char * test_result = (test() ? "\x1b[32mPASS" : "\x1b[31mFAIL");
     printf("Testing %s\t\t[ %s \x1b[0m]\n", test_name, test_result);
 }
 
-int test_strfweather (void) {
+int 
+test_strfweather (void) {
+
     struct weather wthr = {
         .dt = 1402513288,
         .pressure = 1011,
@@ -103,9 +123,13 @@ int test_strfweather (void) {
         .wind_direction = 214
     };
 
-    char * comp_str = "14025132881011Sky is Clear80018305.15307.594693342GeorgetownUS30.63-97.68186214024860441402536816306.351.545.14214";
+    char * comp_str = "14025132881011Sky is Clear80018305.15307.594693342George"
+                      "townUS30.63-97.68186214024860441402536816306.351.545.14"
+                      "214";
+
     char * dest_str = malloc(115);
-    strfweather(dest_str, 115, "%a%b%c%C%d%h%H%i%I%j%l%L%p%P%s%S%t%w%W%x%X", &wthr);
+    strfweather(dest_str, 115, "%a%b%c%C%d%h%H%i%I%j%l%L%p%P%s%S%t%w%W%x%X", 
+                &wthr);
 
     int test_result = strncmp(comp_str, dest_str, 114);
 
@@ -114,45 +138,56 @@ int test_strfweather (void) {
     return (test_result == 0);
 }
 
-int test_owm_local_fetch (void) {
+int 
+test_owm_local_fetch (void) {
+
     json = owm_fetch_local("test.json");
     return (*json->data);
 }
 
-int test_owm_local_parse (void) {
-    struct weather * weather = owm_read(json);
+int 
+test_owm_local_parse (void) {
+
+    struct weather * w = owm_read(json);
     int failed_test_counter = 0;
 
-    if ( strcmp(weather->country, "US") != 0 ) { failed_test_counter ++; };
-    if ( strcmp(weather->name, "Georgetown") != 0 ) { failed_test_counter ++; };
-    if ( strcmp(weather->condition, "Sky is Clear") != 0 ) { failed_test_counter ++; };
-    if ( weather->latitude != 30.63 ) { failed_test_counter ++; };
-    if ( weather->longitude != -97.68 ) { failed_test_counter ++; };
-    if ( weather->sunrise != 1402486044 ) { failed_test_counter ++; };
-    if ( weather->sunset != 1402536816 ) { failed_test_counter ++; };
-    if ( weather->weather_code != 800 ) { failed_test_counter ++; };
-    if ( weather->temperature != 306.35 ) { failed_test_counter ++; };
-    if ( weather->pressure != 1011 ) { failed_test_counter ++; };
-    if ( weather->temp_min != 305.15 ) { failed_test_counter ++; };
-    if ( weather->temp_max != 307.59 ) { failed_test_counter ++; };
-    if ( weather->humidity != 62 ) { failed_test_counter ++; };
-    if ( weather->wind_speed != 1.54 ) { failed_test_counter ++; };
-    if ( weather->wind_gust != 5.14 ) { failed_test_counter ++; };
-    if ( weather->wind_direction != 214 ) { failed_test_counter ++; };
-    if ( weather->precipitation_3h != 18 ) { failed_test_counter ++; };
-    if ( weather->clouds != 18 ) { failed_test_counter ++; };
-    if ( weather->dt != 1402513288 ) { failed_test_counter ++; };
-    if ( weather->id != 4693342 ) { failed_test_counter ++; };
+    if ( strcmp(w->country, "US") != 0 ) { failed_test_counter ++; };
+    if ( strcmp(w->name, "Georgetown") != 0 ) { failed_test_counter ++; };
+    if ( strcmp(w->condition, "Sky is Clear") != 0 ) { 
+        failed_test_counter ++; 
+    }
+
+    if ( w->latitude != 30.63 ) { failed_test_counter ++; };
+    if ( w->longitude != -97.68 ) { failed_test_counter ++; };
+    if ( w->sunrise != 1402486044 ) { failed_test_counter ++; };
+    if ( w->sunset != 1402536816 ) { failed_test_counter ++; };
+    if ( w->weather_code != 800 ) { failed_test_counter ++; };
+    if ( w->temperature != 306.35 ) { failed_test_counter ++; };
+    if ( w->pressure != 1011 ) { failed_test_counter ++; };
+    if ( w->temp_min != 305.15 ) { failed_test_counter ++; };
+    if ( w->temp_max != 307.59 ) { failed_test_counter ++; };
+    if ( w->humidity != 62 ) { failed_test_counter ++; };
+    if ( w->wind_speed != 1.54 ) { failed_test_counter ++; };
+    if ( w->wind_gust != 5.14 ) { failed_test_counter ++; };
+    if ( w->wind_direction != 214 ) { failed_test_counter ++; };
+    if ( w->precipitation_3h != 18 ) { failed_test_counter ++; };
+    if ( w->clouds != 18 ) { failed_test_counter ++; };
+    if ( w->dt != 1402513288 ) { failed_test_counter ++; };
+    if ( w->id != 4693342 ) { failed_test_counter ++; };
 
     return (failed_test_counter == 0);
 }
 
-int test_owm_remote_fetch (void) {
+int 
+test_owm_remote_fetch (void) {
+
     json = owm_fetch_remote('q', "Saint Paul,US", 'i', NULL, OWMAPIKEY);
     return ( *json->data );
 }
 
-int test_owm_cache (void) {
+int 
+test_owm_cache (void) {
+
     char * test_path = ".cache_test.json";
     json = owm_fetch_remote('q', "Saint Paul,US", 'i', test_path, OWMAPIKEY);
 
@@ -166,23 +201,27 @@ int test_owm_cache (void) {
     return 0;
 }
 
-int test_owm_remote_parse (void) {
-    struct weather * weather = owm_read(json);
+int 
+test_owm_remote_parse (void) {
 
-    if ( !weather ) {
+    struct weather * w = owm_read(json);
+
+    if ( !w ) {
         return 1;
     }
 
     int failed_test_counter = 0;
 
-    if ( strcmp(weather->country, "US") != 0 ) { failed_test_counter ++; };
-    if ( strcmp(weather->name, "Saint Paul") != 0 ) { failed_test_counter ++; };
-    if ( weather->id != 5045360 ) { failed_test_counter ++; };
+    if ( strcmp(w->country, "US") != 0 ) { failed_test_counter ++; };
+    if ( strcmp(w->name, "Saint Paul") != 0 ) { failed_test_counter ++; };
+    if ( w->id != 5045360 ) { failed_test_counter ++; };
 
     return (failed_test_counter == 0);
 }
 
-int test_shaman_owm (void) {
+int 
+test_shaman_owm (void) {
+
     return 1;
 }
 
