@@ -60,11 +60,11 @@ struct weather {
     double wind_direction;    // %x  wind heading
 };
 
-extern struct json_write_result * fetch_data_file (char * json_file_path);
+extern struct json_write_result * owm_fetch_local (char * json_file_path);
 
-extern struct json_write_result * fetch_data_owm (const char method, const char * location, const char scale, const char * file_cache_path, const char * api_key);
+extern struct json_write_result * owm_fetch_remote (const char method, const char * location, const char scale, const char * file_cache_path, const char * api_key);
 
-extern struct weather * read_weather (struct json_write_result * json);
+extern struct weather * owm_read (struct json_write_result * json);
 
 extern size_t strfweather (char * dest_str, size_t max, const char * format, const struct weather * weather);
 

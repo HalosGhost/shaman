@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "weather.h"
+#include "../src/weather.h"
 
 // Forward Declarations //
 
@@ -115,12 +115,12 @@ int test_strfweather (void) {
 }
 
 int test_owm_local_fetch (void) {
-    json = fetch_data_file("test.json");
+    json = owm_fetch_local("test.json");
     return (*json->data);
 }
 
 int test_owm_local_parse (void) {
-    struct weather * weather = read_weather(json);
+    struct weather * weather = owm_read(json);
     int failed_test_counter = 0;
 
     if ( strcmp(weather->country, "US") != 0 ) { failed_test_counter ++; };
@@ -148,16 +148,16 @@ int test_owm_local_parse (void) {
 }
 
 int test_owm_remote_fetch (void) {
-    json = fetch_data_owm('q', "Saint Paul,US", 'i', NULL, OWMAPIKEY);
+    json = owm_fetch_remote('q', "Saint Paul,US", 'i', NULL, OWMAPIKEY);
     return ( *json->data );
 }
 
 int test_owm_cache (void) {
     char * test_path = ".cache_test.json";
-    json = fetch_data_owm('q', "Saint Paul,US", 'i', test_path, OWMAPIKEY);
+    json = owm_fetch_remote('q', "Saint Paul,US", 'i', test_path, OWMAPIKEY);
 
     if ( json->data ) {
-        json = fetch_data_file(test_path);
+        json = owm_fetch_local(test_path);
         unlink(test_path);
 
         return ( *json->data );
@@ -167,7 +167,7 @@ int test_owm_cache (void) {
 }
 
 int test_owm_remote_parse (void) {
-    struct weather * weather = read_weather(json);
+    struct weather * weather = owm_read(json);
 
     if ( !weather ) {
         return 1;

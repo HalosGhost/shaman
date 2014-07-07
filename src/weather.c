@@ -55,7 +55,7 @@ static size_t write_data_buffer (void * ptr, size_t size, size_t nmemb, void * s
 }
 
 // Fetch JSON from file
-struct json_write_result * fetch_data_file (char * json_file_path) {
+struct json_write_result * owm_fetch_local (char * json_file_path) {
     char * data = calloc(1, BUFFER_SIZE);
     static struct json_write_result written_result;
     written_result.data = data;
@@ -77,7 +77,7 @@ struct json_write_result * fetch_data_file (char * json_file_path) {
 }
 
 // Fetch JSON from OpenWeatherMap
-struct json_write_result * fetch_data_owm (const char method, const char * location, const char scale, const char * file_cache_path, const char * api_key) {
+struct json_write_result * owm_fetch_remote (const char method, const char * location, const char scale, const char * file_cache_path, const char * api_key) {
     CURL * handle;
     CURLcode result;
 
@@ -157,7 +157,7 @@ struct json_write_result * fetch_data_owm (const char method, const char * locat
 }
 
 // Read JSON into a weather struct
-struct weather * read_weather (struct json_write_result * json) {
+struct weather * owm_read (struct json_write_result * json) {
     json_error_t error;
     json_t * root = json_loads(json->data, 0, &error);
     free(json->data);
@@ -400,9 +400,9 @@ size_t strfweather (char * dest_str, size_t n, const char * format, const struct
                     cl += snprintf(dest_str + cl, n - cl, "%g", weather->temperature);
                     continue;
 
-                case 'T':
+                //case 'T':
                     // cl += snprintf(dest_str + cl, n - cl, "%g", weather->au);
-                    continue;
+                    //continue;
 
                 case 'w':
                     cl += snprintf(dest_str + cl, n - cl, "%g", weather->wind_speed);

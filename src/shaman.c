@@ -124,14 +124,14 @@ int main (int argc, char ** argv) {
     if ( !cache_path ) { cache_path = locate_cache(flag_scale); };
 
     if ( flag_refresh > 0 || check_if_stale(cache_path, flag_verbose) ) {
-        json = fetch_data_owm('q', location, flag_scale, cache_path, OWMAPIKEY);
+        json = owm_fetch_remote('q', location, flag_scale, cache_path, OWMAPIKEY);
     } else {
-        json = fetch_data_file(cache_path);
+        json = owm_fetch_local(cache_path);
         char * city = malloc(strlen(location) - 3);
         sscanf(location, "%[^,]", city);
         if ( !strstr(json->data, city) ) {
             free(json->data);
-            json = fetch_data_owm('q', location, flag_scale, cache_path, OWMAPIKEY);
+            json = owm_fetch_remote('q', location, flag_scale, cache_path, OWMAPIKEY);
         }
         free(city);
     }
@@ -139,7 +139,7 @@ int main (int argc, char ** argv) {
     if ( cache_path ) { free(cache_path); };
     if ( location ) { free(location); };
 
-    struct weather * weather = read_weather(json);
+    struct weather * weather = owm_read(json);
     char output_string [BUFFER_SIZE];
 
     strfweather(output_string, BUFFER_SIZE, format, weather);
