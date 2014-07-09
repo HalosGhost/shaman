@@ -37,6 +37,8 @@ In accordance with OpenWeatherMap's API, a call for new data should be made no m
         Specify location to query. Note that \Arg{"location"} should be formatted as "City Name,CC" where "CC" is the ISO 3166 two-digit Country Code.
     \item[\Opt{-m, --metric}]
         Print information using Metric units
+    \item[\Opt{-q, --quiet}]
+        Silence all output. See the section on Return Values for more information
     \item[\Opt{-r, --refresh}]
         Force updating the cache
     \item[\Opt{-v, --verbose}]
@@ -73,6 +75,19 @@ The following format specifiers may be used in the format string:
 \end{verbatim}
 All other valid escape characters may also be used (e.g., \Bs n and \Bs\Bs).
 
+\section{Return Value}
+When called without the \Opt{-q} flag, \Prog{shaman} will return 0 on success else it will return 1.
+However, when called with \Opt{-q}, \Prog{shaman}'s return code will be set from 1 to 9 (1 indicating failure, and each other code representing one of the following groups of weather conditions):
+
+\begin{verbatim}
+2     Thunderstorm
+3     Drizzle
+5     Rain
+6     Snow
+7     Reduced Visibility
+8     Clouds (includes "Clear Skies")
+9     Extreme Hazards or Miscellaneous
+\end{verbatim}
 \section{Author}
 Copyright \copyright 2012-2014 Sam Stuewe\\
 License GPLv2: GPL version 2 \URL{https://www.gnu.org/licenses/gpl-2.0.html} \\

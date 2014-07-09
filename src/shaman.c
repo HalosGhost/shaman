@@ -47,6 +47,7 @@ main (int argc, char ** argv) {
     char flag_scale = 'i';
     char flag_refresh = 0;
     char flag_verbose = 0;
+    char flag_quiet = 0;
     char * format = NULL;
     char * location = NULL;
     char * cache_path = NULL;
@@ -64,6 +65,7 @@ main (int argc, char ** argv) {
                 { "metric",   no_argument,         0, 'm'   },
                 { "refresh",  no_argument,         0, 'r'   },
                 { "verbose",  no_argument,         0, 'v'   },
+                { "quiet",    no_argument,         0, 'q'   },
                 /* Swtiches */
                 { "cache",    required_argument,   0, 'c'   },
                 { "format",   required_argument,   0, 'f'   },
@@ -73,7 +75,7 @@ main (int argc, char ** argv) {
 
             int option_index = 0;
 
-            c = getopt_long(argc, argv, "himrvc:f:l:", options, &option_index);
+            c = getopt_long(argc, argv, "himrvqc:f:l:", options, &option_index);
             switch ( c ) {
                 case 'h':
                     _usage(0);
@@ -93,6 +95,10 @@ main (int argc, char ** argv) {
 
                 case 'v':
                     flag_verbose ++;
+                    break;
+
+                case 'q':
+                    flag_quiet ++;
                     break;
 
                 case 'c': {
@@ -134,7 +140,11 @@ main (int argc, char ** argv) {
 
     if ( format ) { free(format); };
 
-    printf("%s\n", output_string);
+    if ( !flag_quiet ) {
+        printf("%s\n", output_string);
+    } else {
+        exit(wthr->weather_code / 100); // Report group of weather
+    }
 
     return 0;
 }

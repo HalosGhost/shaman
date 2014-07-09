@@ -1,5 +1,5 @@
 '\" t
-.\" Manual page created with latex2man on Mon Jul  7 11:36:29 CDT 2014
+.\" Manual page created with latex2man on Tue Jul  8 19:03:00 CDT 2014
 .\" NOTE: This file is generated, DO NOT EDIT.
 .de Vb
 .ft CW
@@ -10,7 +10,7 @@
 
 .fi
 ..
-.TH "SHAMAN" "1" "07 July 2014" "Fetch Weather Data " "Fetch Weather Data "
+.TH "SHAMAN" "1" "08 July 2014" "Fetch Weather Data " "Fetch Weather Data "
 .SH NAME
 
 Shaman
@@ -70,6 +70,9 @@ should be formatted as "City Name,CC" where "CC" is the ISO 3166 two\-digit Coun
 \fB\-m, \-\-metric\fP
  Print information using Metric units 
 .TP
+\fB\-q, \-\-quiet\fP
+ Silence all output. See the section on Return Values for more information 
+.TP
 \fB\-r, \-\-refresh\fP
  Force updating the cache 
 .TP
@@ -106,6 +109,24 @@ The following format specifiers may be used in the format string:
 .Ve
 All other valid escape characters may also be used (e.g., \\n and \\\\).
 .PP
+.SH RETURN VALUE
+
+When called without the \fB\-q\fP
+flag, shaman
+will return 0 on success else it will return 1. 
+However, when called with \fB\-q\fP,
+shaman\&'s
+return code will be set from 1 to 9 (1 indicating failure, and each other code representing one of the following groups of weather conditions): 
+.PP
+.Vb
+2     Thunderstorm
+3     Drizzle
+5     Rain
+6     Snow
+7     Reduced Visibility
+8     Clouds (includes "Clear Skies")
+9     Extreme Hazards or Miscellaneous
+.Ve
 .SH AUTHOR
 
 Copyright (C)2012\-2014 Sam Stuewe
