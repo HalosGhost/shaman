@@ -84,7 +84,7 @@ main (void) {
         { "Shaman with OWM\t",   (test_p )test_shaman_owm       }
     };
 
-    for ( char i = 0; i < TEST_COUNT; i ++ ) {
+    for ( size_t i = 0; i < TEST_COUNT; i ++ ) {
         run_test(test_list[i].desc, test_list[i].func);
     } return 0;
 }
