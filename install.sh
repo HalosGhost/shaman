@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PREFIX = ${PREFIX:-/usr}
+PREFIX=${PREFIX:-/usr}
 
 install -Dm755 src/shaman "${DESTDIR}/${PREFIX}/bin/shaman"
 install -Dm755 src/libweather.so "${DESTDIR}/${PREFIX}/lib/libweather.so"
