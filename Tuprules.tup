@@ -1,0 +1,2 @@
+CFLAGS += -Wall -Wpedantic -lcurl -ljansson -lm -std=c11
+CC = gcc
