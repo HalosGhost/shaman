@@ -74,6 +74,7 @@ main (int argc, char ** argv) {
             };
 
             int option_index = 0;
+            int optarg_len;
 
             c = getopt_long(argc, argv, "himrvqc:f:l:", options, &option_index);
             switch ( c ) {
@@ -101,20 +102,23 @@ main (int argc, char ** argv) {
                     flag_quiet ++;
                     break;
 
-                case 'c': {
-                    cache_path = strdup(optarg);
+                case 'c': 
+                    optarg_len = sizeof(char) * strlen(optarg) + 1;
+                    cache_path = malloc(optarg_len);
+                    strncpy(cache_path, optarg, optarg_len);
                     break;
-                }
 
-                case 'f': {
-                    format = strdup(optarg);
+                case 'f': 
+                    optarg_len = sizeof(char) * strlen(optarg) + 1;
+                    format = malloc(optarg_len);
+                    strncpy(format, optarg, optarg_len);
                     break;
-                }
 
-                case 'l': {
-                    location = strdup(optarg);
+                case 'l': 
+                    optarg_len = sizeof(char) * strlen(optarg) + 1;
+                    location = malloc(optarg_len);
+                    strncpy(location, optarg, optarg_len);
                     break;
-                }
             }
         }
     }
