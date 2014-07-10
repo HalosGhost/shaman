@@ -19,8 +19,13 @@ To that end, they now both require only two external dependencies:
 
 * `curl <http://curl.haxx.se/libcurl/>`_, which handles all network interaction very gracefully
 * `jansson <http://www.digip.org/jansson/>`_, which allows for very efficient JSON Parsing
+* `tup <http://gittup.org/tup/>`_, the build system that I will use going forward
 
 Finally, `Jenkins <https://praetorian.erebor.buhman.org:2421/job/shaman/>`_ builds shaman against ``gcc`` and ``clang`` each build, so you can use whichever compiler you prefer.
+
+**NOTE**: with the swtich to tup as a build system, jenkins is no longer building against both ``gcc`` and ``clang``. For the moment, this means that building with ``clang`` is unsupported.
+However, if you want to do it anyway, simply modify ``Tuprules.tup`` to change the line ``CC = gcc`` to ``CC = clang``.
+Eventually, I will utilize tup's variant tool to again test building against both compilers.
 
 Status & Documentation
 ----------------------
@@ -32,7 +37,3 @@ Contributions
 -------------
 All contributions are welcome (pull requests, constructive criticism, feature requests and musings), but pull requests should attempt to follow `these guidelines <http://github.com/HalosGhost/styleguides/blob/master/C.rst>`_ for consistency.
 I am likely to reformat any commit that should deviate from these guidelines.
-
-**NOTE**: With the recode, my C style has changed significantly.
-The styleguide mentioned above is thus, out-of-date.
-It will be updated after the repository is fully transitioned to the new code.
