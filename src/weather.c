@@ -43,6 +43,15 @@ const char * c_dir [] = {
     "NW", "NWbN", "NNW", "NbW"
 };
 
+// Allow unicode representations of basic
+const char * icons [] = {
+	"\xe2\x98\x80", // Sun
+	"\xe2\x98\xbd", // Moon
+	"\xe2\x98\x81", // Clouds
+	"\xe2\x98\x94", // Rain
+	"\xe2\x9a\xa1", // Thunderstorm
+};
+
 // Function drawn from Petri Lehtinen's GitHub Jansson example
 static 
 size_t 
