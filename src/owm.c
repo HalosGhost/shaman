@@ -25,12 +25,22 @@
 #include <string.h>
 #include <curl/curl.h>
 #include <jansson.h>
-#include <math.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
 #include <errno.h>
 #include "weather.h"
+
+struct owm_handle {
+    char method;
+    char * location;
+    char scale;
+    char * cache_path;
+    unsigned int cache_ut;
+    char * api_key;
+    char verbosity;
+    unsigned int precision;
+};
 
 // Function drawn from Petri Lehtinen's GitHub Jansson example
 static 
@@ -110,7 +120,6 @@ owm_fetch_remote (const char method, const char * location, const char scale,
             break;
     }
 
-    curl_global_init(CURL_GLOBAL_ALL);
     handle = curl_easy_init();
 
     if ( handle ) {
@@ -132,7 +141,6 @@ owm_fetch_remote (const char method, const char * location, const char scale,
                     curl_easy_strerror(result));
 
             curl_easy_cleanup(handle);
-            curl_global_cleanup();
             curl_free(encoded_location);
             exit(1);
         }
@@ -155,7 +163,6 @@ owm_fetch_remote (const char method, const char * location, const char scale,
     }
 
     curl_easy_cleanup(handle);
-    curl_global_cleanup();
 
     return &written_result;
 }
