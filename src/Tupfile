@@ -1,6 +1,6 @@
 include_rules
 
 : ../configure.sh |> ./%f |>
-: weather.c |> $(CC) $(CLFAGS) -fPIC -c %f -o %o |> %B.o
-: weather.o |> $(CC) $(CFLAGS) -shared %f -o %o |> lib%B.so
+: foreach weather.c owm.c |> $(CC) $(CLFAGS) -fPIC -c %f -o %o |> %B.o {objs}
+: {objs} |> $(CC) $(CFLAGS) -shared %f -o %o |> libweather.so
 : shaman.c | libweather.so |> $(CC) $(CFLAGS) -L. -lweather %f -o %o |> shaman
