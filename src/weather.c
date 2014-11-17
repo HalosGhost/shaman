@@ -376,7 +376,7 @@ check_if_stale (const char * cache_path, const unsigned int cache_update_time,
     int errsv = errno;
 
     if ( status == 0 ) {
-        return ((time(NULL) - cache_stats.st_mtim.tv_sec) >= cache_update_time);
+        return ((time(NULL) - cache_stats.st_mtime) >= cache_update_time);
     } else {
         if ( verbosity > 0 ) {
             fprintf(stderr, 
