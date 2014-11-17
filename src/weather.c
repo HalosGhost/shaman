@@ -80,7 +80,7 @@ owm_fetch_local (const char * json_file_path) {
 
     FILE * json_fp = fopen(json_file_path, "r");
 
-    size_t bytes_read = fread(written_result.data, BUFFER_SIZE, 1, json_fp);
+    fread(written_result.data, BUFFER_SIZE, 1, json_fp);
 
     if ( ferror(json_fp) ) {
         fclose(json_fp);
@@ -160,10 +160,9 @@ owm_fetch_remote (const char method, const char * location, const char scale,
         curl_free(encoded_location);
     }
 
-    int bytes_written;
     if ( file_cache_path ) {
         FILE * json_cache = fopen(file_cache_path, "w");
-        bytes_written = fwrite(written_result.data, BUFFER_SIZE, 1, json_cache);
+        fwrite(written_result.data, BUFFER_SIZE, 1, json_cache);
 
         if ( ferror(json_cache) ) {
             fclose(json_cache);
