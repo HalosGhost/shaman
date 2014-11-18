@@ -1,2 +1,2 @@
-CFLAGS += -Wall -Wpedantic -lcurl -ljansson -lm -std=c11
-CC = gcc
+CFLAGS += -Weverything -lcurl -ljansson -lm -std=c11
+CC = clang

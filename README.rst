@@ -1,8 +1,5 @@
-Shaman |jenkins|
-================
-.. |jenkins| image:: https://praetorian.erebor.buhman.org:2421/job/shaman/badge/icon
-   :alt: Jenkins Build Status
-   :target: https://praetorian.erebor.buhman.org:2421/job/shaman/
+Shaman
+======
 
 Originally inspired by `weatherman <http://darkhorse.nu/weatherman/>`_, ``shaman`` is a small, native C utilty relying on a small, native C library (``libweather``) to fetch current weather conditions.
 For the moment, ``libweather`` and ``shaman`` support grabbing weather from `OpenWeatherMap <http://openweathermap.org>`_ (which draws data from various sources accounting for nearly 80000 cities). 
@@ -21,11 +18,9 @@ To that end, they now both require only two external dependencies:
 * `jansson <http://www.digip.org/jansson/>`_, which allows for very efficient JSON Parsing
 * `tup <http://gittup.org/tup/>`_, the build system that I will use going forward
 
-Finally, `Jenkins <https://praetorian.erebor.buhman.org:2421/job/shaman/>`_ builds shaman against ``gcc`` and ``clang`` each build, so you can use whichever compiler you prefer.
-
-**NOTE**: with the swtich to tup as a build system, jenkins is no longer building against both ``gcc`` and ``clang``. For the moment, this means that building with ``clang`` is unsupported.
-However, if you want to do it anyway, simply modify ``Tuprules.tup`` to change the line ``CC = gcc`` to ``CC = clang``.
-Eventually, I will utilize tup's variant tool to again test building against both compilers.
+For a variety of reasons, mainly because ``shaman`` does not rely on parallelization at the moment and because of ``-Weverything``, I will no longer be officially supporting ``gcc``.
+Resultingly, to use the official build system, you will need ``clang`` installed.
+Ideally, when I get a continuous integration setup again, I will have the build tested against both compilers.
 
 Status & Documentation
 ----------------------
