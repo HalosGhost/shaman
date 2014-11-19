@@ -10,6 +10,9 @@ Expect GitHub milestone markers to start popping up, as I intend to get this pro
 General
 -------
 
+* Update ``configure.sh``
+   * Add checks for versions of libraries (? Might just stay rolling)
+   * Add checks for the particular functions used in the checked headers
 * Switch to `argp <https://www.gnu.org/software/libc/manual/html_node/Argp.html>`_ instead of ``getopt``
 * Update documentation
    * Switch to rst2man instead of latex2man and generate docs in-build
