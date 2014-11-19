@@ -10,6 +10,7 @@ Expect GitHub milestone markers to start popping up, as I intend to get this pro
 General
 -------
 
+* Increase security (e.g., use full RELRO, NX, Canary, PIE, etc.)
 * Update ``configure.sh``
    * Add checks for versions of libraries (? Might just stay rolling)
    * Add checks for the particular functions used in the checked headers
