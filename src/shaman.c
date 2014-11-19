@@ -74,13 +74,12 @@ main (int argc, char ** argv) {
             };
 
             int option_index = 0;
-            int optarg_len;
+            unsigned long optarg_len;
 
             c = getopt_long(argc, argv, "himrvqc:f:l:", options, &option_index);
             switch ( c ) {
                 case 'h':
                     _usage(0);
-                    break;
 
                 case 'i':
                     flag_scale = 'i';

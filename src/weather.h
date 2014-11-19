@@ -33,18 +33,17 @@ extern "C" {
 
 struct json_write_result {
     char * data;
-    int position;
+    long position;
 };
 
 struct weather {
     long dt;                  // %a  time data received
     double pressure;          // %b  barometric pressure
     const char * condition;   // %c  weather conditions
-    int weather_code;         // %C  weather condition code
     double clouds;            // %d  cloud coverage
     double temp_min;          // %h  low temperature
     double temp_max;          // %H  high temperature
-    long id;                  // %i  city id number
+    unsigned long id;                  // %i  city id number
     const char * name;        // %I  city name
     const char * country;     // %j  country code
     double latitude;          // %l  latitude
@@ -58,6 +57,7 @@ struct weather {
     double wind_speed;        // %w  sustained wind speed
     double wind_gust;         // %W  gusting wind speed
     double wind_direction;    // %x  wind heading
+    unsigned weather_code;         // %C  weather condition code
 };
 
 extern 
