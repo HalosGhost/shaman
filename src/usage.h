@@ -26,6 +26,9 @@
 #include <stdlib.h>
 
 // Usage //
+void
+_usage (int error) __attribute__((noreturn));
+
 void 
 _usage (int error) {
 
