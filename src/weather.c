@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <limits.h>
 #include <curl/curl.h>
 #include <jansson.h>
 #include <math.h>
@@ -32,7 +33,7 @@
 #include <errno.h>
 #include "weather.h"
 
-const char * c_dir [] = {
+static const char * c_dir [] = {
     "N", "NbE", "NNE", "NEbN",
     "NE", "NEbE", "ENE", "EbN",
     "E", "EbS", "ESE", "SEbE",
@@ -44,7 +45,7 @@ const char * c_dir [] = {
 };
 
 // Allow unicode representations of basic
-const char * icons [] = {
+static const char * icons [] = {
 	"\xe2\x98\x80", // Sun
 	"\xe2\x98\xbd", // Moon
 	"\xe2\x98\x81", // Clouds
@@ -421,7 +422,9 @@ size_t
 strfweather (char * dest_str, size_t n, const char * format, 
              const struct weather * w) {
 
-    int cl = 0;
+	if ( n > INT_MAX ) {
+		return 0;
+	} size_t cl = 0;
 
     for ( ; *format; ++format) {
         if ( *format == '%' ) {
@@ -431,107 +434,107 @@ strfweather (char * dest_str, size_t n, const char * format,
                     break;
 
                 case 'a':
-                    cl += snprintf(dest_str + cl, n - cl, "%ld", w->dt);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%ld", w->dt);
                     continue;
 
                 case 'b':
-                    cl += snprintf(dest_str + cl, n - cl, "%g", w->pressure);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", w->pressure);
                     continue;
 
                 case 'c':
-                    cl += snprintf(dest_str + cl, n - cl, "%s", w->condition);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%s", w->condition);
                     continue;
 
                 case 'C':
-                    cl += snprintf(dest_str + cl, n - cl, "%d", 
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%lld", 
                                    w->weather_code);
                     continue;
 
                 case 'd':
-                    cl += snprintf(dest_str + cl, n - cl, "%g", w->clouds);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", w->clouds);
                     continue;
 
                 case 'h':
-                    cl += snprintf(dest_str + cl, n - cl, "%g", w->temp_min);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", w->temp_min);
                     continue;
 
                 case 'H':
-                    cl += snprintf(dest_str + cl, n - cl, "%g", w->temp_max);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", w->temp_max);
                     continue;
 
                 case 'i':
-                    cl += snprintf(dest_str + cl, n - cl, "%ld", w->id);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%lld", w->id);
                     continue;
 
                 case 'I':
-                    cl += snprintf(dest_str + cl, n - cl, "%s", w->name);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%s", w->name);
                     continue;
 
                 case 'j':
-                    cl += snprintf(dest_str + cl, n - cl, "%s", w->country);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%s", w->country);
                     continue;
 
                 case 'l':
-                    cl += snprintf(dest_str + cl, n - cl, "%g", w->latitude);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", w->latitude);
                     continue;
 
                 case 'L':
-                    cl += snprintf(dest_str + cl, n - cl, "%g", w->longitude);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", w->longitude);
                     continue;
 
                 case 'p':
-                    cl += snprintf(dest_str + cl, n - cl, "%g", 
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", 
                                    w->precipitation_3h);
                     continue;
 
                 case 'P':
-                    cl += snprintf(dest_str + cl, n - cl, "%g", w->humidity);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", w->humidity);
                     continue;
 
                 case 's':
-                    cl += snprintf(dest_str + cl, n - cl, "%ld", w->sunrise);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%ld", w->sunrise);
                     continue;
 
                 case 'S':
-                    cl += snprintf(dest_str + cl, n - cl, "%ld", w->sunset);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%ld", w->sunset);
                     continue;
 
                 case 't':
-                    cl += snprintf(dest_str + cl, n - cl, "%g", w->temperature);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", w->temperature);
                     continue;
 
                 //case 'T':
-                    // cl += snprintf(dest_str + cl, n - cl, "%g", w->au);
+                    // cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", w->au);
                     //continue;
 
                 case 'w':
-                    cl += snprintf(dest_str + cl, n - cl, "%g", w->wind_speed);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", w->wind_speed);
                     continue;
 
                 case 'W':
-                    cl += snprintf(dest_str + cl, n - cl, "%g", w->wind_gust);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", w->wind_gust);
                     continue;
 
                 case 'x':
-                    cl += snprintf(dest_str + cl, n - cl, "%g", 
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", 
                                    w->wind_direction);
                     continue;
 
                 case 'X': {
-                    int dir = (int )round(w->wind_direction / (360 / 32)) % 32;
-                    cl += snprintf(dest_str + cl, n - cl, "%s", c_dir[dir]);
+                    long dir = lrint(w->wind_direction / (360 / 32)) % 32;
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%s", c_dir[dir]);
                     continue;
                 }
 
                 case '%':
-                    cl += snprintf(dest_str + cl, n - cl, "%c", *format);
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%c", *format);
                     continue;
 
                 default:
                     break;
             }
         } else {
-            cl += snprintf(dest_str + cl, n - cl, "%c", *format);
+            cl += (size_t )snprintf(dest_str + cl, n - cl, "%c", *format);
         }
     }
     
