@@ -9,10 +9,11 @@ General
 
    * [ ] Add checks for versions of libraries (? Might just stay rolling)
    * [ ] Add checks for the particular functions used in the checked headers
-* [ ] Switch to `argp <https://www.gnu.org/software/libc/manual/html_node/Argp.html>`_ instead of ``getopt``
+
 * [ ] Update documentation
 
    * [ ] Switch to rst2man instead of latex2man and generate docs in-build
+
 * [ ] Update ``_shaman`` (zsh completion)
 
    * [ ] Add Bash completion?
@@ -29,6 +30,7 @@ libweather
 shaman
 ------
 
+* [ ] Switch to `argp <https://www.gnu.org/software/libc/manual/html_node/Argp.html>`_ instead of ``getopt``
 * [ ] Implement a placeholder structure (and option) to specify a provider
 
 test suite
