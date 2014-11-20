@@ -146,7 +146,7 @@ main (int argc, char ** argv) {
     if ( !flag_quiet ) {
         printf("%s\n", output_string);
     } else {
-        exit(wthr->weather_code / 100); // Report group of weather
+        exit((int )wthr->weather_code / 100); // Report group of weather
     }
 
     return 0;
