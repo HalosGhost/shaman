@@ -1,2 +1,2 @@
-CFLAGS += -Weverything -lcurl -ljansson -lm -std=c11
+CFLAGS += -g -O2 -fstack-protector-all -Wl,-z,relro,-z,now -std=c11 -Weverything -lcurl -ljansson -lm 
 CC = clang
