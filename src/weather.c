@@ -46,11 +46,11 @@ static const char * c_dir [] = {
 
 // Allow unicode representations of basic
 //static const char * icons [] = {
-//	"\xe2\x98\x80", // Sun
-//	"\xe2\x98\xbd", // Moon
-//	"\xe2\x98\x81", // Clouds
-//	"\xe2\x98\x94", // Rain
-//	"\xe2\x9a\xa1", // Thunderstorm
+//  "\xe2\x98\x80", // Sun
+//  "\xe2\x98\xbd", // Moon
+//  "\xe2\x98\x81", // Clouds
+//  "\xe2\x98\x94", // Rain
+//  "\xe2\x9a\xa1", // Thunderstorm
 //};
 
 // Function drawn from Petri Lehtinen's GitHub Jansson example
@@ -422,9 +422,9 @@ size_t
 strfweather (char * dest_str, size_t n, const char * format, 
              const struct weather * w) {
 
-	if ( n > INT_MAX ) {
-		return 0;
-	} size_t cl = 0;
+    if ( n > INT_MAX ) {
+        return 0;
+    } size_t cl = 0;
 
     for ( ; *format; ++format) {
         if ( *format == '%' ) {
