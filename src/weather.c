@@ -367,7 +367,7 @@ owm_read (struct json_write_result * json) {
     return &fetched_weather;
 }
 
-int 
+static int 
 check_if_stale (const char * cache_path, const unsigned int cache_update_time, 
                 const char verbosity) {
 
