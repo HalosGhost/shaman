@@ -17,6 +17,7 @@ To that end, they now both require only two external dependencies:
 * `curl <http://curl.haxx.se/libcurl/>`_, which handles all network interaction very gracefully
 * `jansson <http://www.digip.org/jansson/>`_, which allows for very efficient JSON Parsing
 * `tup <http://gittup.org/tup/>`_, the build system that I will use going forward
+* `sphinx <http://sphinx-doc.org/>`, for building the man-page from reStructuredText
 
 For a variety of reasons, mainly because ``shaman`` does not rely on parallelization at the moment and because of ``-Weverything``, I will no longer be officially supporting ``gcc``.
 Resultingly, to use the official build system, you will need ``clang`` installed.
