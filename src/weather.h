@@ -60,28 +60,28 @@ struct weather {
     long long weather_code;   // %C  weather condition code
 };
 
-extern 
-struct json_write_result * 
+extern
+struct json_write_result *
 owm_fetch_local (const char * json_file_path);
 
-extern 
-struct json_write_result * 
-owm_fetch_remote (const char method, const char * location, const char scale, 
+extern
+struct json_write_result *
+owm_fetch_remote (const char method, const char * location, const char scale,
                   const char * file_cache_path, const char * api_key);
 
-extern 
-struct weather * 
+extern
+struct weather *
 owm_read (struct json_write_result * json);
 
-extern 
-struct weather * 
-owm_easy (const char method, const char * location, const char scale, 
-          const char * file_cache_path, const unsigned int cache_update_time, 
+extern
+struct weather *
+owm_easy (const char method, const char * location, const char scale,
+          const char * file_cache_path, const unsigned int cache_update_time,
           const char * api_key, const char verbosity);
 
-extern 
-size_t 
-strfweather (char * dest_str, size_t max, const char * format, 
+extern
+size_t
+strfweather (char * dest_str, size_t max, const char * format,
              const struct weather * w);
 
 #ifdef __cplusplus

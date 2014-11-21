@@ -38,11 +38,11 @@
 #define OWMAPIKEY "83a3a133bc7541a6608536d490f7a11d"
 
 // Forward Declarations //
-char * 
+char *
 locate_cache (char scale);
 
 // Main Function //
-int 
+int
 main (int argc, char ** argv) {
     char flag_scale = 'i';
     char flag_refresh = 0;
@@ -52,8 +52,8 @@ main (int argc, char ** argv) {
     char * location = NULL;
     char * cache_path = NULL;
 
-    if ( argc <= 1 ) { 
-        _usage(1); 
+    if ( argc <= 1 ) {
+        _usage(1);
     } else {
         int c = 0;
 
@@ -101,19 +101,19 @@ main (int argc, char ** argv) {
                     flag_quiet ++;
                     break;
 
-                case 'c': 
+                case 'c':
                     optarg_len = sizeof(char) * strlen(optarg) + 1;
                     cache_path = malloc(optarg_len);
                     strncpy(cache_path, optarg, optarg_len);
                     break;
 
-                case 'f': 
+                case 'f':
                     optarg_len = sizeof(char) * strlen(optarg) + 1;
                     format = malloc(optarg_len);
                     strncpy(format, optarg, optarg_len);
                     break;
 
-                case 'l': 
+                case 'l':
                     optarg_len = sizeof(char) * strlen(optarg) + 1;
                     location = malloc(optarg_len);
                     strncpy(location, optarg, optarg_len);
@@ -121,7 +121,7 @@ main (int argc, char ** argv) {
             }
         }
     }
-    
+
     if ( !format ) {
         format = malloc(11);
         snprintf(format, 11, "%%c (%%t°%c)", (flag_scale == 'm' ? 'C' : 'F'));
@@ -131,8 +131,8 @@ main (int argc, char ** argv) {
 
     if ( !cache_path ) { cache_path = locate_cache(flag_scale); };
 
-    struct weather * wthr = owm_easy('q', location, flag_scale, cache_path, 
-                                     (flag_refresh > 0 ? 0 : 600), OWMAPIKEY, 
+    struct weather * wthr = owm_easy('q', location, flag_scale, cache_path,
+                                     (flag_refresh > 0 ? 0 : 600), OWMAPIKEY,
                                      flag_verbose);
 
     if ( cache_path ) { free(cache_path); };
@@ -152,7 +152,7 @@ main (int argc, char ** argv) {
     return 0;
 }
 
-char * 
+char *
 locate_cache (char scale) {
 
     char * cache_path;
@@ -164,14 +164,14 @@ locate_cache (char scale) {
     size_t conf_prefix_len = strlen(conf_prefix);
     char * conf_dir = malloc(conf_prefix_len + 10);
 
-    snprintf(conf_dir, conf_prefix_len + 9, "%s/%s", conf_prefix, 
+    snprintf(conf_dir, conf_prefix_len + 9, "%s/%s", conf_prefix,
              (location == 'x' ? "shaman" : ".shaman"));
-    int error = mkdir(conf_dir, 
-                      S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH); 
+    int error = mkdir(conf_dir,
+                      S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
                       // mode == 0755
 
     if ( error && errno != EEXIST ) {
-        fprintf(stderr, "Error checking cache at %s: %s\n", conf_dir, 
+        fprintf(stderr, "Error checking cache at %s: %s\n", conf_dir,
                 strerror(errno));
 
         free(conf_dir);
@@ -179,8 +179,8 @@ locate_cache (char scale) {
     } else {
         size_t conf_dir_len = strlen(conf_dir);
         cache_path = malloc(conf_dir_len + 16);
-        snprintf(cache_path, conf_dir_len + 15, 
-                 (scale == 'i' ? "%s/imperial.json" : "%s/metric.json"), 
+        snprintf(cache_path, conf_dir_len + 15,
+                 (scale == 'i' ? "%s/imperial.json" : "%s/metric.json"),
                  conf_dir);
     }
 
