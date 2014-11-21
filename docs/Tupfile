@@ -1,4 +1,4 @@
 include_rules
 
 export LANG
-: shaman.rst |> sphinx-build -b man -Dversion=$(VERSION) -d doctree -E . .; rm -r doctree |> shaman.1
+: shaman.rst |> sphinx-build -b man -Dversion=@(VERSION) -d doctree -E . .; rm -r doctree |> shaman.1
