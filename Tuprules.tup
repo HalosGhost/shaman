@@ -1,3 +1,5 @@
 CFLAGS += -g -O2 -fstack-protector-all -std=c11 -Weverything
 LDFLAGS += -lcurl -ljansson -lm -Wl,-z,relro,-z,now
 CC = clang
+
+VERSION = `git describe`
