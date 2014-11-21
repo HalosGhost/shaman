@@ -45,33 +45,33 @@ struct test {
 static struct json_write_result * json;
 
 /* Test Utilities */
-void 
+void
 run_test (char * test_name, test_p function);
 
 /* Test Functions */
-bool 
+bool
 test_strfweather (void);
 
-bool 
+bool
 test_owm_local_fetch (void);
 
-bool 
+bool
 test_owm_local_parse (void);
 
-bool 
+bool
 test_owm_remote_fetch (void);
 
-bool 
+bool
 test_owm_cache (void);
 
-bool 
+bool
 test_owm_remote_parse (void);
 
-bool 
+bool
 test_shaman_owm (void);
 
 // Run Suite //
-int 
+int
 main (void) {
 
     struct test test_list [] = {
@@ -89,7 +89,7 @@ main (void) {
     } return 0;
 }
 
-void 
+void
 run_test (char * test_name, test_p test) {
 
     printf("Testing %s\t\t[ PEND ]\r", test_name);
@@ -97,7 +97,7 @@ run_test (char * test_name, test_p test) {
     printf("Testing %s\t\t[ %s \x1b[0m]\n", test_name, test_result);
 }
 
-bool 
+bool
 test_strfweather (void) {
 
     struct weather wthr = {
@@ -128,7 +128,7 @@ test_strfweather (void) {
                       "214";
 
     char * dest_str = malloc(115);
-    strfweather(dest_str, 115, "%a%b%c%C%d%h%H%i%I%j%l%L%p%P%s%S%t%w%W%x%X", 
+    strfweather(dest_str, 115, "%a%b%c%C%d%h%H%i%I%j%l%L%p%P%s%S%t%w%W%x%X",
                 &wthr);
 
     int test_result = strncmp(comp_str, dest_str, 114);
@@ -138,14 +138,14 @@ test_strfweather (void) {
     return (test_result == 0);
 }
 
-bool 
+bool
 test_owm_local_fetch (void) {
 
     json = owm_fetch_local("test.json");
     return (*json->data);
 }
 
-bool 
+bool
 test_owm_local_parse (void) {
 
     struct weather * w = owm_read(json);
@@ -153,8 +153,8 @@ test_owm_local_parse (void) {
 
     if ( strcmp(w->country, "US") != 0 ) { failed_test_counter ++; };
     if ( strcmp(w->name, "Georgetown") != 0 ) { failed_test_counter ++; };
-    if ( strcmp(w->condition, "Sky is Clear") != 0 ) { 
-        failed_test_counter ++; 
+    if ( strcmp(w->condition, "Sky is Clear") != 0 ) {
+        failed_test_counter ++;
     }
 
     //if ( w->latitude != 30.63 ) { failed_test_counter ++; };
@@ -178,14 +178,14 @@ test_owm_local_parse (void) {
     return (failed_test_counter == 0);
 }
 
-bool 
+bool
 test_owm_remote_fetch (void) {
 
     json = owm_fetch_remote('q', "Saint Paul,US", 'i', NULL, OWMAPIKEY);
     return ( *json->data );
 }
 
-bool 
+bool
 test_owm_cache (void) {
 
     char * test_path = ".cache_test.json";
@@ -201,7 +201,7 @@ test_owm_cache (void) {
     return false;
 }
 
-bool 
+bool
 test_owm_remote_parse (void) {
 
     struct weather * w = owm_read(json);
@@ -219,7 +219,7 @@ test_owm_remote_parse (void) {
     return (failed_test_counter == 0);
 }
 
-bool 
+bool
 test_shaman_owm (void) {
 
     return 1;

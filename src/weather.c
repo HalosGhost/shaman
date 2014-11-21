@@ -54,8 +54,8 @@ static const char * c_dir [] = {
 //};
 
 // Function drawn from Petri Lehtinen's GitHub Jansson example
-static 
-size_t 
+static
+size_t
 write_data_buffer (void * ptr, size_t size, size_t nmemb, void * stream) {
 
     struct json_write_result * result = (struct json_write_result * )stream;
@@ -71,7 +71,7 @@ write_data_buffer (void * ptr, size_t size, size_t nmemb, void * stream) {
 }
 
 // Fetch JSON from file
-struct json_write_result * 
+struct json_write_result *
 owm_fetch_local (const char * json_file_path) {
 
     char * data = calloc(1, BUFFER_SIZE);
@@ -95,8 +95,8 @@ owm_fetch_local (const char * json_file_path) {
 }
 
 // Fetch JSON from OpenWeatherMap
-struct json_write_result * 
-owm_fetch_remote (const char method, const char * location, const char scale, 
+struct json_write_result *
+owm_fetch_remote (const char method, const char * location, const char scale,
                   const char * file_cache_path, const char * api_key) {
 
     CURL * handle;
@@ -135,12 +135,12 @@ owm_fetch_remote (const char method, const char * location, const char scale,
     handle = curl_easy_init();
 
     if ( handle ) {
-        const char * provider = 
+        const char * provider =
             "http://api.openweathermap.org/data/2.5/weather";
 
         char * encoded_location = curl_easy_escape(handle, location, 0);
-        
-        snprintf(url, sizeof(url), "%s?%s=%s&units=%s&APPID=%s", provider, 
+
+        snprintf(url, sizeof(url), "%s?%s=%s&units=%s&APPID=%s", provider,
                  fetch_method, encoded_location, fetch_scale, api_key);
 
         curl_easy_setopt(handle, CURLOPT_URL, url);
@@ -149,7 +149,7 @@ owm_fetch_remote (const char method, const char * location, const char scale,
 
         result = curl_easy_perform(handle);
         if ( result != CURLE_OK ) {
-            fprintf(stderr, "Failed to retrieve data (%s)\n", 
+            fprintf(stderr, "Failed to retrieve data (%s)\n",
                     curl_easy_strerror(result));
 
             curl_easy_cleanup(handle);
@@ -181,7 +181,7 @@ owm_fetch_remote (const char method, const char * location, const char scale,
 }
 
 // Read JSON into a weather struct
-struct weather * 
+struct weather *
 owm_read (struct json_write_result * json) {
 
     json_error_t error;
@@ -205,17 +205,17 @@ owm_read (struct json_write_result * json) {
                     json_t * sub_value;
                     json_object_foreach(root_value, sub_key, sub_value) {
                         if ( root_key[1] == 'l' ) {
-                            fetched_weather.clouds = 
+                            fetched_weather.clouds =
                                 json_number_value(sub_value);
                         } else if ( root_key[2] == 'o' ) {
                             if ( sub_key[1] == 'o' ) {
-                                fetched_weather.longitude = 
+                                fetched_weather.longitude =
                                     json_number_value(sub_value);
                             } else if ( sub_key[1] == 'a' ) {
-                                fetched_weather.latitude = 
+                                fetched_weather.latitude =
                                     json_number_value(sub_value);
                             }
-                        } 
+                        }
                     }
                 } break;
 
@@ -239,23 +239,23 @@ owm_read (struct json_write_result * json) {
                         switch ( sub_key[0] ) {
                             case 't':
                                 if ( strlen(sub_key) == 4 ) {
-                                    fetched_weather.temperature = 
+                                    fetched_weather.temperature =
                                         json_number_value(sub_value);
                                 } else if ( sub_key[6] == 'i' ) {
-                                    fetched_weather.temp_min = 
+                                    fetched_weather.temp_min =
                                         json_number_value(sub_value);
                                 } else if ( sub_key[6] == 'a' ) {
-                                    fetched_weather.temp_max = 
+                                    fetched_weather.temp_max =
                                         json_number_value(sub_value);
                                 } break;
-    
+
                             case 'p':
-                                fetched_weather.pressure = 
+                                fetched_weather.pressure =
                                     json_number_value(sub_value);
                                 break;
-    
+
                             case 'h':
-                                fetched_weather.humidity = 
+                                fetched_weather.humidity =
                                     json_number_value(sub_value);
                                 break;
                         }
@@ -277,27 +277,27 @@ owm_read (struct json_write_result * json) {
                             case 'y':
                                 switch ( sub_key[4] ) {
                                     case 'i':
-                                        fetched_weather.sunrise = 
+                                        fetched_weather.sunrise =
                                             json_integer_value(sub_value);
                                         break;
 
                                     case 'e':
-                                        fetched_weather.sunset = 
+                                        fetched_weather.sunset =
                                             json_integer_value(sub_value);
                                         break;
 
                                     case 't':
-                                        fetched_weather.country = 
+                                        fetched_weather.country =
                                             json_string_value(sub_value);
 
                                         if ( !fetched_weather.country ) {
-                                            fetched_weather.country = 
+                                            fetched_weather.country =
                                                 "Unavailable";
                                         } break;
                                 } break;
-    
+
                             case 'n':
-                                fetched_weather.precipitation_3h = 
+                                fetched_weather.precipitation_3h =
                                     json_number_value(sub_value);
                                 break;
                         }
@@ -312,12 +312,12 @@ owm_read (struct json_write_result * json) {
                     json_object_foreach(weather, sub_key, sub_value) {
                         switch ( sub_key[1] ) {
                             case 'd':
-                                fetched_weather.weather_code = 
+                                fetched_weather.weather_code =
                                     json_integer_value(sub_value);
                                 break;
 
                             case 'e':
-                                fetched_weather.condition = 
+                                fetched_weather.condition =
                                     json_string_value(sub_value);
 
                                 if ( !fetched_weather.condition ) {
@@ -331,17 +331,17 @@ owm_read (struct json_write_result * json) {
                     json_object_foreach(root_value, sub_key, sub_value) {
                         switch ( sub_key[0] ) {
                             case 's':
-                                fetched_weather.wind_speed = 
+                                fetched_weather.wind_speed =
                                     json_number_value(sub_value);
                                 break;
-    
+
                             case 'g':
-                                fetched_weather.wind_gust = 
+                                fetched_weather.wind_gust =
                                     json_number_value(sub_value);
                                 break;
-    
+
                             case 'd':
-                                fetched_weather.wind_direction = 
+                                fetched_weather.wind_direction =
                                     json_number_value(sub_value);
                                 break;
                         }
@@ -354,7 +354,7 @@ owm_read (struct json_write_result * json) {
                     json_t * sub_value;
                     json_object_foreach(root_value, sub_key, sub_value) {
                         if ( sub_key[0] == '3' ) {
-                            fetched_weather.precipitation_3h = 
+                            fetched_weather.precipitation_3h =
                                 json_number_value(sub_value);
                         }
                     }
@@ -367,8 +367,8 @@ owm_read (struct json_write_result * json) {
     return &fetched_weather;
 }
 
-static int 
-check_if_stale (const char * cache_path, const unsigned int cache_update_time, 
+static int
+check_if_stale (const char * cache_path, const unsigned int cache_update_time,
                 const char verbosity) {
 
     struct stat cache_stats;
@@ -379,16 +379,16 @@ check_if_stale (const char * cache_path, const unsigned int cache_update_time,
         return ((time(NULL) - cache_stats.st_mtime) >= cache_update_time);
     } else {
         if ( verbosity > 0 ) {
-            fprintf(stderr, 
-                    "Determining if cache should be freshened failed: %s\n", 
+            fprintf(stderr,
+                    "Determining if cache should be freshened failed: %s\n",
                     strerror(errsv));
         } return -1;
     }
 }
 
-struct weather * 
-owm_easy (const char method, const char * location, const char scale, 
-          const char * file_cache_path, const unsigned int cache_update_time, 
+struct weather *
+owm_easy (const char method, const char * location, const char scale,
+          const char * file_cache_path, const unsigned int cache_update_time,
           const char * api_key, const char verbosity) {
 
     struct json_write_result * json;
@@ -396,7 +396,7 @@ owm_easy (const char method, const char * location, const char scale,
 
     if ( file_cache_path ) {
         if ( check_if_stale(file_cache_path, cache_update_time, verbosity) ) {
-            json = owm_fetch_remote(method, location, scale, file_cache_path, 
+            json = owm_fetch_remote(method, location, scale, file_cache_path,
                                     api_key);
         } else {
             json = owm_fetch_local(file_cache_path);
@@ -404,7 +404,7 @@ owm_easy (const char method, const char * location, const char scale,
             sscanf(location, "%[^,]", city);
             if ( !strstr(json->data, city) ) {
                 free(json->data);
-                json = owm_fetch_remote(method, location, scale, 
+                json = owm_fetch_remote(method, location, scale,
                                         file_cache_path, api_key);
             } free(city);
         }
@@ -418,8 +418,8 @@ owm_easy (const char method, const char * location, const char scale,
 
 // TODO: Add support for formatting time variables
 // TODO: Add support for Apparent Temperature
-size_t 
-strfweather (char * dest_str, size_t n, const char * format, 
+size_t
+strfweather (char * dest_str, size_t n, const char * format,
              const struct weather * w) {
 
     if ( n > INT_MAX ) {
@@ -446,7 +446,7 @@ strfweather (char * dest_str, size_t n, const char * format,
                     continue;
 
                 case 'C':
-                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%lld", 
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%lld",
                                    w->weather_code);
                     continue;
 
@@ -483,7 +483,7 @@ strfweather (char * dest_str, size_t n, const char * format,
                     continue;
 
                 case 'p':
-                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", 
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g",
                                    w->precipitation_3h);
                     continue;
 
@@ -516,7 +516,7 @@ strfweather (char * dest_str, size_t n, const char * format,
                     continue;
 
                 case 'x':
-                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g", 
+                    cl += (size_t )snprintf(dest_str + cl, n - cl, "%g",
                                    w->wind_direction);
                     continue;
 
@@ -537,7 +537,7 @@ strfweather (char * dest_str, size_t n, const char * format,
             cl += (size_t )snprintf(dest_str + cl, n - cl, "%c", *format);
         }
     }
-    
+
     return (cl == n ? 0 : cl);
 }
 

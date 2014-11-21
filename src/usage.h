@@ -29,7 +29,7 @@
 void
 _usage (int error) __attribute__((noreturn));
 
-void 
+void
 _usage (int error) {
 
     fputs("Usage: shaman [options]\n\n"
@@ -44,7 +44,7 @@ _usage (int error) {
           "  -f, --format=\"format\"\t\tformat output according to \"format\"\n"
           "  -l, --location=\"location\"\tprint weather information for "
           "\"location\"\n\n"
-          "See `man 1 shaman` for more information\n", 
+          "See `man 1 shaman` for more information\n",
           (error ? stderr : stdout));
     exit(error);
 }
