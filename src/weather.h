@@ -1,5 +1,5 @@
-#ifndef __WEATHER_H__
-#define __WEATHER_H__
+#ifndef WEATHER_H
+#define WEATHER_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,33 +60,26 @@ struct weather {
     long long weather_code;   // %C  weather condition code
 };
 
-extern
-struct json_write_result *
-owm_fetch_local (const char * json_file_path);
+extern struct json_write_result *
+owm_fetch_local (const char *);
 
-extern
-struct json_write_result *
-owm_fetch_remote (const char method, const char * location, const char scale,
-                  const char * file_cache_path, const char * api_key);
+extern struct json_write_result *
+owm_fetch_remote (const char, const char *, const char, const char *,
+                  const char *);
 
-extern
-struct weather *
-owm_read (struct json_write_result * json);
+extern struct weather *
+owm_read (struct json_write_result *);
 
-extern
-struct weather *
-owm_easy (const char method, const char * location, const char scale,
-          const char * file_cache_path, const unsigned int cache_update_time,
-          const char * api_key, const char verbosity);
+extern struct weather *
+owm_easy (const char, const char *, const char, const char *, const unsigned,
+          const char *, const char);
 
-extern
-size_t
-strfweather (char * dest_str, size_t max, const char * format,
-             const struct weather * w);
+extern size_t
+strfweather (char *, size_t, const char *, const struct weather *);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // __WEATHER_H__
+#endif // WEATHER_H
 // vim: set ts=4 sw=4 et:

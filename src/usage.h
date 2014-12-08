@@ -1,5 +1,5 @@
-#ifndef __USAGE_H__
-#define __USAGE_H__
+#ifndef USAGE_H
+#define USAGE_H
 
 /*******************************************************************\
 * Usage Functions for shaman                                        *
@@ -27,10 +27,10 @@
 
 // Usage //
 void
-_usage (int error) __attribute__((noreturn));
+_usage (signed error) __attribute__((noreturn));
 
 void
-_usage (int error) {
+_usage (signed error) {
 
     fputs("Usage: shaman [options]\n\n"
           "Options:\n"
@@ -49,4 +49,4 @@ _usage (int error) {
     exit(error);
 }
 
-#endif // __USAGE_H__
+#endif // USAGE_H

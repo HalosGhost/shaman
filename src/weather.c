@@ -54,8 +54,7 @@ static const char * c_dir [] = {
 //};
 
 // Function drawn from Petri Lehtinen's GitHub Jansson example
-static
-size_t
+static size_t
 write_data_buffer (void * ptr, size_t size, size_t nmemb, void * stream) {
 
     struct json_write_result * result = (struct json_write_result * )stream;
@@ -197,7 +196,7 @@ owm_read (struct json_write_result * json) {
     json_object_foreach(root, root_key, root_value) {
         switch ( root_key[0] ) {
             case 'c':
-                if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
+                if ( json_typeof(root_value) == (signed )JSON_OBJECT ) {
                     const char * sub_key;
                     json_t * sub_value;
                     json_object_foreach(root_value, sub_key, sub_value) {
@@ -229,7 +228,7 @@ owm_read (struct json_write_result * json) {
                     fprintf(stderr, "%s\n", json_string_value(root_value));
                     free(root);
                     exit(1);
-                } else if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
+                } else if ( json_typeof(root_value) == (signed )JSON_OBJECT ) {
                     const char * sub_key;
                     json_t * sub_value;
                     json_object_foreach(root_value, sub_key, sub_value) {
@@ -266,7 +265,7 @@ owm_read (struct json_write_result * json) {
                 } break;
 
             case 's':
-                if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
+                if ( json_typeof(root_value) == (signed )JSON_OBJECT ) {
                     const char * sub_key;
                     json_t * sub_value;
                     json_object_foreach(root_value, sub_key, sub_value) {
@@ -302,7 +301,7 @@ owm_read (struct json_write_result * json) {
                 } break;
 
             case 'w':
-                if ( json_typeof(root_value) == (int )JSON_ARRAY ) {
+                if ( json_typeof(root_value) == (signed )JSON_ARRAY ) {
                     json_t * weather = json_array_get(root_value, 0);
                     const char * sub_key;
                     json_t * sub_value;
@@ -322,7 +321,7 @@ owm_read (struct json_write_result * json) {
                                 } break;
                         }
                     }
-                } else if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
+                } else if ( json_typeof(root_value) == (signed )JSON_OBJECT ) {
                     const char * sub_key;
                     json_t * sub_value;
                     json_object_foreach(root_value, sub_key, sub_value) {
@@ -346,7 +345,7 @@ owm_read (struct json_write_result * json) {
                 } break;
 
             case 'r':
-                if ( json_typeof(root_value) == (int )JSON_OBJECT ) {
+                if ( json_typeof(root_value) == (signed )JSON_OBJECT ) {
                     const char * sub_key;
                     json_t * sub_value;
                     json_object_foreach(root_value, sub_key, sub_value) {
@@ -364,13 +363,13 @@ owm_read (struct json_write_result * json) {
     return &fetched_weather;
 }
 
-static int
-check_if_stale (const char * cache_path, const unsigned int cache_update_time,
+static signed
+check_if_stale (const char * cache_path, const unsigned cache_update_time,
                 const char verbosity) {
 
     struct stat cache_stats;
-    int status = stat(cache_path, &cache_stats);
-    int errsv = errno;
+    signed status = stat(cache_path, &cache_stats);
+    signed errsv = errno;
 
     if ( status == 0 ) {
         return ((time(NULL) - cache_stats.st_mtime) >= cache_update_time);
@@ -385,7 +384,7 @@ check_if_stale (const char * cache_path, const unsigned int cache_update_time,
 
 struct weather *
 owm_easy (const char method, const char * location, const char scale,
-          const char * file_cache_path, const unsigned int cache_update_time,
+          const char * file_cache_path, const unsigned cache_update_time,
           const char * api_key, const char verbosity) {
 
     struct json_write_result * json;
