@@ -12,7 +12,7 @@ General
 
 * [ ] Update documentation
 
-   * [ ] Switch to rst2man instead of latex2man and generate docs in-build
+   * [-] Switch to rst2man instead of latex2man and generate docs in-build
 
 * [ ] Update ``_shaman`` (zsh completion)
 
