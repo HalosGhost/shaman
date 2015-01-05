@@ -100,19 +100,19 @@ main (signed argc, char * argv []) {
                     break;
 
                 case 'c':
-                    optarg_len = sizeof(char) * strlen(optarg) + 1;
+                    optarg_len = strlen(optarg) + 1;
                     cache_path = malloc(optarg_len);
                     strncpy(cache_path, optarg, optarg_len);
                     break;
 
                 case 'f':
-                    optarg_len = sizeof(char) * strlen(optarg) + 1;
+                    optarg_len = strlen(optarg) + 1;
                     format = malloc(optarg_len);
                     strncpy(format, optarg, optarg_len);
                     break;
 
                 case 'l':
-                    optarg_len = sizeof(char) * strlen(optarg) + 1;
+                    optarg_len = strlen(optarg) + 1;
                     location = malloc(optarg_len);
                     strncpy(location, optarg, optarg_len);
                     break;
