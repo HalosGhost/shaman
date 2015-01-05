@@ -129,6 +129,15 @@ main (signed argc, char * argv []) {
 
     if ( !cache_path ) { cache_path = locate_cache(flag_scale); };
 
+    struct stat st;
+    if ( stat(cache_path, &st) == -1 ) {
+        fputs("The specified cache path does not exist\n", stderr);
+        if ( cache_path ) { free(cache_path); }
+        if ( location )   { free(location);   }
+        if ( format )     { free(format);     }
+        return 1;
+    }
+
     struct weather * wthr = owm_easy('q', location, flag_scale, cache_path,
                                      (flag_refresh > 0 ? 0 : 600), OWMAPIKEY,
                                      flag_verbose);
