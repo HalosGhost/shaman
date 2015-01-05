@@ -42,8 +42,8 @@ char *
 locate_cache (char scale);
 
 // Main Function //
-int
-main (int argc, char ** argv) {
+signed
+main (signed argc, char * argv []) {
     char flag_scale = 'i';
     char flag_refresh = 0;
     char flag_verbose = 0;
@@ -55,28 +55,26 @@ main (int argc, char ** argv) {
     if ( argc <= 1 ) {
         _usage(1);
     } else {
-        int c = 0;
+        static struct option os [] = {
+            /* Flags */
+            { "help",     no_argument,         0, 'h'   },
+            { "imperial", no_argument,         0, 'i'   },
+            { "metric",   no_argument,         0, 'm'   },
+            { "refresh",  no_argument,         0, 'r'   },
+            { "verbose",  no_argument,         0, 'v'   },
+            { "quiet",    no_argument,         0, 'q'   },
+            /* Swtiches */
+            { "cache",    required_argument,   0, 'c'   },
+            { "format",   required_argument,   0, 'f'   },
+            { "location", required_argument,   0, 'l'   },
+            { 0,          0,                   0, 0     },
+        };
 
-        while ( c != -1 ) {
-            static struct option options [] = {
-                /* Flags */
-                { "help",     no_argument,         0, 'h'   },
-                { "imperial", no_argument,         0, 'i'   },
-                { "metric",   no_argument,         0, 'm'   },
-                { "refresh",  no_argument,         0, 'r'   },
-                { "verbose",  no_argument,         0, 'v'   },
-                { "quiet",    no_argument,         0, 'q'   },
-                /* Swtiches */
-                { "cache",    required_argument,   0, 'c'   },
-                { "format",   required_argument,   0, 'f'   },
-                { "location", required_argument,   0, 'l'   },
-                { 0,          0,                   0, 0     },
-            };
+        for ( signed c = 0, oi = 0; c != -1;
+              getopt_long(argc, argv, "himrvqc:f:l:", os, &oi) ) {
 
-            int option_index = 0;
             unsigned long optarg_len;
 
-            c = getopt_long(argc, argv, "himrvqc:f:l:", options, &option_index);
             switch ( c ) {
                 case 'h':
                     _usage(0);
@@ -146,7 +144,7 @@ main (int argc, char ** argv) {
     if ( !flag_quiet ) {
         printf("%s\n", output_string);
     } else {
-        exit((int )wthr->weather_code / 100); // Report group of weather
+        exit((signed )wthr->weather_code / 100); // Report group of weather
     }
 
     return 0;
@@ -166,9 +164,9 @@ locate_cache (char scale) {
 
     snprintf(conf_dir, conf_prefix_len + 9, "%s/%s", conf_prefix,
              (location == 'x' ? "shaman" : ".shaman"));
-    int error = mkdir(conf_dir,
-                      S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-                      // mode == 0755
+    signed error = mkdir(conf_dir,
+                         S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+                         // mode == 0755
 
     if ( error && errno != EEXIST ) {
         fprintf(stderr, "Error checking cache at %s: %s\n", conf_dir,
