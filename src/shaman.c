@@ -71,7 +71,7 @@ main (signed argc, char * argv []) {
         };
 
         for ( signed c = 0, oi = 0; c != -1;
-              getopt_long(argc, argv, "himrvqc:f:l:", os, &oi) ) {
+              c = getopt_long(argc, argv, "himrvqc:f:l:", os, &oi) ) {
 
             unsigned long optarg_len;
 
