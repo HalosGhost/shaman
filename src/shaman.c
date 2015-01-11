@@ -44,30 +44,29 @@ locate_cache (char scale);
 // Main Function //
 signed
 main (signed argc, char * argv []) {
-    char flag_scale = 'i';
-    char flag_refresh = 0;
-    char flag_verbose = 0;
-    char flag_quiet = 0;
-    char * format = NULL;
-    char * location = NULL;
-    char * cache_path = NULL;
+
+    char flag_scale   = 'i',  flag_refresh = 0,
+         flag_verbose = 0,    flag_quiet   = 0;
+
+    char * format     = NULL, * location   = NULL,
+         * cache_path = NULL;
 
     if ( argc <= 1 ) {
         _usage(1);
     } else {
         static struct option os [] = {
             /* Flags */
-            { "help",     no_argument,         0, 'h'   },
-            { "imperial", no_argument,         0, 'i'   },
-            { "metric",   no_argument,         0, 'm'   },
-            { "refresh",  no_argument,         0, 'r'   },
-            { "verbose",  no_argument,         0, 'v'   },
-            { "quiet",    no_argument,         0, 'q'   },
+            { "help",     no_argument,       0, 'h' },
+            { "imperial", no_argument,       0, 'i' },
+            { "metric",   no_argument,       0, 'm' },
+            { "refresh",  no_argument,       0, 'r' },
+            { "verbose",  no_argument,       0, 'v' },
+            { "quiet",    no_argument,       0, 'q' },
             /* Swtiches */
-            { "cache",    required_argument,   0, 'c'   },
-            { "format",   required_argument,   0, 'f'   },
-            { "location", required_argument,   0, 'l'   },
-            { 0,          0,                   0, 0     },
+            { "cache",    required_argument, 0, 'c' },
+            { "format",   required_argument, 0, 'f' },
+            { "location", required_argument, 0, 'l' },
+            { 0,          0,                 0, 0   },
         };
 
         for ( signed c = 0, oi = 0; c != -1;
@@ -139,24 +138,22 @@ main (signed argc, char * argv []) {
     }
 
     struct weather * wthr = owm_easy('q', location, flag_scale, cache_path,
-                                     (flag_refresh > 0 ? 0 : 600), OWMAPIKEY,
+                                     flag_refresh ? 0 : 600, OWMAPIKEY,
                                      flag_verbose);
 
     if ( cache_path ) { free(cache_path); };
-    if ( location ) { free(location); };
+    if ( location )   { free(location); };
 
     char output_string [BUFFER_SIZE];
     strfweather(output_string, BUFFER_SIZE, format, wthr);
 
     if ( format ) { free(format); };
 
-    if ( !flag_quiet ) {
-        printf("%s\n", output_string);
+    if ( flag_quiet ) {
+        exit((signed )wthr->weather_code / 100); // weather group as exit status
     } else {
-        exit((signed )wthr->weather_code / 100); // Report group of weather
-    }
-
-    return 0;
+        printf("%s\n", output_string);
+    } return 0;
 }
 
 char *
@@ -165,7 +162,7 @@ locate_cache (char scale) {
     char * cache_path;
     char * conf_prefix = getenv("XDG_CONFIG_HOME");
 
-    char location = ( conf_prefix ? 'x' : 'h' );
+    char location = conf_prefix ? 'x' : 'h';
     if ( location == 'h' ) { conf_prefix = getenv("HOME"); };
 
     size_t conf_prefix_len = strlen(conf_prefix);
