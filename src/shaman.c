@@ -79,24 +79,19 @@ main (signed argc, char * argv []) {
                     _usage(0);
 
                 case 'i':
-                    flag_scale = 'i';
-                    break;
+                    flag_scale = 'i'; break;
 
                 case 'm':
-                    flag_scale = 'm';
-                    break;
+                    flag_scale = 'm'; break;
 
                 case 'r':
-                    flag_refresh ++;
-                    break;
+                    flag_refresh ++; break;
 
                 case 'v':
-                    flag_verbose ++;
-                    break;
+                    flag_verbose ++; break;
 
                 case 'q':
-                    flag_quiet ++;
-                    break;
+                    flag_quiet ++; break;
 
                 case 'c':
                     optarg_len = strlen(optarg) + 1;
@@ -124,9 +119,9 @@ main (signed argc, char * argv []) {
         snprintf(format, 11, "%%c (%%t°%c)", (flag_scale == 'm' ? 'C' : 'F'));
     }
 
-    if ( !location ) { _usage(1); };
+    if ( !location ) { _usage(1); }
 
-    if ( !cache_path ) { cache_path = locate_cache(flag_scale); };
+    if ( !cache_path ) { cache_path = locate_cache(flag_scale); }
 
     struct stat st;
     if ( stat(cache_path, &st) == -1 ) {
@@ -141,13 +136,13 @@ main (signed argc, char * argv []) {
                                      flag_refresh ? 0 : 600, OWMAPIKEY,
                                      flag_verbose);
 
-    if ( cache_path ) { free(cache_path); };
-    if ( location )   { free(location); };
+    if ( cache_path ) { free(cache_path); }
+    if ( location )   { free(location);   }
 
     char output_string [BUFFER_SIZE];
     strfweather(output_string, BUFFER_SIZE, format, wthr);
 
-    if ( format ) { free(format); };
+    if ( format ) { free(format); }
 
     if ( flag_quiet ) {
         exit((signed )wthr->weather_code / 100); // weather group as exit status
