@@ -4,7 +4,8 @@ To-Do Lists
 General
 -------
 
-* [ ] Improve internal and exposed error handling
+* [ ] Use ``stdint.h``/``stdbool.h`` types
+* [ ] Improve internal and exposed error handling (use ``errno.h``)
 * [ ] Update ``configure.sh``
 
    * [ ] Add checks for versions of libraries (? Might just stay rolling)
@@ -23,6 +24,7 @@ libweather
 
 * [ ] Create a ``setopt`` interface rather than passing a huge number of arguments
 * [ ] Add support for formatting time variables
+* [ ] Fix escape sequences
 * [ ] Split ``fetch_data_file()``, ``fetch_data_owm()`` and ``read_weather()`` into a separate header (tentatively ``owm.h``)
 
    * [ ] Probably rename to avoid name conflicts (tentatively, ``fetch_owm_local()``, ``fetch_owm_remote()`` and ``read_owm()``)
@@ -30,7 +32,7 @@ libweather
 shaman
 ------
 
-* [ ] Switch to `argp <https://www.gnu.org/software/libc/manual/html_node/Argp.html>`_ instead of ``getopt``
+* [ ] Switch to `argp <https://www.gnu.org/software/libc/manual/html_node/Argp.html>`_ instead of ``getopt`` (?)
 * [ ] Implement a placeholder structure (and option) to specify a provider
 
 test suite
