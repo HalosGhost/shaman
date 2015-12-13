@@ -48,8 +48,11 @@ static struct json_write_result * json;
 #define APPROX_EQUALITY_EPSILON 1e-7
 
 /* Test Utilities */
-void
+bool
 run_test (char * test_name, test_p function);
+
+char *
+test_result_text (bool passed);
 
 bool
 approx_equal (double value1, double value2);
@@ -90,17 +93,32 @@ main (void) {
         { "Shaman with OWM\t",   (test_p )test_shaman_owm       }
     }; unsigned test_count = sizeof test_list / sizeof test_list[0];
 
+    unsigned failure_count = 0;
     for ( size_t i = 0; i < test_count; i ++ ) {
-        run_test(test_list[i].desc, test_list[i].func);
-    } return 0;
+        bool passed = run_test(test_list[i].desc, test_list[i].func);
+        if ( !passed ) { failure_count ++; }
+    }
+
+    bool suite_passed = (failure_count == 0);
+    printf("\t\t\t\t\t--------\n");
+    printf("Passed %u/%u tests\t\t\t[ %s \x1b[0m]\n", test_count - failure_count,
+           test_count, test_result_text(suite_passed));
+    return (suite_passed ? 0 : 1);
 }
 
-void
+bool
 run_test (char * test_name, test_p test) {
 
     printf("Testing %s\t\t[ PEND ]\r", test_name);
-    char * test_result = (test() ? "\x1b[32mPASS" : "\x1b[31mFAIL");
-    printf("Testing %s\t\t[ %s \x1b[0m]\n", test_name, test_result);
+    bool passed = test();
+    printf("Testing %s\t\t[ %s \x1b[0m]\n", test_name, test_result_text(passed));
+    return passed;
+}
+
+char *
+test_result_text(bool passed) {
+
+    return (passed ? "\x1b[32mPASS" : "\x1b[31mFAIL");
 }
 
 bool
