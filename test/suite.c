@@ -96,14 +96,14 @@ main (void) {
     unsigned failure_count = 0;
     for ( size_t i = 0; i < test_count; i ++ ) {
         bool passed = run_test(test_list[i].desc, test_list[i].func);
-        if ( !passed ) { failure_count ++; }
+	failure_count += !passed;
     }
 
     bool suite_passed = (failure_count == 0);
-    printf("\t\t\t\t\t--------\n");
-    printf("Passed %u/%u tests\t\t\t[ %s \x1b[0m]\n", test_count - failure_count,
-           test_count, test_result_text(suite_passed));
-    return (suite_passed ? 0 : 1);
+    printf("\t\t\t\t\t--------\nPassed %u/%u tests\t\t\t[ %s \x1b[0m]\n",
+	   test_count - failure_count, test_count,
+	   test_result_text(suite_passed));
+    return !suite_passed;
 }
 
 bool
