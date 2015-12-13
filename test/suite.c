@@ -24,6 +24,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <math.h>
 #include "../src/weather.h"
 
 // Forward Declarations //
@@ -44,9 +45,17 @@ struct test {
 
 static struct json_write_result * json;
 
+#define APPROX_EQUALITY_EPSILON 1e-7
+
 /* Test Utilities */
-void
+bool
 run_test (char * test_name, test_p function);
+
+char *
+test_result_text (bool passed);
+
+bool
+approx_equal (double value1, double value2);
 
 /* Test Functions */
 bool
@@ -84,17 +93,32 @@ main (void) {
         { "Shaman with OWM\t",   (test_p )test_shaman_owm       }
     }; unsigned test_count = sizeof test_list / sizeof test_list[0];
 
+    unsigned failure_count = 0;
     for ( size_t i = 0; i < test_count; i ++ ) {
-        run_test(test_list[i].desc, test_list[i].func);
-    } return 0;
+        bool passed = run_test(test_list[i].desc, test_list[i].func);
+	failure_count += !passed;
+    }
+
+    bool suite_passed = (failure_count == 0);
+    printf("\t\t\t\t\t--------\nPassed %u/%u tests\t\t\t[ %s \x1b[0m]\n",
+	   test_count - failure_count, test_count,
+	   test_result_text(suite_passed));
+    return !suite_passed;
 }
 
-void
+bool
 run_test (char * test_name, test_p test) {
 
     printf("Testing %s\t\t[ PEND ]\r", test_name);
-    char * test_result = (test() ? "\x1b[32mPASS" : "\x1b[31mFAIL");
-    printf("Testing %s\t\t[ %s \x1b[0m]\n", test_name, test_result);
+    bool passed = test();
+    printf("Testing %s\t\t[ %s \x1b[0m]\n", test_name, test_result_text(passed));
+    return passed;
+}
+
+char *
+test_result_text(bool passed) {
+
+    return (passed ? "\x1b[32mPASS" : "\x1b[31mFAIL");
 }
 
 bool
@@ -157,21 +181,21 @@ test_owm_local_parse (void) {
         failed_test_counter ++;
     }
 
-    //if ( w->latitude != 30.63 ) { failed_test_counter ++; };
-    //if ( w->longitude != -97.68 ) { failed_test_counter ++; };
+    if ( !approx_equal(w->latitude, 30.63) ) { failed_test_counter ++; };
+    if ( !approx_equal(w->longitude, -97.68) ) { failed_test_counter ++; };
     if ( w->sunrise != 1402486044 ) { failed_test_counter ++; };
     if ( w->sunset != 1402536816 ) { failed_test_counter ++; };
     if ( w->weather_code != 800 ) { failed_test_counter ++; };
-    //if ( w->temperature != 306.35 ) { failed_test_counter ++; };
-    //if ( w->pressure != 1011 ) { failed_test_counter ++; };
-    //if ( w->temp_min != 305.15 ) { failed_test_counter ++; };
-    //if ( w->temp_max != 307.59 ) { failed_test_counter ++; };
-    //if ( w->humidity != 62 ) { failed_test_counter ++; };
-    //if ( w->wind_speed != 1.54 ) { failed_test_counter ++; };
-    //if ( w->wind_gust != 5.14 ) { failed_test_counter ++; };
-    //if ( w->wind_direction != 214 ) { failed_test_counter ++; };
-    //if ( w->precipitation_3h != 18 ) { failed_test_counter ++; };
-    //if ( w->clouds != 18 ) { failed_test_counter ++; };
+    if ( !approx_equal(w->temperature, 306.35) ) { failed_test_counter ++; };
+    if ( !approx_equal(w->pressure, 1011) ) { failed_test_counter ++; };
+    if ( !approx_equal(w->temp_min, 305.15) ) { failed_test_counter ++; };
+    if ( !approx_equal(w->temp_max, 307.59) ) { failed_test_counter ++; };
+    if ( !approx_equal(w->humidity, 62) ) { failed_test_counter ++; };
+    if ( !approx_equal(w->wind_speed, 1.54) ) { failed_test_counter ++; };
+    if ( !approx_equal(w->wind_gust, 5.14) ) { failed_test_counter ++; };
+    if ( !approx_equal(w->wind_direction, 214) ) { failed_test_counter ++; };
+    if ( !approx_equal(w->precipitation_3h, 18) ) { failed_test_counter ++; };
+    if ( !approx_equal(w->clouds, 18) ) { failed_test_counter ++; };
     if ( w->dt != 1402513288 ) { failed_test_counter ++; };
     if ( w->id != 4693342 ) { failed_test_counter ++; };
 
@@ -223,6 +247,12 @@ bool
 test_shaman_owm (void) {
 
     return 1;
+}
+
+bool
+approx_equal (double value1, double value2) {
+
+    return fabs(value2 - value1) < APPROX_EQUALITY_EPSILON;
 }
 
 // vim: set ts=4 sw=4 et:
