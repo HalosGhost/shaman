@@ -4,4 +4,4 @@ include_rules
 : weather.c |> $(CC) $(CFLAGS) -Wno-disabled-macro-expansion -fPIC -c %f -o %o |> %B.o
 : weather.o |> $(CC) $(CFLAGS) $(LDFLAGS) -shared %f -o %o |> ../dist/lib%B.so
 : weather.h |> cp %f %o |> ../dist/weather.h
-: shaman.c | ../dist/libweather.so |> $(CC) $(CFLAGS) $(LDFLAGS) -fPIE -pie -L. -lweather %f -o %o |> ../dist/shaman
+: shaman.c | ../dist/libweather.so |> $(CC) $(CFLAGS) $(LDFLAGS) -fPIE -pie -L../dist -lweather %f -o %o |> ../dist/shaman
