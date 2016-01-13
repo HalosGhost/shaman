@@ -1,4 +1,6 @@
 include_rules
 
 export LANG
-: shaman.rst |> sphinx-build -b man -Dversion=@(VERSION) -E . .; rm -r .doctrees |> shaman.1
+: shaman.rst |> sphinx-build -b man -Dversion=@(VERSION) -E . ../dist; rm -rf ../dist/.doctrees |> ../dist/shaman.1
+: strfweather.3 |> cp %f %o |> ../dist/strfweather.3
+: _shaman |> cp %f %o |> ../dist/_shaman
