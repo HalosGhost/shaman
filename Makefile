@@ -13,8 +13,8 @@ all:
 clean:
 	@rm -rf ./dist
 
-test:
-	@./dist/suite
+#test:
+#	@./dist/suite
 
 install:
 	@install -Dm755 dist/shaman        $(BINDIR)/shaman

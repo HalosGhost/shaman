@@ -1,3 +1,0 @@
-include_rules
-
-: suite.c |> $(CC) $(CFLAGS) $(LDFLAGS) -fPIE -pie -Wno-disabled-macro-expansion -L../dist -lweather %f -o %o |> ../dist/%B
