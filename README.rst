@@ -1,7 +1,7 @@
 Shaman
 ======
 
-Originally inspired by `weatherman <http://darkhorse.nu/weatherman/>`_, ``shaman`` is a small, native C utilty relying on a small, native C library (``libweather``) to fetch current weather conditions.
+Originally inspired by a tool called weatherman, ``shaman`` is a small, native C utilty relying on a small, native C library (``libweather``) to fetch current weather conditions.
 For the moment, ``libweather`` and ``shaman`` support grabbing weather from `OpenWeatherMap <http://openweathermap.org>`_ (which draws data from various sources accounting for nearly 80000 cities).
 However, because the library uses a source-agnostic data structure, other weather providers can be easily added.
 The only requirement for a new provider (which may become less stringent) is that they have a JSON API.
