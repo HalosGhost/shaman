@@ -1,4 +1,4 @@
-#compdef shaman 
+#compdef shaman
 _arguments -C -A "-*" \
     -a'[print all info]' \
     -c'[print current conditons]' \
