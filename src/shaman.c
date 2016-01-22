@@ -125,7 +125,8 @@ main (signed argc, char * argv []) {
 
     struct stat st;
     if ( stat(cache_path, &st) == -1 ) {
-        fputs("The specified cache path does not exist\n", stderr);
+        int errsv = errno;
+        fprintf(stderr, "shaman: %s\n", strerror(errsv));
         if ( cache_path ) { free(cache_path); }
         if ( location )   { free(location);   }
         if ( format )     { free(format);     }
