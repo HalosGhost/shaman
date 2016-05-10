@@ -26,6 +26,8 @@
 #include <errno.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include "weather.h"
 #include "usage.h"
@@ -123,15 +125,15 @@ main (signed argc, char * argv []) {
 
     if ( !cache_path ) { cache_path = locate_cache(flag_scale); }
 
-    struct stat st;
-    if ( stat(cache_path, &st) == -1 ) {
+    signed fd = 0;
+    if ( (fd = open(cache_path, O_CREAT | O_EXCL, 0666)) == -1 ) {
         int errsv = errno;
         fprintf(stderr, "shaman: %s\n", strerror(errsv));
         if ( cache_path ) { free(cache_path); }
         if ( location )   { free(location);   }
         if ( format )     { free(format);     }
         return 1;
-    }
+    } close(fd);
 
     struct weather * wthr = owm_easy('q', location, flag_scale, cache_path,
                                      flag_refresh ? 0 : 600, OWMAPIKEY,
