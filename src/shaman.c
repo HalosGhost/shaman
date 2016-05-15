@@ -126,7 +126,7 @@ main (signed argc, char * argv []) {
     if ( !cache_path ) { cache_path = locate_cache(flag_scale); }
 
     signed fd = 0;
-    if ( (fd = open(cache_path, O_CREAT | O_EXCL, 0666)) == -1 ) {
+    if ( (fd = open(cache_path, O_CREAT, 0666)) == -1 ) {
         int errsv = errno;
         fprintf(stderr, "shaman: %s\n", strerror(errsv));
         if ( cache_path ) { free(cache_path); }
