@@ -25,7 +25,7 @@ Shaman will look for the cache in the following locations stopping upon the firs
 
 :file:`$HOME/.shaman/SCALE.json`
 
-In both of the paths listed above, :option:`SCALE` may be either :option:`imperial` or :option:`metric` depending on the units requested. In accordance with OpenWeatherMap's API, a call for new data should be made no more often than once per 10 minutes per device. Shaman will, therefore, automatically use data from the cache (assuming the requested location and units are the same) until the file's last-modified timestamp is over 10 minutes old (or the :option:`--refresh` flag has been passed).
+In both of the paths listed above, ``SCALE`` may be either ``imperial`` or ``metric`` depending on the units requested. In accordance with OpenWeatherMap's API, a call for new data should be made no more often than once per 10 minutes per device. Shaman will, therefore, automatically use data from the cache (assuming the requested location and units are the same) until the file's last-modified timestamp is over 10 minutes old (or the ``--refresh`` flag has been passed).
 
 Options
 -------
@@ -34,7 +34,7 @@ Options
     Print usage information and exit
 
 -c CACHE, --cache=CACHE
-    Use the file located at :option:`CACHE` for data caching
+    Use the file located at ``CACHE`` for data caching
 
 -f FORMAT, --format=FORMAT
     Specify an output format string
@@ -43,7 +43,7 @@ Options
     Print information using Imperial units
 
 -l LOCATION, --location=LOCATION
-    Specify location to query. Note that :option:`LOCATION` should be formatted as "City Name,CC" where "CC" is the ISO 3166 two-digit Country Code.
+    Specify location to query. Note that ``LOCATION`` should be formatted as "City Name,CC" where "CC" is the ISO 3166 two-digit Country Code.
 
 -m, --metric
     Print information using Metric units
@@ -90,7 +90,7 @@ All other valid escape characters may also be used (e.g., \\n and \\\\).
 Return value
 ------------
 
-When called without the :option:`-q` flag, shaman will return 0 on success else it will return 1. However, when called with :option:`-q`, shaman's return code will be set from 1 to 9 (1 indicating failure, and each other code representing one of the following groups of weather conditions)::
+When called without the ``-q`` flag, shaman will return 0 on success else it will return 1. However, when called with ``-q``, shaman's return code will be set from 1 to 9 (1 indicating failure, and each other code representing one of the following groups of weather conditions)::
 
     2     Thunderstorm
     3     Drizzle
