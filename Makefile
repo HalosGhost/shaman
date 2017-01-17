@@ -36,7 +36,7 @@ install:
 	@install -Dm644 dist/weather.h     $(INCDIR)/shaman/weather.h
 	@install -Dm644 dist/shaman.1      $(DOCDIR)/man1/$(PROGNM).1
 	@install -Dm644 dist/strfweather.3 $(DOCDIR)/man3/strfweather.3
-	@install -Dm644 dist/zsh           $(ZSHDIR)/site-functions/_$(PROGNM)
+	@install -Dm644 dist/_$(PROGNM)    $(ZSHDIR)/site-functions/_$(PROGNM)
 
 uninstall:
 	@rm -f $(BINDIR)/$(PROGNM)
