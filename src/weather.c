@@ -159,19 +159,14 @@ owm_fetch_remote (const char method, const char * location, const char scale,
     }
 
     if ( file_cache_path ) {
-        FILE * json_cache = fopen(file_cache_path, "w");
-        fwrite(written_result.data, BUFFER_SIZE, 1, json_cache);
-
-        if ( ferror(json_cache) ) {
-            fclose(json_cache);
+        json_error_t err;
+        json_t * resjson = json_loads(written_result.data, 0, &err);
+        size_t flags = JSON_PRESERVE_ORDER | JSON_INDENT(2);
+        if ( resjson && json_dump_file(resjson, file_cache_path, flags) == -1 ) {
             fprintf(stderr, "Error caching file\n");
             exit(1);
         }
-
-        fclose(json_cache);
-    }
-
-    curl_easy_cleanup(handle);
+    } curl_easy_cleanup(handle);
 
     return &written_result;
 }
